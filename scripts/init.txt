@@ -229,6 +229,7 @@ bind ~%home send Kateye /ma \"Curaga V\" Sensarity
 bind %end send Kateye /ma \"Erase\" Sensarity
 bind %- ffo me
 bind %= ffo stopall
+bind f11 sm toggle
 bind f12 sm toggle all
 
 
