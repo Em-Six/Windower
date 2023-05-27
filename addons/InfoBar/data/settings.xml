@@ -1,10 +1,6 @@
 <?xml version="1.1" ?>
 <settings>
     <global>
-        <NoTarget>${name} (${main_job}${main_job_level}/${sub_job}${sub_job_level}) (${x},${y},${z})</NoTarget>
-        <TargetMOB>${name} (${notes})</TargetMOB>
-        <TargetNPC>${name}</TargetNPC>
-        <TargetPC>${name}</TargetPC>
         <display>
             <bg>
                 <alpha>102</alpha>
@@ -44,23 +40,27 @@
                 </stroke>
             </text>
         </display>
+        <NoTarget>${name} (${main_job}${main_job_level}/${sub_job}${sub_job_level}) (${x},${y},${z})</NoTarget>
+        <TargetMOB>${name} (${notes})</TargetMOB>
+        <TargetNPC>${name}</TargetNPC>
+        <TargetPC>${name}</TargetPC>
     </global>
     <asalith>
-        <TargetMOB>${name}</TargetMOB>
         <display>
             <pos>
                 <x>408</x>
                 <y>140</y>
             </pos>
         </display>
+        <TargetMOB>${name}</TargetMOB>
     </asalith>
     <sensarity>
-        <TargetMOB>${name}</TargetMOB>
         <display>
             <pos>
                 <x>1001</x>
                 <y>974</y>
             </pos>
         </display>
+        <TargetMOB>${name}</TargetMOB>
     </sensarity>
 </settings>

@@ -3048,6 +3048,12 @@
             <Width>1280</Width>
         </UIScreen>
     </dainopu>
+    <kateye>
+        <UIScreen>
+            <Height>1440</Height>
+            <Width>2560</Width>
+        </UIScreen>
+    </kateye>
     <sensarity>
         <UIScreen>
             <Height>1440</Height>
