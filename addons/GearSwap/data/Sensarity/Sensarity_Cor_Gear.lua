@@ -148,7 +148,7 @@ function init_gear_sets()
 		left_ear="Moonshade Earring",
 		right_ear="Ishvara Earring",
 		left_ring="Regal Ring",
-		right_ring="Rufescent Ring",
+		right_ring="Epaminondas's Ring",
 		back=gear.str_wsd_jse_back,}
 				
     -- Specific weaponskill sets.  Uses the base set if an appropriate WSMod version isn't found.
@@ -167,7 +167,7 @@ function init_gear_sets()
 		left_ear="Moonshade Earring",
 		right_ear="Ishvara Earring",
 		left_ring="Regal Ring",
-		right_ring="Rufescent Ring",
+		right_ring="Epaminondas's Ring",
 		back=gear.str_wsd_jse_back,
 	}
 
@@ -204,7 +204,7 @@ function init_gear_sets()
 		waist="Eschan Stone",
 		left_ear="Moonshade Earring",
 		right_ear="Friomisi Earring",
-		left_ring="Dingir Ring",
+		left_ring="Epaminondas's Ring",
 		right_ring="Archon Ring",
 		back=gear.magic_wsd_jse_back,
 		}
@@ -220,7 +220,7 @@ function init_gear_sets()
 		waist="Eschan Stone",
 		left_ear="Moonshade Earring",
 		right_ear="Friomisi Earring",
-		left_ring="Dingir Ring",
+		left_ring="Epaminondas's Ring",
 		right_ring="Metamorph Ring +1",
 		back=gear.magic_wsd_jse_back,
 	}
@@ -237,7 +237,7 @@ function init_gear_sets()
 		left_ear="Moonshade Earring",
 		right_ear="Friomisi Earring",
 		left_ring="Dingir Ring",
-		right_ring="Ilabrat Ring",
+		right_ring="Epaminondas's Ring",
 		back=gear.magic_wsd_jse_back,
 	}
 		
@@ -252,7 +252,7 @@ function init_gear_sets()
 		waist="Fotia Belt",
 		left_ear="Moonshade Earring",
 		right_ear="Friomisi Earring",
-		left_ring="Dingir Ring",
+		left_ring="Epaminondas's Ring",
 		right_ring="Regal Ring",
 		back=gear.ranger_wsd_jse_back,
 	}

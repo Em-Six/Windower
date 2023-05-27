@@ -180,7 +180,7 @@ function init_gear_sets()
 		left_ear="Moonshade Earring",
 		right_ear="Thrud Earring",
 		left_ring="Niqmaddu Ring",
-		right_ring="Regal Ring",
+		right_ring="Epaminondas's Ring",
 		back=gear.wsd_str_jse_back,
 	}
 
@@ -233,7 +233,7 @@ function init_gear_sets()
 		waist="Eschan Stone",
 		left_ear="Moonshade Earring",
 		right_ear="Friomisi Earring",
-		left_ring="Shiva Ring +1",
+		left_ring="Epaminondas's Ring",
 		right_ring="Metamor. Ring +1",
 		back=gear.wsd_mab_jse_back,
 	}
