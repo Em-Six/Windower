@@ -1,0 +1,5 @@
+input /ma "Qultada" <me>;
+wait 6; 
+input /ma "Koru-Moru" <me>; 
+wait 6;
+input /ma "Yoran-Oran (UC)" <me>;

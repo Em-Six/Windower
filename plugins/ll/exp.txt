@@ -1,0 +1,32 @@
+//EXP Profile
+//Passes everything except for Kindred & Beastmen Seals
+
+// ===== Crystal ===== 
+if item is 4096 then pass // pass Fire Crystal
+if item is 4099 then pass // pass Earth Crystal
+if item is 4101 then pass // pass Water Crystal
+if item is 4098 then pass // pass Wind Crystal
+if item is 4097 then pass // pass Ice Crystal
+if item is 4100 then pass // pass Lightning Crystal
+if item is 4102 then pass // pass Light Crystal
+if item is 4103 then pass // pass Dark Crystal
+
+// ===== Geodes =====
+if item is 3297 then pass //pass Flame Geode
+if item is 3298 then pass //pass Snow Geode
+if item is 3299 then pass //pass Breeze Geode
+if item is 3300 then pass //pass Soil Geode
+if item is 3301 then pass //pass Thunder Geode
+if item is 3302 then pass //pass Aqua Geode
+if item is 3303 then pass //pass Light Geode
+if item is 3304 then pass //pass Shadow Geode
+
+// ===== Avatarites =====
+if item is 3520 then pass //pass Ifritite
+if item is 3521 then pass //pass Shivite
+if item is 3522 then pass //pass Garudite
+if item is 3523 then pass //pass Titanite
+if item is 3524 then pass //pass Ramuite
+if item is 3525 then pass //pass Leviatite
+if item is 3526 then pass //pass Cabite
+if item is 3527 then pass //pass Fenrite

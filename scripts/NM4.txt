@@ -1,0 +1,2 @@
+tradenpc 10 "Tumult's Blood" "Ethereal Junction #4"
+input /echo Attempting to pop Tumult Curator.

@@ -1,0 +1,11 @@
+send sensarity autows;
+wait .1;
+send arayala autows;
+wait .1;
+send Sensarity exec lilithtrusts.txt;
+wait .1;
+send Arayala exec songs.txt;
+wait .1;
+send Kateye exec whmbuffs.txt;
+wait 30;
+send Kateye hb on;

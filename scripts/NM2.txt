@@ -1,0 +1,2 @@
+tradenpc 3 "Sovereign's Hide" "Ethereal Junction #2"
+input /echo Attempting to pop Sovereign Behemoth.

@@ -1,0 +1,33 @@
+<settings>
+    <global>
+        <Ranges />
+        <X>1900</X>
+        <Y>50</Y>
+        <Zoom>100</Zoom>
+        <Opacity>75</Opacity>
+        <ShowPC>true</ShowPC>
+        <ShowNPC>true</ShowNPC>
+        <ShowMob>true</ShowMob>
+        <ShowMarker>true</ShowMarker>
+        <ShowTargetLine>true</ShowTargetLine>
+        <Scale>1</Scale>
+    </global>
+    <Arayala>
+        <X>1148</X>
+        <Y>1198</Y>
+        <Zoom>40</Zoom>
+    </Arayala>
+    <Sensarity>
+        <X>1147</X>
+        <Y>1193</Y>
+        <Zoom>35</Zoom>
+    </Sensarity>
+    <Kateye>
+        <X>1150</X>
+        <Y>1200</Y>
+    </Kateye>
+    <Emsix>
+        <X>1906</X>
+        <Y>51</Y>
+    </Emsix>
+</settings>

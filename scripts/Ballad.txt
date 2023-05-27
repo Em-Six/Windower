@@ -1,0 +1,7 @@
+input /ma "Mage's Ballad" <me>; 
+wait 8; 
+input /ma "Mage's Ballad II" <me>; 
+wait 8; 
+input /ma "fowl aubade" <me>;
+wait 8; 
+input /ma "Mage's Ballad III" <me>; 

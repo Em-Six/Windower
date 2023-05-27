@@ -1,0 +1,12 @@
+<?xml version="1.1" ?>
+<settings>
+    <global>
+        <AutoDrop>true</AutoDrop>
+        <AutoStack>true</AutoStack>
+        <Delay>0</Delay>
+        <Drop>Ajari Necklace, Walkure Mask, Philomath Stole, Altep Ring, Dem Ring,Crayfish,Zinc Ore,Windurstian Tea,Date,Win. Tea Set,Elshimo Newt,Maple Log,Herb Seeds,Orange Juice,Airlixir +1,Win. Tea Leaves,Mushrm. Locust,Airlixir +2,Eschalixir,Gold Ore,Acorn,Butterpear,Flint Stone,Mythril Ore,Ulbukan Lobster,Moat Carp,Tin Ore,Fish Bones,Kitron,Bone Chip,Eschalixir +1,Airlixir,Apple Juice,Red Terrapin,Aurora Bass</Drop>
+        <Lot />
+        <Pass>Copper Ore, Tin Ore, Wivre Maul,Puk Egg,Smilodon Liver,Ahriman Lens,Marid Hide,Lightng. Crystal,2Leaf Mandra Bud,Rock Salt,Lizard Tail,Wolf Hide,Colibri Feather,Beastman Blood,Fire Crystal,Ice Crystal,Crudelis Belt,Water Crystal,Shadow Geode,Mercury,Cotton Cloth,Flame Geode,Karakul Meat,Ebony Log,Revival Root,Carbite,Scorpion Claw,Profane Memory,Wamoura Scale,Danceshroom,Sleepshroom,Apkallu Feather,Radiant Memory,Thunder Geode,Ladybug Wing,Shivite,Puffball,Aqua Geode,Light Crystal,Woozyshroom,Fleeting Memory,Ifritite,Bat Wing,Silk Thread,Forgotten Touch,Frgtn. Thought,Insect Wing,Raptor Skin,Dryad Root,Wyvern Skin,Mistletoe,Verboshroom,Pebble,Coveter Remnant,Garudite,Shockshroom,Bitter Memory,Soil Geode,Honey,Leviatite,Bomb Ash,Saruta Cotton,Oblivispore,Mythril Ore,Golem Shard,Roast Mushroom,Manticore Fang,Wind Crystal,Undead Skin,Wam. Cocoon,Flan Meat,Flytrap Leaf,Colibri Beak,Bat Fang,Coeurl Meat,Breeze Geode,Crawler Cocoon,Manigordo Tusk,Coeurl Hide,Bird Egg,Airlixir +1,Hare Meat,Karakul Skin,Hecteyes Eye,Soulflayer Staff,Slime Oil,Soulflayer Robe,Blk. Tiger Fang,Frgtn. Journey,Hero&apos;s Reflections,Agaricus,Light Geode,Fenrite,Colibri Fltchg.,G. Sheep Meat,Forgotten Step,Spider Web,Somber Memory,Forgotten Hope,Titanite,Snow Geode,Manticore Hair,Giant Agaricus,Eschalixir,Burning Memory,Bone Chip,Earth Crystal,Strtlng. Memory,Magic Pot Shard,Giant Bird Fthr.,Almond,Troll Vambrace,Petrified Log,Wivre Horn,Puk Wing,Beehive Chip,Aristo Belt,Scorpion Shell,Tiger Hide,Poroggo Hat,Airlixir +2,Satiator Remnant,Ziz Meat,Rosewood Log,Manticore Hide,Bird Feather,Bugard Skin,Fiend Blood,Reishi Mushroom,Malevolent Mem.,Ramuite,Wamoura Hair,Imp Wing,Cerebrator Rem.,Apkallu Egg,Dark Crystal,Lambent Scale,Crawler Egg,Smilodon Hide,Airlixir,Rabbit Hide,Ameretat Vine,Soulfl. Tentacle</Pass>
+        <Verbose>false</Verbose>
+    </global>
+</settings>

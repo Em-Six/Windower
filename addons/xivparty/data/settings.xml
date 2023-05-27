@@ -1,0 +1,36 @@
+<?xml version="1.1" ?>
+<settings>
+    <global>
+        <alignBottom>false</alignBottom>
+        <buffs>
+            <customOrder>true</customOrder>
+            <filterMode>blacklist</filterMode>
+            <filters />
+        </buffs>
+        <hideSolo>false</hideSolo>
+        <layout>auto</layout>
+        <posX>50</posX>
+        <posY>400</posY>
+        <rangeIndicator>0</rangeIndicator>
+        <rangeIndicatorFar>0</rangeIndicatorFar>
+        <spacingY>4</spacingY>
+    </global>
+    <arayala>
+        <alignBottom>true</alignBottom>
+        <layout>1440p</layout>
+        <posX>1540</posX>
+        <posY>1440</posY>
+    </arayala>
+    <kateye>
+        <alignBottom>true</alignBottom>
+        <layout>1440p</layout>
+        <posX>1540</posX>
+        <posY>1440</posY>
+    </kateye>
+    <sensarity>
+        <alignBottom>true</alignBottom>
+        <layout>1440p</layout>
+        <posX>1540</posX>
+        <posY>1440</posY>
+    </sensarity>
+</settings>

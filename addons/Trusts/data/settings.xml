@@ -1,0 +1,133 @@
+<?xml version="1.1" ?>
+<settings>
+    <global>
+        <auto>true</auto>
+        <language>English</language>
+        <sets>
+            <abyssea>
+                <1>Yoran-Oran (UC)</1>
+                <2>Koru-Moru</2>
+                <3>Ulmia</3>
+                <4>Joachim</4>
+                <5>Lion II</5>
+            </abyssea>
+            <alex>
+                <1>Cornelia</1>
+                <2>Yoran-Oran (UC)</2>
+                <3>Selh&apos;teus</3>
+            </alex>
+            <basic>
+                <1>Apururu (UC)</1>
+                <2>Zeid II</2>
+                <3>Valaineral</3>
+                <4>Semih Lafihna</4>
+            </basic>
+            <default>
+                <1>Valaineral</1>
+                <2>Mihli Aliapoh</2>
+                <3>Tenzen</3>
+                <4>Adelheid</4>
+                <5>Joachim</5>
+            </default>
+            <dia>
+                <1>Apururu (UC)</1>
+                <2>Cornelia</2>
+                <3>Joachim</3>
+                <4>Lilisette II</4>
+                <5>Selh&apos;teus</5>
+            </dia>
+            <diara>
+                <1>Lilisette II</1>
+                <2>Selh&apos;teus</2>
+                <3>Fablinix</3>
+                <4>Koru-Moru</4>
+                <5>Apururu (UC)</5>
+            </diara>
+            <diarayala>
+                <1>Lilisette II</1>
+                <2>Selh&apos;teus</2>
+                <3>Joachim</3>
+                <4>Koru-Moru</4>
+                <5>Apururu (UC)</5>
+            </diarayala>
+            <dikat>
+                <1>Cornelia</1>
+                <2>Lilisette II</2>
+                <3>Selh&apos;teus</3>
+                <4>Mayakov</4>
+                <5>Areuhat</5>
+            </dikat>
+            <disen>
+                <1>Yoran-Oran (UC)</1>
+                <2>Arciela II</2>
+                <3>Lilisette II</3>
+                <4>Selh&apos;teus</4>
+                <5>Ulmia</5>
+            </disen>
+            <disens>
+                <1>Lilisette II</1>
+                <2>Yoran-Oran (UC)</2>
+                <3>Selh&apos;teus</3>
+                <4>Cornelia</4>
+                <5>Fablinix</5>
+            </disens>
+            <disensarity>
+                <1>Lilisette II</1>
+                <2>Yoran-Oran (UC)</2>
+                <3>Ulmia</3>
+                <4>Joachim</4>
+                <5>Selh&apos;teus</5>
+            </disensarity>
+            <leveling>
+                <1>Iroha II</1>
+                <2>Valaineral</2>
+                <3>Shantotto II</3>
+                <4>Yoran-Oran (UC)</4>
+                <5>Cornelia</5>
+            </leveling>
+            <levk>
+                <1>Iroha II</1>
+                <2>Valaineral</2>
+                <3>Cornelia</3>
+                <4>Arciela II</4>
+                <5>Prishe II</5>
+            </levk>
+            <lilith>
+                <1>Yoran-Oran (UC)</1>
+                <2>Koru-Moru</2>
+                <3>Qultada</3>
+            </lilith>
+            <sens>
+                <1>Yoran-Oran (UC)</1>
+                <2>Ulmia</2>
+                <3>Joachim</3>
+                <4>Selh&apos;teus</4>
+                <5>Kupipi</5>
+            </sens>
+            <uragnite>
+                <1>Yoran-Oran (UC)</1>
+                <2>Koru-Moru</2>
+                <3>Ulmia</3>
+                <4>Joachim</4>
+                <5>Sakura</5>
+            </uragnite>
+            <warder>
+                <1>Yoran-Oran (UC)</1>
+                <2>August</2>
+                <3>Koru-Moru</3>
+                <4>Lion II</4>
+            </warder>
+            <wspoints>
+                <1>Yoran-Oran (UC)</1>
+                <2>August</2>
+                <3>Joachim</3>
+                <4>Ulmia</4>
+            </wspoints>
+        </sets>
+        <wait>
+            <aftercast>3</aftercast>
+            <retr>1.25</retr>
+            <retrall>3</retrall>
+        </wait>
+    </global>
+</settings>

@@ -1,0 +1,2 @@
+tradenpc 5 "Hidhaegg's Scale" "Ethereal Junction #3"
+input /echo Attempting to pop Hidhaegg.

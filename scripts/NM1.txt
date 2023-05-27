@@ -1,0 +1,2 @@
+tradenpc 1 "Sarama's Hide" "Ethereal Junction #1"
+input /echo Attempting to pop Sarama.

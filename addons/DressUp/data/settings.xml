@@ -1,0 +1,84 @@
+<?xml version="1.1" ?>
+<settings>
+    <global>
+        <arayala>
+            <ranged>32903</ranged>
+        </arayala>
+        <autoupdate>true</autoupdate>
+        <blinking>
+            <all>
+                <always>true</always>
+                <combat>false</combat>
+                <target>false</target>
+            </all>
+            <follow>
+                <always>false</always>
+                <combat>false</combat>
+                <target>false</target>
+            </follow>
+            <others>
+                <always>true</always>
+                <combat>false</combat>
+                <target>false</target>
+            </others>
+            <party>
+                <always>true</always>
+                <combat>false</combat>
+                <target>false</target>
+            </party>
+            <self>
+                <always>false</always>
+                <combat>false</combat>
+                <target>false</target>
+            </self>
+        </blinking>
+        <emsix>
+
+        </emsix>
+        <kateye>
+        <!-- <sub>28723</sub> Aegis -->
+        <!--    <main>25408</main> -->
+        </kateye>
+        <others>
+
+        </others>
+        <profiles>
+
+        </profiles>
+        <replacements>
+            <body>
+
+            </body>
+            <face>
+
+            </face>
+            <feet>
+
+            </feet>
+            <hands>
+
+            </hands>
+            <head>
+
+            </head>
+            <legs>
+
+            </legs>
+            <main>
+
+            </main>
+            <race>
+
+            </race>
+            <ranged>
+
+            </ranged>
+            <sub>
+
+            </sub>
+        </replacements>
+        <sensarity>
+
+        </sensarity>
+    </global>
+</settings>
