@@ -19,15 +19,17 @@
             </flags>
             <padding>0</padding>
             <pos>
-                <x>500</x>
-                <y>100</y>
+                <x>2000</x>
+                <y>50</y>
             </pos>
             <text>
                 <alpha>255</alpha>
                 <blue>255</blue>
                 <font>Courier New</font>
                 <fonts>
-
+                    <1>consolas</1>
+                    <2>courier new</2>
+                    <3>monospace</3>
                 </fonts>
                 <green>255</green>
                 <red>255</red>
@@ -49,19 +51,4 @@
         <UpdateFrequency>0.5</UpdateFrequency>
         <visible>true</visible>
     </global>
-    <sensarity>
-        <display>
-            <pos>
-                <x>2025</x>
-                <y>47</y>
-            </pos>
-            <text>
-                <fonts>
-                    <1>consolas</1>
-                    <2>courier new</2>
-                    <3>monospace</3>
-                </fonts>
-            </text>
-        </display>
-    </sensarity>
 </settings>

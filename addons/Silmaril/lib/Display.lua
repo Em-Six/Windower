@@ -54,7 +54,7 @@ function display_box_refresh()
 	lines:insert(' Silmaril...'..string.format('[%s]',tostring(gears[gear])):lpad(' ',maxWidth - 12 + string.len(gears[gear]))..' ')
 	lines:insert('')
 	for index, member in pairs(party_location) do
-		if member.zone == world.zone and player_location then
+		if member.zone == world.zone and player_location and member.name ~= player.name then
 			local delta = {x = member.x - player_location.x, y = member.y - player_location.y}
 			local distance = math.round(math.sqrt(delta.x^2 + delta.y^2),2)
 			lines:insert('  '..member.name..string.format('[%s]',tostring(distance)):lpad(' ',maxWidth - string.len(member.name) - 2))

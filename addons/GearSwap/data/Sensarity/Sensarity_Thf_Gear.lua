@@ -9,7 +9,7 @@ function user_job_setup()
     state.PhysicalDefenseMode:options('PDT')
 	state.MagicalDefenseMode:options('MDT')
 	state.ResistDefenseMode:options('MEVA')
-	state.Weapons:options('Aeneas','Savage','Domain')
+	state.Weapons:options('Aeneas','Savage','Evisceration')
 
     state.ExtraMeleeMode = M{['description']='Extra Melee Mode','None','Suppa','DWMax','Parry'}
 	state.AmbushMode = M(false, 'Ambush Mode')
@@ -64,7 +64,7 @@ function init_gear_sets()
 	-- Weapons sets
 	sets.weapons.Aeneas = {main="Aeneas",sub="Gleti's Knife"}
 	sets.weapons.Savage = {main="Naegling",sub="Gleti's Knife"}
-	sets.weapons.Domain = {main="Voluspa Knife",sub="Gleti's Knife"}
+	sets.weapons.Evisceration = {main="Tauret",sub="Gleti's Knife"}
 
 	
     -- Actions we want to use to tag TH.

@@ -79,9 +79,26 @@ function commands(cmd, args)
             elseif args[2] then
                 send_packet(player.name..";load_"..args[1]:lower().."_"..args[2]:lower())
                 log(player.name..";load_"..args[1]:lower().."_"..args[2]:lower())
-            else
+            elseif args[1] then
                 send_packet(player.name..";load_"..args[1]:lower())
                 log(player.name..";load_"..args[1]:lower())
+            else
+                send_packet(player.name..";load_")
+                log(player.name..";load_")
+            end
+        elseif cmd == "file" then
+            if args[3] then
+                send_packet(player.name..";load_"..args[1].."_"..args[2].." "..args[3].."_"..player.main_job.."_"..player.sub_job.."_"..player.name)
+                log(player.name..";load_"..args[1].."_"..args[2].." "..args[3].."_"..player.main_job.."_"..player.sub_job.."_"..player.name)
+            elseif args[2] then
+                send_packet(player.name..";load_"..args[1].."_"..args[2].."_"..player.main_job.."_"..player.sub_job.."_"..player.name)
+                log(player.name..";load_"..args[1].."_"..args[2].."_"..player.main_job.."_"..player.sub_job.."_"..player.name)
+            elseif args[1] then
+                send_packet(player.name..";load_"..args[1].."_"..player.main_job.."_"..player.sub_job.."_"..player.name)
+                log(player.name..";load_"..args[1].."_"..player.main_job.."_"..player.sub_job.."_"..player.name)
+            else
+                send_packet(player.name..";load_"..player.main_job.."_"..player.sub_job.."_"..player.name)
+                log(player.name..";load_"..player.main_job.."_"..player.sub_job.."_"..player.name)
             end
         elseif cmd == "send" then
             send_packet(player.name..';echo_Test')

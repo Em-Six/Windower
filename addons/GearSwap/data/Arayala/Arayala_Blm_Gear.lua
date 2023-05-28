@@ -96,7 +96,7 @@ function init_gear_sets()
 
     sets.precast.FC.Curaga = sets.precast.FC.Cure
 	
-	sets.precast.FC.Impact = set_combine(sets.precast.FC, {head=empty,body="Twilight Cloak"})
+	sets.precast.FC.Impact = set_combine(sets.precast.FC, {head=empty, body="Twilight Cloak", back="Perimede Cape",})
 	sets.precast.FC.Dispelga = set_combine(sets.precast.FC, {main="Daybreak",sub="Genmei Shield"})
 
 	sets.precast.FC.Death = set_combine(sets.precast.FC, {})
@@ -195,7 +195,7 @@ function init_gear_sets()
 	
 		-- Elemental Debuffs
     sets.midcast.ElementalEnfeeble = {
-	    ammo="Ghastly Tathlum +1", --Pemp
+	    ammo="Pemphredo Tathlum", --Pemp
 		head="Wicce Petasos +2", 
 		body="Spaekona's Coat +3",
 		hands="Spae. Gloves +3",
@@ -207,7 +207,7 @@ function init_gear_sets()
 		right_ear="Regal Earring",
 		left_ring=gear.stikini1,
 		right_ring="Metamor. Ring +1",
-		back=gear.nuke_jse_back,
+		back="Aurist's Cape +1",
 	}
     sets.midcast.ElementalEnfeeble.Resistant = set_combine(sets.midcast['Enfeebling Magic'].Resistant, {head="Amalric Coif +1",waist="Acuity Belt +1"})
 	
@@ -262,10 +262,21 @@ function init_gear_sets()
         body="Zendik Robe",hands="Regal Cuffs",ring1="Stikini Ring +1",ring2="Metamor. Ring +1",
         back=gear.nuke_jse_back,waist="Luminary Sash",legs="Merlinic Shalwar",feet="Medium's Sabots"}
 		
-	sets.midcast.Impact = {main="Daybreak",sub="Ammurapi Shield",ammo="Pemphredo Tathlum",
-		head=empty,neck="Erra Pendant",ear1="Malignance Earring",ear2="Regal Earring",
-		body="Twilight Cloak",hands="Regal Cuffs",ring1="Stikini Ring +1",ring2="Metamor. Ring +1",
-		back=gear.nuke_jse_back,waist="Acuity Belt +1",legs="Merlinic Shalwar",feet=gear.merlinic_aspir_feet}
+	sets.midcast.Impact = {
+	    ammo="Pemphredo Tathlum",
+		head=empty,
+		body="Twilight Cloak",
+		hands="Spae. Gloves +3",
+		legs="Wicce Chausses +3",
+		feet="Wicce Sabots +3",
+		neck="Src. Stole +2", -- need Spaekona +3
+		waist="Acuity Belt +1",
+		left_ear="Regal Earring",
+		right_ear="Malignance Earring",
+		left_ring=gear.stikini1,
+		right_ring="Metamor. Ring +1",
+		back="Aurist's Cape +1", 
+	}
 		
     -- Elemental Magic sets
     

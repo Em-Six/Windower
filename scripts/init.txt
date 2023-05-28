@@ -153,6 +153,7 @@ alias ram gs c useitem main Ram Staff
 alias republic gs c useitem main Republic Staff
 alias kitty gs c useitem main Kitty Rod
 alias livingbullets gs c useitem waist Liv. Bul. Pouch
+alias chronobullets gs c useitem waist Chr. Bul. Pouch
 
 
 //General Elementalmode aliases

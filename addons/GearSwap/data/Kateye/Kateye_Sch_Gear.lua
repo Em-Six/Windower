@@ -287,7 +287,7 @@ function init_gear_sets()
 		head="Arbatel Bonnet +3",
 		body="Arbatel Gown +3",
 		hands="Arbatel Bracers +2",
-		legs="Arbatel Pants +2",
+		legs="Arbatel Pants +3",
 		feet="Arbatel Loafers +3",
 		neck="Argute Stole +2",
 		waist="Hachirin-no-Obi",
@@ -434,8 +434,8 @@ function init_gear_sets()
     sets.buff['Rapture'] = {head="Arbatel Bonnet +3"}
     sets.buff['Perpetuance'] = {hands="Arbatel Bracers +2"}
     sets.buff['Immanence'] = {hands="Arbatel Bracers +2"}
-    sets.buff['Penury'] = {legs="Arbatel Pants +2"}
-    sets.buff['Parsimony'] = {legs="Arbatel Pants +2"}
+    sets.buff['Penury'] = {legs="Arbatel Pants +3"}
+    sets.buff['Parsimony'] = {legs="Arbatel Pants +3"}
     sets.buff['Celerity'] = {feet="Peda. Loafers +1"}
     sets.buff['Alacrity'] = {feet="Peda. Loafers +1"}
     sets.buff['Klimaform'] = {feet="Arbatel Loafers +3"}

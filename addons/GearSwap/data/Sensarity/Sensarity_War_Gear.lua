@@ -172,7 +172,7 @@ function init_gear_sets()
 		ammo="Knobkierrie",
 		head="Agoge Mask +3",
 		body="Nyame Mail",
-		hands="Nyame Gauntlets",
+		hands="Boii Mufflers +3",
 		legs="Nyame Flanchard",
 		feet="Nyame Sollerets",
 		neck="Warrior's Bead Necklace +2",

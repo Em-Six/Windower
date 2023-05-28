@@ -20,9 +20,16 @@ function get_enemy_data()
             ..tostring(enemy.in_party)..'|'..tostring(enemy.in_alliance)..'|'..tostring(enemy.is_npc)..','
         end
     end
-    player_enemy_data = formattedString:sub(1, #formattedString - 1) -- remove last character
-    player_npc_data = formattedString2:sub(1, #formattedString2 - 1) -- remove last character
-    --log(player_enemy_data)
+    if(#formattedString > 6) then
+        player_enemy_data = formattedString:sub(1, #formattedString - 1) -- remove last character
+    else
+        player_enemy_data = nil
+    end
+    if(#formattedString2 > 4) then
+        player_npc_data = formattedString2:sub(1, #formattedString2 - 1) -- remove last character
+    else
+        player_npc_data = nil
+    end
 end
 
 function get_all_zone_data()

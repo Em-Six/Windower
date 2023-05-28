@@ -64,6 +64,8 @@ function receive_info()
                 elseif message[2] == "skillchain4" then
                     skillchain4(message[3],message[4],message[5],message[6])
                 end
+            else
+                log("Wrong Message Recieved ["..message[2]..']')
             end
 		elseif msg ~= 'timeout' then 
 			--log("Network error: "..tostring(msg))

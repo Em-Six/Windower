@@ -28,11 +28,17 @@ function input_message(Type, Index, Param, Option)
     end
     Target = windower.ffxi.get_mob_by_index(Index)
     if not Target then
-        log("Target not found")
-        if following then
-            runStop()
+        Target = windower.ffxi.get_mob_by_id(Index)
+        if not Target then
+            Target = party_location[tonumber(Index)]
+            if not Target then
+                log("Target not found")
+                if following then
+                    runStop()
+                end
+                return
+            end
         end
-        return
     end
 	if Type == "JobAbility" then
         Action_Message('0x09',Target,Param)
@@ -117,6 +123,14 @@ function input_message(Type, Index, Param, Option)
             log("Distance is too far to run")
             runStop()
         end
+    elseif Type == "FastFollow" then
+        if player.zone == Target.zone or world.mog_house then
+            -- Call the movement section
+            fastfollow(Target,Param, Option)
+        else
+            log("Distance is too far to run")
+            runStop()
+        end
     elseif Type == "Face" then
         if Target.valid_target and math.sqrt(Target.distance) <= 50 then
             -- Call the movement section
@@ -124,6 +138,14 @@ function input_message(Type, Index, Param, Option)
 		    log("Face on")
         else
             log("Distance is too far to face")
+        end
+    elseif Type == "LockOn" then
+        if Target.valid_target and math.sqrt(Target.distance) <= 50 then
+            -- Call the lockon section
+            lockon(Target,Param)
+		    log("LockOn")
+        else
+            log("Distance is too far to Lock On to")
         end
     elseif Type == "Script" then
         if Target.valid_target and math.sqrt(Target.distance) <= 25 then

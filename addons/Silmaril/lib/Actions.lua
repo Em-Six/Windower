@@ -1,24 +1,31 @@
+local time
+local utime
+do
+    local now = os.time()
+    local h, m = (os.difftime(now, os.time(os.date('!*t', now))) / 3600):modf()
+    local timezone = '%+.2d:%.2d':format(h, 60 * m)
+    local fn = function(ts)
+        return os.date('%Y-%m-%dT%H:%M:%S' .. timezone, ts)
+    end
+    time = function(ts)
+        return fn(os.time() - ts)
+    end
+    utime = function(ts)
+        return fn(ts)
+    end
+    bufftime = function(ts)
+        return fn(1009810800 + (ts / 60) + 0x100000000 / 60 * 9) -- increment last number every 2.27 years
+    end
+end
+
 function message_in(id, original)
-    if id == 0x076 then -- Buffs
-        run_buffs(id, original) -- via Buffs.lua
+    if id == 0x00A then -- Zone update
+		zoning = false
+        log("Zoning ["..tostring(zoning).."]")
+    elseif id == 0x00B then -- Zone Response
+		zoning = true
+        log("Zoning ["..tostring(zoning).."]")
     elseif id == 0x028 then -- Action
-        --[[
-        Action packets
-        [1] = 'Melee attack',
-        [2] = 'Ranged attack finish',
-        [3] = 'Weapon Skill finish',
-        [4] = 'Casting finish',
-        [5] = 'Item finish',
-        [6] = 'Job Ability',
-        [7] = 'Weapon Skill start',
-        [8] = 'Casting start',
-        [9] = 'Item start',
-        [11] = 'NPC TP finish',
-        [12] = 'Ranged attack start',
-        [13] = 'Avatar TP finish',
-        [14] = 'Job Ability DNC',
-        [15] = 'Job Ability RUN',
-        ]]--
         local data = windower.packets.parse_action(original)
         if data.actor_id == player.id then
             -- [2] = 'Ranged attack finish'
@@ -104,7 +111,7 @@ function message_in(id, original)
             run_spell_check(data)
             run_burst(data)
         end
-    elseif id == 0x29 then -- Action Message
+    elseif id == 0x029 then -- Action Message
         local packet = packets.parse('incoming', original)
         if packet['Message'] == 48 then -- Reraise Fail
             local action = player.name..';packet_castfail_'..packet['Param 1']..'_'..packet['Target']
@@ -120,6 +127,25 @@ function message_in(id, original)
             send_packet(action)
             player_attack_target = "attacking_"..packet['Target Index']
         end
+    elseif id == 0x063 then -- Player buff duration
+        if original:byte(0x05) == 0x09 then
+            local packet = packets.parse('incoming', original)
+            local formattedString = "playerbuffs_"
+            player_buffs = {}
+            for i=1,32 do
+                local buff = 'Buffs '..tostring(i)
+                local duration = 'Time '..tostring(i)
+                if packet[buff] ~= 255 and packet[buff] ~= 0 then
+                    local buff_id = packet[buff]
+                    local end_time = bufftime(packet[duration])
+                    formattedString = formattedString..buff_id..','..end_time..'|'
+                    log('Buff ['..buff_id..'] End Time ['..end_time..']')
+                end
+            end
+            player_buffs = formattedString:sub(1, #formattedString - 1) -- remove last character
+        end
+    elseif id == 0x076 then -- Buffs
+        run_buffs(id, original) -- via Buffs.lua
     elseif id == 0x0F9 then -- Reraise Dialog
         local packet = packets.parse('incoming', original)
         if packet['Category'] == 1 then 
@@ -144,6 +170,9 @@ function message_out(id, original)
             send_packet(action)
             player_attack_target = "attacking_"..packet['Target Index']
         elseif packet['Category'] == 0x04 then  -- Disengage monster
+            if not player.target_index then
+                player.target_index = 0
+            end
             local action = player.name..';packet_disengage_'..player.target_index
             log(action)
             send_packet(action)
@@ -151,10 +180,11 @@ function message_out(id, original)
         end
     elseif id == 0x05E then -- Zone
         local packet = packets.parse('outgoing', original)
+        zoning = true
         if tonumber(packet['Type']) ~= 3 and player_location then  -- 03 for leaving the MH, 00 otherwise
-            player = windower.ffxi.get_player()
+            player_info()
             player_location = windower.ffxi.get_mob_by_id(player.id)
-            windower.send_ipc_message('zone '..player_location.id..' '..player_location.x..' '..player_location.y)
+            windower.send_ipc_message('zone '..player_location.id..' '..player_location.x..' '..player_location.y..' '..player_location.z)
             log("IPC zone line sent")
             player_attack_target = "attacking_0"
         end

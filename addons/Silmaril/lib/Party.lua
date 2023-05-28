@@ -27,11 +27,16 @@ function party_status()
             ..tostring(member.mpp)..','..tostring(member.tp)..','..tostring(member.zone)
             if member.mob then
                 local mob = {}
-                local local_player = party_location[member.mob.index]
-                if local_player then
+                local local_player = party_location[tonumber(member.mob.id)]
+                if local_player then -- update with local IPC information
                     member.mob.x = local_player.x
                     member.mob.y = local_player.y
                     member.mob.z = local_player.z
+                    member.mob.heading = local_player.heading
+                    if local_player.name == player.name then
+                        member.mob.target_index = player.target_index
+                        member.mob.status = player.status
+                    end
                 end
                 for index, value in pairs(member.mob) do
                     if index == 'id' then
@@ -40,10 +45,6 @@ function party_status()
                         mob[2] = tostring(value)
                     elseif index == 'target_index' then
                         mob[3] = tostring(value)
-                        if player.target_index and member.name == player.name then
-                            --log('change the target from ['..tostring(mob[3])..'] to ['..tostring(player.target_index)..']')
-                            mob[3] = tostring(player.target_index)
-                        end
                     elseif index == 'status' then
                         mob[4] = tostring(value)
                     elseif index == 'heading' then

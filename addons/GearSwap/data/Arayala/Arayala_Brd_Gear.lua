@@ -137,7 +137,7 @@ function init_gear_sets()
 		left_ear="Moonshade Earring",
 		right_ear="Ishvara Earring",
 		left_ring="Sroda Ring",
-		right_ring=gear.ifrit2,
+		right_ring="Cornelia's Ring",
 		back=gear.str_wsd_jse_back,
 	}
 	
@@ -153,7 +153,7 @@ function init_gear_sets()
 		left_ear="Moonshade Earring",
 		right_ear="Friomisi Earring",
 		left_ring=gear.shiva1,
-		right_ring=gear.shiva2,
+		right_ring="Cornelia's Ring",
 		back=gear.aeolain_jse_back, 
 	}
 
@@ -169,7 +169,7 @@ function init_gear_sets()
 		left_ear="Telos Earring",
 		right_ear="Brutal Earring",
 		left_ring="Moonlight Ring", -- Need Illabrat Ring
-		right_ring="Moonlight Ring", -- Need Begrudging ring or a DEX ring
+		right_ring="Cornelia's Ring", -- Need Begrudging ring or a DEX ring
 		back=gear.dex_crit_jse_back,
 	}
 	
@@ -185,7 +185,7 @@ function init_gear_sets()
 		left_ear="Telos Earring", -- Need Regal Earring
 		right_ear="Ishvara Earring",
 		left_ring=gear.carb1, -- Need Metamorph +1
-		right_ring=gear.carb2, -- Need Epam or some other ring
+		right_ring="Cornelia's Ring", -- Need Epam or some other ring
 		back=gear.chr_wsd_jse_back, -- Needs augmenting
 	}
 	

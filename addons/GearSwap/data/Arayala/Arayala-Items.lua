@@ -33,5 +33,6 @@ gear.telchine_enhancing_feet = { name="Telchine Pigaches", augments={'Enh. Mag. 
 
 gear.merlinic_FC_head = { name="Merlinic Hood", augments={'"Mag.Atk.Bns."+20','"Fast Cast"+6',}}
 gear.merlinic_FC_body = { name="Merlinic Jubbah", augments={'Mag. Acc.+4 "Mag.Atk.Bns."+4','"Fast Cast"+7','STR+1','"Mag.Atk.Bns."+10',}}
+gear.merlinic_FC_hands = { name="Merlinic Dastanas", augments={'"Mag.Atk.Bns."+7','"Fast Cast"+6',}}
 gear.merlinic_FC_legs = { name="Merlinic Dastanas", augments={'"Mag.Atk.Bns."+7','"Fast Cast"+6',}}
 gear.merlinic_FC_feet = { name="Merlinic Crackows", augments={'"Fast Cast"+6','INT+5','Mag. Acc.+13',}}

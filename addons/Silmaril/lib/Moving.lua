@@ -4,9 +4,10 @@ do
 	local autorun_distance = 0
 	local autorun_tofrom = 0
 	local mov = {x=0, y=0, z=0}
-	local runtime = 1
+	local runtime = .5
 	local runsstart = os.clock()
-	local zone_time = 0
+	local zone_time = os.clock()
+	local face_target_dir = false
 
 	function combat_movement()
 		if autorun == 1 and autorun_distance and autorun_tofrom then
@@ -21,7 +22,6 @@ do
 			local t = party_location[autorun_target]
 			if t and t.zone == world.zone then
 				t.spawn_type = 1
-				t.status = 0
 				t.valid_target = true
 				t.distance = (player_location.x-t.x)^2 + (player_location.y-t.y)^2 + (player_location.z-t.z)^2
 			else
@@ -51,9 +51,14 @@ do
 				elseif autorun_tofrom == 3 then -- follow
 					runsstart = os.clock()
 					following = true
-					if t.distance:sqrt() < autorun_distance then
+					if t.distance:sqrt() + .05 < autorun_distance then
 						if moving and t.name ~= player.name then
 							windower.ffxi.run(false)
+						end
+						if math.abs(t.heading - player_location.heading) > .05 and not moving and face_target_dir then
+							if player.status == 0 or player.status == 5 or player.status == 85 then
+								windower.ffxi.turn(t.heading)
+							end
 						end
 					elseif t.zone == world.zone then
 						local angle = (math.atan2((t.y - player_location.y), (t.x - player_location.x))*180/math.pi)*-1
@@ -72,7 +77,11 @@ do
 	end
 
 	function runto(target,distance)
-		if target and enabled and os.clock() - zone_time > 2 then
+		if os.clock() - zone_time < 5 then
+			log("Abort command - Zoning [RunTo]")
+			return
+		end
+		if target and enabled then
 			autorun = 1
 			autorun_target = target.id
 			autorun_distance = tonumber(distance)
@@ -82,8 +91,11 @@ do
 	end
 
 	function runaway(target, distance) 
-		-- if not targeting self and has a valid targets
-		if target and enabled and os.clock() - zone_time > 2 then 
+		if os.clock() - zone_time < 5 then
+			log("Abort command - Zoning [RunAway]")
+			return
+		end
+		if target and enabled then 
 			if player.target_locked then 
 				windower.send_command("input /lockon")
 			end
@@ -96,60 +108,108 @@ do
 	end
 
 	function runStop()
-		if os.clock() - zone_time > 2 then
-			windower.ffxi.run(false)
-			autorun = 0
-			autorun_tofrom = 0
-			autorun_target = player.id
-			following = false
-			runsstart = os.clock()
+		if os.clock() - zone_time < 5 then
+			log("Abort command - Zoning [RunStop]")
+			return
 		end
+		windower.ffxi.run(false)
+		autorun = 0
+		autorun_tofrom = 0
+		autorun_target = player.id
+		following = false
+		runsstart = os.clock()
 	end
 
 	function follow (target,distance)
+		if os.clock() - zone_time < 5 then
+			log("Abort command - Zoning [Follow]")
+			return
+		end
 		if target then
 			autorun = 1
 			autorun_target = target.id
 			autorun_distance = tonumber(distance)
-			autorun_tofrom = 3	
+			autorun_tofrom = 3
 			runsstart = os.clock()
 		end
 	end
 
+	function fastfollow (target,distance,face)
+		if os.clock() - zone_time < 5 then
+			log("Abort command - Zoning [FastFollow]")
+			return
+		end
+		if target then
+			autorun = 1
+			autorun_target = target.id
+			autorun_distance = tonumber(distance)
+			autorun_tofrom = 3
+			runsstart = os.clock()
+			if face == "True" then
+				face_target_dir = true
+			else
+				face_target_dir = false
+			end
+		end
+	end
+
 	function facemob(target)
+		if os.clock() - zone_time < 5 then
+			log("Abort command - Zoning [FaceMob]")
+			return
+		end
 		if target and enabled then
 			local angle = (math.atan2((target.y - player_location.y), (target.x - player_location.x))*180/math.pi)*-1
 			windower.ffxi.turn((angle):radian())
 		end
 	end
 
-	function moving_check()
-		if player.status == 0 or player.status == 1 or player.status == 85 or player.status == 5 then
-			player_location = windower.ffxi.get_mob_by_id(player.id) -- Update the player information
-			if player_location then
-				local movement = math.sqrt((player_location.x-mov.x)^2 + (player_location.y-mov.y)^2 + (player_location.z-mov.z)^2 ) > 0.05
-				if movement then
-					windower.send_ipc_message('update '..player.id..' '..player.name..' '..world.zone..' '..player_location.x..' '..player_location.y..' '..player_location.z)
+	function lockon(target, lock) 
+		if target and enabled then 
+			if player.target_locked and lock == "0" then 
+				windower.send_command("input /lockon")
+			elseif not player.target_locked and lock == "1" then
+				if player.target_index ~= target.index then
+					log("Lock on ["..target.id..']')
+					local inject = packets.new("incoming", 0x058, {
+						['Player'] = player.id,
+						['Target'] = target.id,
+						['Player Index'] = player.index,
+					})
+					packets.inject(inject)
+				else
+					windower.send_command("input /lockon")
 				end
-				if movement and not moving then
-					moving = true
-				elseif not movement and moving then
-					moving = false
-				end
-				mov.x = player_location.x
-				mov.y = player_location.y
-				mov.z = player_location.z
-				combat_movement()
 			end
 		end
 	end
 
-	function zone_check(player_id, player_x, player_y)
-		if os.clock() - runsstart < 8 and autorun_target == player_id then
+	function IPC_update()
+		player_location = windower.ffxi.get_mob_by_id(player.id) -- Update the player information
+		player_info()
+		if player_location then
+			local movement = math.sqrt((player_location.x-mov.x)^2 + (player_location.y-mov.y)^2 + (player_location.z-mov.z)^2 ) > 0.05
+			local character = { id = player.id, name = player.name, zone = world.zone, x = player_location.x, y = player_location.y, z = player_location.z, heading = player_location.heading, status = player.status, target_index = player.target_index}
+			party_location[player.id] = character -- Update the party table with player info also
+			if movement and not moving then
+				moving = true
+			elseif not movement and moving then
+				moving = false
+			end
+			windower.send_ipc_message('update '..player.id..' '..player.name..' '..world.zone..' '..player_location.x..' '..player_location.y..' '..player_location.z..' '..player_location.heading..' '..player.status..' '..player.target_index)
+			mov.x = player_location.x
+			mov.y = player_location.y
+			mov.z = player_location.z
+			combat_movement()
+		end
+	end
+
+	function zone_check(player_id, player_x, player_y, player_z)
+		if autorun_target == player_id then
 			log('Zone Detected - turning and running towards zone')
-			autorun = 0
 			zone_time = os.clock()
 			local angle = (math.atan2((player_y - player_location.y), (player_x - player_location.x))*180/math.pi)*-1
+			autorun = 0
 			windower.ffxi.run((angle):radian())
 		end
 	end
