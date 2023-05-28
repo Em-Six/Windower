@@ -220,7 +220,7 @@ function init_gear_sets()
 	
 	sets.precast.WS["Fell Cleave"] = set_combine(sets.precast.WS, {left_ear="Lugra Earring +1",})
 	
-	sets.precast.WS['Impulse Drive'] = set_combine(sets.precast.WS, { ammo="Yetshila +1", body="Hjarrandi Breast."}) 
+	sets.precast.WS['Impulse Drive'] = set_combine(sets.precast.WS, { ammo="Yetshila +1", body="Hjarrandi Breast.", right_ring="Lehko's Ring"}) 
 	
 	sets.precast.WS["Aeolian Edge"] = {
 	    ammo="Seeth. Bomblet +1",
@@ -275,7 +275,7 @@ function init_gear_sets()
 		feet="Sakpata's Leggings",
 		neck="Warder's Charm +1", -- Dynamis RP SWAP
 		--neck="Warrior's Bead Necklace +2",
-		waist="Flume Belt",
+		waist="Platinum Moogle Belt",
 		left_ear="Odnowa Earring +1",
 		right_ear="Odnowa Earring",
 		left_ring=gear.moonlight1,
@@ -323,11 +323,11 @@ function init_gear_sets()
 		legs="Pummeler's Cuisses +3", 
 		feet="Pummeler's Calligae +3", 
 		neck="Warrior's Bead Necklace +2", 
-		waist="Sailfi Belt +1", 
+		waist="Windbuffet Belt +1", 
 		left_ear="Telos Earring", 
 		right_ear="Schere Earring", 
 		left_ring="Niqmaddu Ring", 
-		right_ring=gear.moonlight2, 
+		right_ring="Lehko's Ring", 
 		back=gear.da_jse_back, 
 	}
 	

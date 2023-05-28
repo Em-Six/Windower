@@ -1,17 +1,6 @@
 <?xml version="1.1" ?>
 <settings>
-    <!--
-        This file controls the settings for the Scoreboard plugin.
-        Settings in the <global> section apply to all characters
-        
-        The available settings are:
-        posX - x coordinate for position
-        posY - y coordinate for position
-        numPlayers - The maximum number of players to display damage for
-        bgTransparency - Transparency level for the background. 0-255 range
-    -->
     <global>
-        <bgtransparency>200</bgtransparency>
         <combinepets>true</combinepets>
         <display>
             <bg>
@@ -38,9 +27,7 @@
                 <blue>255</blue>
                 <font>Courier New</font>
                 <fonts>
-                    <1>consolas</1>
-                    <2>courier new</2>
-                    <3>monospace</3>
+
                 </fonts>
                 <green>255</green>
                 <red>255</red>
@@ -55,8 +42,6 @@
             </text>
         </display>
         <numplayers>8</numplayers>
-        <posx>10</posx>
-        <posy>250</posy>
         <resetfilters>true</resetfilters>
         <sbcolor>204</sbcolor>
         <showallidps>true</showallidps>
@@ -64,28 +49,19 @@
         <UpdateFrequency>0.5</UpdateFrequency>
         <visible>true</visible>
     </global>
-    <arayala>
-        <display>
-            <pos>
-                <x>2024</x>
-                <y>50</y>
-            </pos>
-        </display>
-    </arayala>
-    <kateye>
-        <display>
-            <pos>
-                <x>2025</x>
-                <y>50</y>
-            </pos>
-        </display>
-    </kateye>
     <sensarity>
         <display>
             <pos>
-                <x>2013</x>
-                <y>54</y>
+                <x>2025</x>
+                <y>47</y>
             </pos>
+            <text>
+                <fonts>
+                    <1>consolas</1>
+                    <2>courier new</2>
+                    <3>monospace</3>
+                </fonts>
+            </text>
         </display>
     </sensarity>
 </settings>

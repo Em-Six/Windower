@@ -126,7 +126,7 @@ function init_gear_sets()
 		legs=gear.odyssean_fc_legs,
 		feet="Carmine Greaves +1",
 		neck="Unmoving Collar +1",
-		waist="Gold Mog. Belt",
+		waist="Platinum Moogle Belt",
 		left_ear="Odnowa Earring +1",
 		right_ear="Etiolation Earring",
 		left_ring="Moonlight Ring",
@@ -353,7 +353,7 @@ function init_gear_sets()
 		legs=gear.odyssean_fc_legs,
 		feet="Carmine Greaves +1",
 		neck="Unmoving Collar +1",
-		waist="Gold Mog. Belt",
+		waist="Platinum Moogle Belt",
 		left_ear="Odnowa Earring +1",
 		right_ear="Etiolation Earring",
 		left_ring="Moonlight Ring",
@@ -403,7 +403,7 @@ function init_gear_sets()
 		legs="Sakpata's Cuisses",
 		feet="Souveran Schuhs +1",
 		neck="Unmoving Collar +1",
-		waist="Gold Mog. Belt",
+		waist="Platinum Moogle Belt",
 		left_ear="Odnowa Earring +1",
 		right_ear="Odnowa Earring",
 		left_ring="Moonlight Ring",
@@ -443,7 +443,7 @@ function init_gear_sets()
 		
     sets.idle.MDT = sets.idle
 	
-	sets.idle.Town = set_combine(sets.idle, sets,Kiting, {ammo="Homiliary",hands="Regal Gauntlets",waist="Gold Mog. Belt",left_ring=gear.stikini1,right_ring=gear.stikini2,})
+	sets.idle.Town = set_combine(sets.idle, sets,Kiting, {ammo="Homiliary",hands="Regal Gauntlets",waist="Platinum Moogle Belt",left_ring=gear.stikini1,right_ring=gear.stikini2,})
 		
 	sets.idle.Refresh = {main="Mafic Cudgel",sub="Ochain",ammo="Homiliary",
 		head="Jumalik Helm",neck="Coatl Gorget +1",ear1="Etiolation Earring",ear2="Ethereal Earring",

@@ -365,7 +365,7 @@ function init_gear_sets()
 		left_ear="Brutal Earring",
 		right_ear="Telos Earring",
 		left_ring="Epona's Ring",
-		right_ring="Chirich Ring +1",
+		right_ring="Lehko's Ring",
 		back=gear.tp_da_jse_back,
 	}
     

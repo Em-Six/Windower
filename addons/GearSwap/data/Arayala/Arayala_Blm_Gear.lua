@@ -9,7 +9,8 @@ function user_job_setup()
 	gear.obi_low_nuke_waist = "Sekhmet Corset"
 	gear.obi_high_nuke_waist = "Refoccilation Stone"
 	
-	state.RecoverMode = M('15%','Never','35%', '60%', 'Always')
+	--state.RecoverMode = M('15%','Never','35%', '60%', 'Always')
+	state.RecoverMode = M('35%','Never','35%', '60%', 'Always')
 	
 	gear.nuke_jse_back = { name="Taranus's Cape", augments={'INT+20','Mag. Acc+20 /Mag. Dmg.+20','INT+10','"Mag.Atk.Bns."+10','Phys. dmg. taken-10%',}}
 	gear.FC_jse_back = { name="Taranus's Cape", augments={'MP+60','Eva.+20 /Mag. Eva.+20','"Fast Cast"+10','Phys. dmg. taken-10%',}}

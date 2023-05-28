@@ -22,7 +22,7 @@ local ruspix = {x =    -36.00, y =  0.00, z =    0.00, r = 10, zone = 281}
 local sortie = {x =    -250.00, y =  360.00, z =    3.00, r = 5, zone = 267}
 local ambu    = {x =  -27.10, y =   52.56, z =  -16.00, r =  8, zone = 249}
 local oseem   = {x =   13.89, y =   24.25, z =    0.24, r =  5, zone = 252}
-local paparoon   = {x =   0.30, y =   7.50, z =    0.00, r =  10, zone = 53}
+local paparoon   = {x =   0.30, y =   7.50, z =    0.00, r =  5, zone = 53}
 local dragonA = {x =   -1.47, y =   39.04, z =    0.00, r = 30, zone = 288} -- Zi'tah dragon
 local dragonB = {x =   -0.17, y = -210.26, z =  -43.60, r = 30, zone = 289} -- Ru'aun dragon
 local dragonC = {x =  623.53, y = -934.87, z = -371.58, r = 30, zone = 291} -- Reisenjima dragon
