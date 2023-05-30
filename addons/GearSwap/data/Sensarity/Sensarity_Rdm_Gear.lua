@@ -331,8 +331,8 @@ function init_gear_sets()
 
 	-- Idle sets
 	sets.idle = {
-		main="Crocea Mors",
-		sub="Daybreak", -- Need Sacro Bulwark or Genmei Shield
+		main="Daybreak",
+		sub="Sacro Bulwark",
 	    ammo="Homiliary",
 		head="Vitiation Chapeau +3",
 		body="Lethargy Sayon +2",
@@ -344,7 +344,7 @@ function init_gear_sets()
 		waist="Carrier's Sash",
 		left_ear="Odnowa Earring +1",
 		right_ear="Etiolation Earring",
-		left_ring="Defending Ring",
+		left_ring=gear.stikini1,
 		right_ring=gear.stikini2,
 		back=gear.stp_jse_back, -- Need PDT JSE Cape
 	}
