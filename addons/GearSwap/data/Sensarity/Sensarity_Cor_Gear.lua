@@ -18,7 +18,7 @@ function user_job_setup()
     gear.QDbullet = "Living Bullet"
     options.ammo_warning_limit = 50
 	options.shihei_warning_limit = 30
-	ammostock = 1980
+	ammostock = 990
 
 	gear.phantom_role_jse_adoulin_back = { name="Gunslinger's Cape", augments={'Enmity-3','"Phantom Roll" ability delay -5',}}
 	gear.tp_ranger_jse_back = {name="Camulus's Mantle",augments={'AGI+20','Rng.Acc.+20 Rng.Atk.+20','Rng.Acc.+10','"Store TP"+10',}}

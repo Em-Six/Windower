@@ -35,6 +35,7 @@ bind ^sysrq screenshot png
 bind ^v paste
 bind f1 fillmode 1
 bind f2 fillmode 0
+bind pause .
 
 //Sets ConsoleBG Background Position
 consolebg position 15 50

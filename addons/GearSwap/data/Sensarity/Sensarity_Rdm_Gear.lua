@@ -190,7 +190,7 @@ function init_gear_sets()
 	}
 
 	sets.midcast['Enhancing Magic'] = {main="Colada",sub="Ammurapi Shield",range=empty,ammo="Staunch Tathlum",
-		head=gear.telchine_enhancing_head,neck="Dls. Torque +2",ear1="Odnowa Earring +1",ear2="Etiolation Earring",
+		head=gear.telchine_enhancing_head,neck="Dls. Torque +2",ear1="Odnowa Earring +1",ear2="Lethargy Earring",
 		body="Viti. Tabard +3",hands="Atrophy Gloves +3",ring1=gear.stikini1,ring2=gear.stikini2,
 		back="Ghostfyre Cape",waist="Embla Sash",legs=gear.telchine_enhancing_legs,feet="Leth. Houseaux +2"}
 
