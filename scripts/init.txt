@@ -41,7 +41,7 @@ consolebg position 15 50
 consolebg size 1300 310
 
 //Other addons
-//lua load HTMB
+lua load HTMB
 lua load xivparty
 lua load xipivot
 lua load superwarp
@@ -54,6 +54,7 @@ lua load quicktrade
 lua load sirpopalot
 lua load sheolhelper
 //lua load sendalltarget
+lua load react
 lua load trade
 lua load whereisdi
 lua load anchor

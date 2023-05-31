@@ -18,7 +18,7 @@ function user_job_setup()
     gear.QDbullet = "Living Bullet"
     options.ammo_warning_limit = 50
 	options.shihei_warning_limit = 30
-	ammostock = 198
+	ammostock = 1980
 
 	gear.phantom_role_jse_adoulin_back = { name="Gunslinger's Cape", augments={'Enmity-3','"Phantom Roll" ability delay -5',}}
 	gear.tp_ranger_jse_back = {name="Camulus's Mantle",augments={'AGI+20','Rng.Acc.+20 Rng.Atk.+20','Rng.Acc.+10','"Store TP"+10',}}
@@ -162,11 +162,11 @@ function init_gear_sets()
 		hands="Nyame Gauntlets",
 		legs="Nyame Flanchard",
 		feet="Nyame Sollerets",
-		neck="Comm. Charm +2",
+		neck="Rep. Plat. Medal",
 		waist="Sailfi Belt +1",
 		left_ear="Moonshade Earring",
 		right_ear="Ishvara Earring",
-		left_ring="Regal Ring",
+		left_ring="Sroda Ring",
 		right_ring="Epaminondas's Ring",
 		back=gear.str_wsd_jse_back,
 	}

@@ -179,7 +179,7 @@ function init_gear_sets()
 		waist="Sailfi Belt +1",
 		left_ear="Moonshade Earring",
 		right_ear="Thrud Earring",
-		left_ring="Niqmaddu Ring",
+		left_ring="Sroda Ring",
 		right_ring="Epaminondas's Ring",
 		back=gear.wsd_str_jse_back,
 	}

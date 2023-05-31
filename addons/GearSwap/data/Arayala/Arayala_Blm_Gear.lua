@@ -195,8 +195,8 @@ function init_gear_sets()
 	
 		-- Elemental Debuffs
     sets.midcast.ElementalEnfeeble = {
-	    ammo="Pemphredo Tathlum", --Pemp
-		head="Wicce Petasos +2", 
+	    ammo="Pemphredo Tathlum",
+		head="Wicce Petasos +3", 
 		body="Spaekona's Coat +3",
 		hands="Spae. Gloves +3",
 		legs="Archmage's Tonban +3",
@@ -282,7 +282,7 @@ function init_gear_sets()
     
     sets.midcast['Elemental Magic'] = {
 	    ammo="Ghastly Tathlum +1",
-		head="Wicce Petasos +2",
+		head="Wicce Petasos +3",
 		body="Wicce Coat +3",
 		hands="Wicce Gloves +2",
 		legs="Wicce Chausses +3",
@@ -330,7 +330,7 @@ function init_gear_sets()
 		body="Wicce Coat +3",
 		hands="Volte Gloves",
 		legs="Nyame Flanchard",
-		feet="Mallquis Clogs +2",
+		feet="Volte Gaiters",
 		neck="Loricate Torque +1", 		-- Dynamis Swap 
 		--neck="Sorcerer's Stole +2", 		-- Dynamis Swap 
 		waist="Carrier's Sash",
