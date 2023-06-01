@@ -1,6 +1,6 @@
 return {
     ["dummy"] = L{"Fowl Aubade","Shining Fantasia",},
-    ["debuffs"] = L{"Carnage Elegy","Pining Nocturne",},
+    ["debuffs"] = L{"Carnage Elegy",},
     ["playlist"] = T{
         ["clear"] = L{},
         ["dualmarch"] = L{"Honor March","Victory March","Valor Minuet V","Valor Minuet IV",},
@@ -20,5 +20,5 @@ return {
     ["song"] = T{
         ["Kateye"] = L{"Mage's Ballad III",},
     },
-    ["songs"] = L{"Honor March","Blade Madrigal","Sword Madrigal","Victory March",},
+    ["songs"] = L{"Honor March","Blade Madrigal","Valor Minuet V","Valor Minuet IV",},
 }

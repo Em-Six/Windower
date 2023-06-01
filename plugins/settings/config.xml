@@ -14,7 +14,17 @@
         <FootstepEffects>true</FootstepEffects>
         <!--Time in minutes of inactivity until a disconnect, 0 to disable-->
         <AutoDisconnectTime>0</AutoDisconnectTime>
+        <!--2 for 30 FPS, 1 for 60 FPS, 0 for uncapped frame rates-->
+        <FrameRateDivisor>0</FrameRateDivisor>
     </global>
+    <Arayala>
+        <!--2 for 30 FPS, 1 for 60 FPS, 0 for uncapped frame rates-->
+        <FrameRateDivisor>1</FrameRateDivisor>
+    </Arayala>
+    <Kateye>
+        <!--2 for 30 FPS, 1 for 60 FPS, 0 for uncapped frame rates-->
+        <FrameRateDivisor>1</FrameRateDivisor>
+    </Kateye>
     <Emsix>
         <!--2 for 30 FPS, 1 for 60 FPS, 0 for uncapped frame rates-->
         <FrameRateDivisor>1</FrameRateDivisor>
