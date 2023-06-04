@@ -333,10 +333,27 @@ function init_gear_sets()
 	sets.midcast.Helix = set_combine(sets.midcast['Elemental Magic'], {})
 	sets.midcast.Helix.Burst = set_combine(sets.midcast.Helix, {ring1="Mujin Band"}) 
 	
-	sets.midcast['Luminohelix'] = set_combine(sets.midcast.Helix, {ring2="Weather. Ring"})
-	sets.midcast['Luminohelix II'] = sets.midcast['Luminohelix']
-	sets.midcast['Luminohelix'].Burst = set_combine(sets.midcast.Helix.Burst, {ring2="Weather. Ring"})
-	sets.midcast['Luminohelix II'].Burst = sets.midcast['Luminohelix'].Burst
+	--Sets to make Helices not do big damage during skillchains
+	sets.midcast['Geohelix'] = set_combine(sets.precast.FC, {})
+	sets.midcast['Hydrohelix'] = set_combine(sets.precast.FC, {})
+	sets.midcast['Anemohelix'] = set_combine(sets.precast.FC, {})
+	sets.midcast['Pyrohelix'] = set_combine(sets.precast.FC, {})
+	sets.midcast['Cryohelix'] = set_combine(sets.precast.FC, {})
+	sets.midcast['Ionohelix'] = set_combine(sets.precast.FC, {})
+	sets.midcast['Noctohelix'] = set_combine(sets.precast.FC, {})
+	sets.midcast['Luminohelix'] = set_combine(sets.precast.FC, {})
+	
+	sets.midcast['Geohelix'].Burst = set_combine(sets.midcast['Geohelix'], {})
+	sets.midcast['Hydrohelix'].Burst = set_combine(sets.midcast['Hydrohelix'], {})
+	sets.midcast['Anemohelix'].Burst = set_combine(sets.midcast['Anemohelix'], {})
+	sets.midcast['Pyrohelix'].Burst = set_combine(sets.midcast['Pyrohelix'], {})
+	sets.midcast['Cryohelix'].Burst = set_combine(sets.midcast['Cryohelix'], {})
+	sets.midcast['Ionohelix'].Burst = set_combine(sets.midcast['Ionohelix'], {})
+	sets.midcast['Noctohelix'].Burst = set_combine(sets.midcast['Noctohelix'], {})
+	sets.midcast['Luminohelix'].Burst = set_combine(sets.midcast['Luminohelix'], {})
+	
+	sets.midcast['Luminohelix II'] = set_combine(sets.midcast.Helix, {} )
+	sets.midcast['Luminohelix II'].Burst = set_combine(sets.midcast.Helix, {} )
 	
 	sets.midcast.Helix.Resistant = {main="Daybreak",sub="Ammurapi Shield",ammo="Pemphredo Tathlum",
         head=gear.merlinic_nuke_head,neck="Sanctity Necklace",ear1="Malignance Earring",ear2="Friomisi Earring",
