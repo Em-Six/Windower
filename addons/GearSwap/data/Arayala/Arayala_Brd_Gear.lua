@@ -3,7 +3,7 @@ function user_job_setup()
     state.OffenseMode:options('Normal','Acc')
     state.CastingMode:options('Normal','Resistant','Ody')
     state.IdleMode:options('Normal','Ody')
-	state.Weapons:options('DualCentoNaeg','DualNaegling','Carnwenhan','Naegling','Evisceration','Aeolian','Ody','Domain')
+	state.Weapons:options('DualCentovente','DualNaegling','Carnwenhan','Naegling','Evisceration','Aeolian','Ody','Domain')
 	
 	autows = "Mordant Rime"
 	autowstp = 1000
@@ -21,7 +21,7 @@ function user_job_setup()
 	
 	gear.dt_jse_back = { name="Intarabus's Cape", augments={'HP+60','Eva.+20 /Mag. Eva.+20','Evasion+10','Enmity-10','Evasion+15',}}
 	gear.fc_macc_jse_back = { name="Intarabus's Cape", augments={'CHR+20','Mag. Acc+20 /Mag. Dmg.+20','Mag. Acc.+10','"Fast Cast"+10',}}
-	gear.tp_jse_back =  { name="Intarabus's Cape", augments={'DEX+20','Accuracy+20 Attack+20','Accuracy+10','"Dual Wield"+10','Phys. dmg. taken-10%',}}
+	gear.tp_jse_back =  { name="Intarabus's Cape", augments={'DEX+20','Accuracy+20 Attack+20','Accuracy+10','"Dbl.Atk."+10','Phys. dmg. taken-10%',}}
 	gear.str_wsd_jse_back = { name="Intarabus's Cape", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%',}}
 	gear.chr_wsd_jse_back = { name="Intarabus's Cape", augments={'CHR+20','Accuracy+20 Attack+20','Weapon skill damage +10%',}} -- Need Dye Augment
 	gear.aeolain_jse_back = { name="Intarabus's Cape", augments={'INT+20','Mag. Acc+20 /Mag. Dmg.+20','INT+10','Weapon skill damage +10%','Phys. dmg. taken-10%',}}
@@ -40,6 +40,20 @@ function user_job_setup()
 	select_default_macro_book()
 end
 
+function job_filtered_action(spell, eventArgs)
+	if spell.type == 'WeaponSkill' then
+		local available_ws = S(windower.ffxi.get_abilities().weapon_skills)
+		-- WS 112 is Double Thrust, meaning a Spear is equipped.
+		if available_ws:contains(32) then
+            if spell.english == "Mordant Rime" then
+				windower.chat.input('/ws "Savage Blade" '..spell.target.raw)
+                cancel_spell()
+				eventArgs.cancel = true
+            end
+        end
+	end
+end
+
 function init_gear_sets()
 
 	--------------------------------------
@@ -47,7 +61,7 @@ function init_gear_sets()
 	--------------------------------------
 
 	-- Weapons sets
-	sets.weapons.DualCentoNaeg = {main="Naegling",sub="Centovente"}
+	sets.weapons.DualCentovente = {main="Naegling",sub="Centovente"}
 	sets.weapons.DualNaegling = {main="Naegling",sub="Gleti's Knife"}
 	sets.weapons.Carnwenhan = {main="Carnwenhan",sub="Gleti's Knife"}
 	sets.weapons.Naegling = {main="Naegling",sub="Genmei Shield"}
@@ -436,6 +450,7 @@ function init_gear_sets()
 	}
 	
 	sets.engaged.DW = set_combine(sets.engaged, {})
+	sets.engaged.DualCentovente = set_combine(sets.engaged, {right_ear="Eabani Earring", waist="Reiki Yotai", hands="Gazu Bracelets +1"})
 	
 end
 

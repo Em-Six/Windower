@@ -5,11 +5,11 @@ _addon.commands = {'fuckoff','fo'} --Won't do anything atm.
 
 packets = require('packets')
 
-local blackListedUsers = T{'Ochaking','Sonsuken','Bushin','Xiaobx','Zirow','Cpttn','Charmghost','Ouzo','Goldmansachs'} -- Want to block all messages from X user then added their name(s) here.
+local blackListedUsers = T{'Chrisanthe','Ochaking','Sonsuken','Bushin','Xiaobx','Zirow','Cpttn','Charmghost','Ouzo','Goldmansachs'} -- Want to block all messages from X user then added their name(s) here.
 
 -- I could do a general digit check on JP instead of set 500/2100 values but atm I feel it's not needed. Will see if they change thier tactics.
 -- If you want to learn more about "Magical Characters" or Patterns in Lua: <a href="https://riptutorial.com/lua/example/20315/lua-pattern-matching" rel="nofollow">https://riptutorial.com/lua/example/20315/lua-pattern-matching</a>
-local blackListedWords = T{string.char(0x81,0x99),string.char(0x81,0x9A),'Weapon 3 zone', '3zone', 'Bumba, Xevioso, Arebati','T1 T2 V20','Herculean Valorous','t3 Xecioso Ngai v20','V20 Unlock','King Ranp','Bibiki Bay','10M 20-30','T3 Kalunga-V20','ReisenjimaFull or HelmT4 x7','3zoneClear','Sarameya','M/run','Unlock Relic','Unlock-Aug','Fermion Sword','WoC Kirin','T1 T2-V20','VD/Lilith VD','HTMB VD','9999','1\-55','500JP','500p','CP500','T1T2T3','local gamers ffxi','2100','3zones Full','1\-60','50\-99','60\-99','Ballista','T1234'} -- First two are '☆' and '★' symbols.
+local blackListedWords = T{string.char(0x81,0x99),string.char(0x81,0x9A),'Wanted UNM135 Escha','T1 T2-V20','Shulmanu Collar','Weapon 3 zone', '3zone', 'Bumba, Xevioso, Arebati','T1 T2 V20','Herculean Valorous','t3 Xecioso Ngai v20','V20 Unlock','King Ranp','Bibiki Bay','10M 20-30','T3 Kalunga-V20','ReisenjimaFull or HelmT4 x7','3zoneClear','Sarameya','M/run','Unlock Relic','Unlock-Aug','Fermion Sword','WoC Kirin','T1 T2-V20','VD/Lilith VD','HTMB VD','9999','1\-55','500JP','500p','CP500','T1T2T3','local gamers ffxi','2100','3zones Full','1\-60','50\-99','60\-99','Ballista','T1234'} -- First two are '☆' and '★' symbols.
 
 windower.register_event('incoming chunk', function(id,data)
     if id == 0x017 then -- 0x017 Is incoming chat.

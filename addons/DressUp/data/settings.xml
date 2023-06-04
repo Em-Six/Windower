@@ -36,8 +36,8 @@
 
         </emsix>
         <kateye>
-        <!-- <sub>28723</sub> Aegis -->
-        <!--    <main>25408</main> -->
+        <!-- <main>25408</main> -->
+
         </kateye>
         <others>
 
@@ -45,38 +45,6 @@
         <profiles>
 
         </profiles>
-        <replacements>
-            <body>
-
-            </body>
-            <face>
-
-            </face>
-            <feet>
-
-            </feet>
-            <hands>
-
-            </hands>
-            <head>
-
-            </head>
-            <legs>
-
-            </legs>
-            <main>
-
-            </main>
-            <race>
-
-            </race>
-            <ranged>
-
-            </ranged>
-            <sub>
-
-            </sub>
-        </replacements>
         <sensarity>
 
         </sensarity>
