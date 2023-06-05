@@ -82,6 +82,6 @@
             </savageblade>
         </profiles>
         <style>magic</style>
-        <taupe>false</taupe>
+        <taupe>true</taupe>
     </global>
 </settings>

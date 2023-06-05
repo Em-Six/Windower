@@ -28,6 +28,7 @@ gear.telchine_enhancing_feet = { name="Telchine Pigaches", augments={'Enh. Mag. 
 
 gear.chironic_enfeebling_legs = { name="Chironic Hose", augments={'Mag. Acc.+23 "Mag.Atk.Bns."+23','"Fast Cast"+3','MND+9','Mag. Acc.+13','"Mag.Atk.Bns."+7',}}
 
+gear.merlinic_fc_head = { name="Merlinic Hood", augments={'"Fast Cast"+7','CHR+1','Mag. Acc.+3','"Mag.Atk.Bns."+12',}}
 gear.merlinic_fc_body = { name="Merlinic Jubbah", augments={'"Fast Cast"+6','MND+10',}}
 
 gear.gada_enhancing_club = { name="Gada", augments={'Enh. Mag. eff. dur. +6','STR+3','Mag. Acc.+20','"Mag.Atk.Bns."+6','DMG:+7',}}

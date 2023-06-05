@@ -74,7 +74,7 @@ function init_gear_sets()
 		main=gear.grioavolr_fc_staff, --11% FC
 		sub="Clerisy Strap +1", -- 3% FC
 		ammo="Impatiens", -- 2% QC
-		head="Nyame Helm", -- Replace with Merlinic - 8% base + 6-7% Augmented
+		head=gear.merlinic_fc_head, -- Replace with Merlinic - 8% base + 6-7% Augmented
 		body=gear.merlinic_fc_body, -- 12% FC
 		hands="Gende. Gages +1", -- 7% FC Merlinic 6-7% Augmented
 		legs="Psycloth Lappas", -- 7% FC Replace with Agwu's
@@ -329,6 +329,7 @@ function init_gear_sets()
 	sets.midcast['Elemental Magic'].HighTierNuke = set_combine(sets.midcast['Elemental Magic'], {})
 	sets.midcast['Elemental Magic'].HighTierNuke.Burst = set_combine(sets.midcast['Elemental Magic'].Burst, {})
 	sets.midcast['Elemental Magic'].HighTierNuke.Fodder = set_combine(sets.midcast['Elemental Magic'].Fodder, {})
+	sets.midcast['Elemental Magic'].LowTierNuke = set_combine(sets.precast.FC, {})
 
 	sets.midcast.Helix = set_combine(sets.midcast['Elemental Magic'], {})
 	sets.midcast.Helix.Burst = set_combine(sets.midcast.Helix, {ring1="Mujin Band"}) 
