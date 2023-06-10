@@ -10,7 +10,7 @@ function user_job_setup()
 	gear.obi_high_nuke_waist = "Refoccilation Stone"
 	
 	--state.RecoverMode = M('15%','Never','35%', '60%', 'Always')
-	state.RecoverMode = M('35%','Never','35%', '60%', 'Always')
+	state.RecoverMode = M('Never','35%', '60%', 'Always')
 	
 	gear.nuke_jse_back = { name="Taranus's Cape", augments={'INT+20','Mag. Acc+20 /Mag. Dmg.+20','INT+10','"Mag.Atk.Bns."+10','Phys. dmg. taken-10%',}}
 	gear.FC_jse_back = { name="Taranus's Cape", augments={'MP+60','Eva.+20 /Mag. Eva.+20','"Fast Cast"+10','Phys. dmg. taken-10%',}}
@@ -230,7 +230,7 @@ function init_gear_sets()
         body=gear.merlinic_nuke_body,hands="Amalric Gages +1",ring1="Stikini Ring +1",ring2="Metamor. Ring +1",
         back=gear.nuke_jse_back,waist="Acuity Belt +1",legs="Merlinic Shalwar",feet=gear.merlinic_aspir_feet}
 
-    sets.midcast.Drain = {main="Rubicundity",sub="Ammurapi Shield",ammo="Pemphredo Tathlum",
+    sets.midcast.Drain = {ammo="Pemphredo Tathlum",
         head="Pixie Hairpin +1",neck="Erra Pendant",ear1="Malignance Earring",ear2="Regal Earring",
         body=gear.merlinic_nuke_body,hands="Amalric Gages +1",ring1="Evanescence Ring",ring2="Archon Ring",
         back=gear.nuke_jse_back,waist="Fucho-no-obi",legs="Merlinic Shalwar",feet=gear.merlinic_aspir_feet}
@@ -284,7 +284,7 @@ function init_gear_sets()
 	    ammo="Ghastly Tathlum +1",
 		head="Wicce Petasos +3",
 		body="Wicce Coat +3",
-		hands="Wicce Gloves +2",
+		hands="Wicce Gloves +3",
 		legs="Wicce Chausses +3",
 		feet="Wicce Sabots +3",
 		neck="Src. Stole +2",
@@ -408,10 +408,21 @@ function init_gear_sets()
     -- EG: sets.engaged.Dagger.Accuracy.Evasion
     
     -- Normal melee group
-    sets.engaged = {ammo="Staunch Tathlum",
-        head="Jhakri Coronal +2",neck="Combatant's Torque",ear1="Mache Earring +1",ear2="Telos Earring",
-		body="Jhakri Robe +2",hands="Jhakri Cuffs +2",ring1="Ramuh Ring +1",ring2="Ramuh Ring +1",
-		back=gear.stp_jse_back,waist="Olseni Belt",legs="Jhakri Slops +2",feet="Jhakri Pigaches +2"}
+    sets.engaged = {
+		ammo="Staunch Tathlum",
+		head="Nyame Helm",
+		body="Nyame Mail",
+		hands="Gazu Bracelets +1",
+		legs="Nyame Flanchard",
+		feet="Nyame Sollerets",
+		neck="Loricate Torque +1",
+		waist="Cornelia's Belt",
+		left_ear="Telos Earring",
+		right_ear="Crepuscular Earring",
+		left_ring=gear.stikini1,
+		right_ring=gear.stikini2,
+		back=gear.nuke_jse_back, 
+	}
 
 	--Situational sets: Gear that is equipped on certain targets
 	sets.Self_Healing = {neck="Phalaina Locket",ring1="Kunaji Ring",ring2="Asklepian Ring",waist="Gishdubar Sash"}
@@ -423,4 +434,8 @@ end
 -- Select default macro book on initial load or subjob change.
 function select_default_macro_book()
     set_macro_page(1, 7)
+end
+
+function user_job_lockstyle()
+	windower.chat.input('/lockstyleset 005')
 end

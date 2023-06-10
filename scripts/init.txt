@@ -57,6 +57,8 @@ lua load sheolhelper
 //lua load sendalltarget
 lua load react
 lua load trade
+lua load enemybar2
+lua load revisible
 lua load whereisdi
 lua load anchor
 lua load fastfollow

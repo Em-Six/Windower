@@ -3,7 +3,7 @@ function user_job_setup()
     state.OffenseMode:options('Normal','Acc')
     state.CastingMode:options('Normal','Resistant','Ody')
     state.IdleMode:options('Normal','Ody')
-	state.Weapons:options('DualCentovente','DualNaegling','Carnwenhan','Naegling','Evisceration','Aeolian','Ody','Domain')
+	state.Weapons:options('DualCentovente','DualNaegling','Carnwenhan','Naegling','Evisceration','Aeolian','Xoanon')
 	
 	autows = "Mordant Rime"
 	autowstp = 1000
@@ -51,6 +51,13 @@ function job_filtered_action(spell, eventArgs)
 				eventArgs.cancel = true
             end
         end
+		if available_ws:contains(189) then
+            if spell.english == "Mordant Rime" then
+				windower.chat.input('/ws "Retribution" '..spell.target.raw)
+                cancel_spell()
+				eventArgs.cancel = true
+            end
+        end
 	end
 end
 
@@ -69,6 +76,7 @@ function init_gear_sets()
 	sets.weapons.Evisceration = {main="Tauret",sub="Gleti's Knife"}
 	sets.weapons.Aeolian = {main="Tauret",sub="Centovente"}
 	sets.weapons.Domain = {main="Voluspa Knife",sub="Gleti's Knife"}
+	sets.weapons.Xoanon = {main="Xoanon",sub="Rigorous Grip +1"}
 
     sets.buff.Sublimation = {waist="Embla Sash"}
     sets.buff.DTSublimation = {waist="Embla Sash"}
@@ -128,8 +136,8 @@ function init_gear_sets()
 		waist="Sailfi Belt +1",
 		left_ear="Moonshade Earring",
 		right_ear="Ishvara Earring",
-		left_ring=gear.ifrit1,
-		right_ring=gear.ifrit2,
+		left_ring="Cornelia's Ring",
+		right_ring="Sroda Ring",
 		back=gear.str_wsd_jse_back,
 	}
 				
@@ -189,17 +197,17 @@ function init_gear_sets()
 	
 	sets.precast.WS['Mordant Rime'] = {
 	    range=gear.Linos_STR_WSD, -- Need CHR Linos
-		head="Bihu Roundlet +3",
-		body="Bihu Jstcorps. +3",
-		hands="Bihu Cuffs +3",
-		legs="Bihu Cannions +3",
-		feet="Bihu Slippers +3",
+		head="Nyame Helm",
+		body="Bihu Justaucorps +3",
+		hands="Nyame Gauntlets",
+		legs="Nyame Flanchard",
+		feet="Nyame Sollerets",
 		neck="Bard's Charm +2",
-		waist="Sailfi Belt +1", -- Need Kentarch Belt +1
-		left_ear="Telos Earring", -- Need Regal Earring
+		waist="Sailfi Belt +1", 
+		left_ear="Regal Earring", 
 		right_ear="Ishvara Earring",
-		left_ring=gear.carb1, -- Need Metamorph +1
-		right_ring="Cornelia's Ring", -- Need Epam or some other ring
+		left_ring="Metamorph Ring +1",
+		right_ring="Cornelia's Ring", 
 		back=gear.chr_wsd_jse_back, -- Needs augmenting
 	}
 	
@@ -451,10 +459,15 @@ function init_gear_sets()
 	
 	sets.engaged.DW = set_combine(sets.engaged, {})
 	sets.engaged.DualCentovente = set_combine(sets.engaged, {right_ear="Eabani Earring", waist="Reiki Yotai", hands="Gazu Bracelets +1"})
+	sets.engaged.Aeolian = sets.engaged.DualCentovente
 	
 end
 
 -- Select default macro book on initial load or subjob change.
 function select_default_macro_book()
 	set_macro_page(1, 10)
+end
+
+function user_job_lockstyle()
+	windower.chat.input('/lockstyleset 002')
 end

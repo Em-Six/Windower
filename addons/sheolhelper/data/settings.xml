@@ -21,7 +21,7 @@
                 <x>640</x>
                 <y>580</y>
             </pos>
-            <show>true</show>
+            <show>false</show>
             <text>
                 <alpha>0</alpha>
                 <blue>255</blue>
@@ -65,7 +65,7 @@
                 <fit>false</fit>
                 <path />
             </texture>
-            <visible>true</visible>
+            <visible>false</visible>
         </map>
         <res_box>
             <bg>
@@ -117,7 +117,7 @@
                 <visible>true</visible>
             </bg>
             <conserve>true</conserve>
-            <disclaimer>true</disclaimer>
+            <disclaimer>false</disclaimer>
             <flags>
                 <bold>true</bold>
                 <bottom>false</bottom>
@@ -127,8 +127,8 @@
             </flags>
             <padding>10</padding>
             <pos>
-                <x>640</x>
-                <y>684</y>
+                <x>600</x>
+                <y>1150</y>
             </pos>
             <show>true</show>
             <text>
@@ -151,56 +151,4 @@
             </text>
         </seg_box>
     </global>
-    <arayala>
-        <disclaimer>
-            <bg>
-                <alpha>255</alpha>
-            </bg>
-            <pos>
-                <x>831.5</x>
-            </pos>
-            <show>false</show>
-            <text>
-                <alpha>255</alpha>
-            </text>
-        </disclaimer>
-        <map>
-            <texture>
-                <path>C:\Users\ohshi\Final Fantasy XI\Windower\/addons/sheolhelper/maps/3-4.png</path>
-            </texture>
-        </map>
-        <seg_box>
-            <disclaimer>false</disclaimer>
-            <pos>
-                <x>583</x>
-                <y>1147</y>
-            </pos>
-        </seg_box>
-    </arayala>
-    <sensarity>
-        <disclaimer>
-            <bg>
-                <alpha>255</alpha>
-            </bg>
-            <pos>
-                <x>831.5</x>
-            </pos>
-            <show>false</show>
-            <text>
-                <alpha>255</alpha>
-            </text>
-        </disclaimer>
-        <map>
-            <texture>
-                <path>C:\Users\ohshi\Final Fantasy XI\Windower\/addons/sheolhelper/maps/3-4.png</path>
-            </texture>
-        </map>
-        <seg_box>
-            <disclaimer>false</disclaimer>
-            <pos>
-                <x>590</x>
-                <y>1143</y>
-            </pos>
-        </seg_box>
-    </sensarity>
 </settings>

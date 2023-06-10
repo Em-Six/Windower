@@ -7,46 +7,30 @@
         <autoupdate>true</autoupdate>
         <blinking>
             <all>
-                <always>true</always>
-                <combat>false</combat>
-                <target>false</target>
+                <always>false</always>
+                <combat>true</combat>
+                <target>true</target>
             </all>
             <follow>
-                <always>false</always>
-                <combat>false</combat>
-                <target>false</target>
+                <always>true</always>
+                <combat>true</combat>
+                <target>true</target>
             </follow>
             <others>
-                <always>true</always>
-                <combat>false</combat>
-                <target>false</target>
+                <always>false</always>
+                <combat>true</combat>
+                <target>true</target>
             </others>
             <party>
-                <always>true</always>
-                <combat>false</combat>
-                <target>false</target>
+                  <always>false</always>
+                <combat>true</combat>
+                <target>true</target>
             </party>
             <self>
                 <always>false</always>
-                <combat>false</combat>
-                <target>false</target>
+                <combat>true</combat>
+                <target>true</target>
             </self>
         </blinking>
-        <emsix>
-
-        </emsix>
-        <kateye>
-        <!-- <main>25408</main> -->
-
-        </kateye>
-        <others>
-
-        </others>
-        <profiles>
-
-        </profiles>
-        <sensarity>
-
-        </sensarity>
     </global>
 </settings>

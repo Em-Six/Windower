@@ -190,7 +190,7 @@ function init_gear_sets()
 	}
 
 	sets.midcast['Enhancing Magic'] = {main="Colada",sub="Ammurapi Shield",range=empty,ammo="Staunch Tathlum",
-		head=gear.telchine_enhancing_head,neck="Dls. Torque +2",ear1="Odnowa Earring +1",ear2="Lethargy Earring",
+		head=gear.telchine_enhancing_head,neck="Dls. Torque +2",ear1="Odnowa Earring +1",ear2="Lethargy Earring +1",
 		body="Viti. Tabard +3",hands="Atrophy Gloves +3",ring1=gear.stikini1,ring2=gear.stikini2,
 		back="Ghostfyre Cape",waist="Embla Sash",legs=gear.telchine_enhancing_legs,feet="Leth. Houseaux +2"}
 
@@ -494,45 +494,5 @@ function user_job_buff_change(buff, gain)
 end
 
 function user_job_lockstyle()
-	if player.sub_job == 'NIN' or player.sub_job == 'DNC' then
-		if player.equipment.main == nil or player.equipment.main == 'empty' then
-			windower.chat.input('/lockstyleset 011')
-		elseif res.items[item_name_to_id(player.equipment.main)].skill == 3 then --Sword in main hand.
-			if res.items[item_name_to_id(player.equipment.sub)].skill == 3 then --Sword/Sword.
-				windower.chat.input('/lockstyleset 011')
-			elseif res.items[item_name_to_id(player.equipment.sub)].skill == 2 then --Sword/Dagger.
-				windower.chat.input('/lockstyleset 011')
-			elseif res.items[item_name_to_id(player.equipment.sub)].skill == 11 then --Sword/Club.
-				windower.chat.input('/lockstyleset 011')
-			else
-				windower.chat.input('/lockstyleset 011') --Catchall
-			end
-		elseif res.items[item_name_to_id(player.equipment.main)].skill == 2 then --Dagger in main hand.
-			if res.items[item_name_to_id(player.equipment.sub)].skill == 3 then --Dagger/Sword.
-				windower.chat.input('/lockstyleset 011')
-			elseif res.items[item_name_to_id(player.equipment.sub)].skill == 2 then --Dagger/Dagger.
-				windower.chat.input('/lockstyleset 011')
-			elseif res.items[item_name_to_id(player.equipment.sub)].skill == 11 then --Dagger/Club.
-				windower.chat.input('/lockstyleset 011')
-			else
-				windower.chat.input('/lockstyleset 011') --Catchall
-			end
-		elseif res.items[item_name_to_id(player.equipment.main)].skill == 11 then --Club in main hand.
-			if res.items[item_name_to_id(player.equipment.sub)].skill == 3 then --Club/Sword.
-				windower.chat.input('/lockstyleset 011')
-			elseif res.items[item_name_to_id(player.equipment.sub)].skill == 2 then --Club/Dagger.
-				windower.chat.input('/lockstyleset 011')
-			elseif res.items[item_name_to_id(player.equipment.sub)].skill == 11 then --Club/Club.
-				windower.chat.input('/lockstyleset 011')
-			else
-				windower.chat.input('/lockstyleset 011') --Catchall
-			end
-		end
-	elseif player.sub_job == 'WHM' or state.Buff['Light Arts'] or state.Buff['Addendum: White'] then
-		windower.chat.input('/lockstyleset 011')
-	elseif player.sub_job == 'BLM' or state.Buff['Dark Arts'] or state.Buff['Addendum: Black'] then
-		windower.chat.input('/lockstyleset 011')
-	else
-		windower.chat.input('/lockstyleset 011')
-	end
+	windower.chat.input('/lockstyleset 011')
 end

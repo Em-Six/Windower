@@ -58,7 +58,7 @@ function init_gear_sets()
 	
     sets.precast.FC.Stoneskin = set_combine(sets.precast.FC['Enhancing Magic'], {})
 
-    sets.precast.FC['Healing Magic'] = set_combine(sets.precast.FC, {legs="Ebers Pant. +2"})
+    sets.precast.FC['Healing Magic'] = set_combine(sets.precast.FC, {legs="Ebers Pant. +3"})
 
     sets.precast.FC.StatusRemoval = sets.precast.FC['Healing Magic']
 	
@@ -152,7 +152,7 @@ function init_gear_sets()
 		head="Kaykaus Mitra +1",
 		body="Kaykaus Bliaut +1",
 		hands="Theophany Mitts +3",
-		legs="Ebers Pant. +2",
+		legs="Ebers Pant. +3",
 		feet="Kaykaus Boots +1",
 		neck="Clr. Torque +2",
 		waist="Austerity Belt +1",
@@ -472,7 +472,7 @@ function init_gear_sets()
 	sets.HPCure = {main="Queller Rod",sub="Ammurapi Shield",ammo="Pemphredo Tathlum",
 		head="Blistering Sallet +1",neck="Nodens Gorget",ear1="Etiolation Earring",ear2="Ethereal Earring",
 		body="Kaykaus Bliaut",hands="Kaykaus Cuffs",ring1="Kunaji Ring",ring2="Meridian Ring",
-		back="Alaunus's Cape",waist="Eschan Stone",legs="Ebers Pant. +2",feet="Kaykaus Boots"}
+		back="Alaunus's Cape",waist="Eschan Stone",legs="Ebers Pant. +3",feet="Kaykaus Boots"}
 
 	sets.buff.Doom = set_combine(sets.buff.Doom, {})
 
@@ -512,4 +512,8 @@ buff_spell_lists = {
 -- Select default macro book on initial load or subjob change.
 function select_default_macro_book()
 	set_macro_page(1, 2)
+end
+
+function user_job_lockstyle()
+	windower.chat.input('/lockstyleset 004')
 end

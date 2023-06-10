@@ -286,7 +286,7 @@ function init_gear_sets()
 		ammo="Ghastly Tathlum +1",
 		head="Arbatel Bonnet +3",
 		body="Arbatel Gown +3",
-		hands="Arbatel Bracers +2",
+		hands="Arbatel Bracers +3",
 		legs="Arbatel Pants +3",
 		feet="Arbatel Loafers +3",
 		neck="Argute Stole +2",
@@ -450,8 +450,8 @@ function init_gear_sets()
     -- Buff sets: Gear that needs to be worn to actively enhance a current player buff.
     sets.buff['Ebullience'] = {head="Arbatel Bonnet +3"}
     sets.buff['Rapture'] = {head="Arbatel Bonnet +3"}
-    sets.buff['Perpetuance'] = {hands="Arbatel Bracers +2"}
-    sets.buff['Immanence'] = {hands="Arbatel Bracers +2"}
+    sets.buff['Perpetuance'] = {hands="Arbatel Bracers +3"}
+    sets.buff['Immanence'] = {hands="Arbatel Bracers +3"}
     sets.buff['Penury'] = {legs="Arbatel Pants +3"}
     sets.buff['Parsimony'] = {legs="Arbatel Pants +3"}
     sets.buff['Celerity'] = {feet="Peda. Loafers +1"}
@@ -492,4 +492,8 @@ function select_default_macro_book()
 	else
 		set_macro_page(1, 1)
 	end
+end
+
+function user_job_lockstyle()
+	windower.chat.input('/lockstyleset 004')
 end
