@@ -228,6 +228,23 @@ skills.weapon_skills = {
     [228] = {en='Final Paradise',skillchain={'Light'}},
     [238] = {en='Uriel Blade',skillchain={'Light','Fragmentation'}},
     [239] = {en='Glory Slash',skillchain={'Light','Fusion'}},
+    --New Prime Weapon skills --Bippin
+    [231] = {en='Maru Kala',skillchain={'Detonation','Compression','Distortion'}},
+    [232] = {en='Ruthless Stroke',skillchain={'Liquefaction','Impaction','Fragmentation'}},
+    [233] = {en='Imperator',skillchain={'Impaction','Compression','Distortion'}},
+    [62] = {en='Fimbulvetr',skillchain={'Detonation','Compression','Distortion'}},
+    [78] = {en='Blitz',skillchain={'Liquefaction','Impaction','Fragmentation'}},
+    [94] = {en='Disaster',skillchain={'Trasnfixion','Scission','Gravitation'}},
+    [110] = {en='Origin',skillchain={'Induration','Reverberation','Fusion'}},
+    [126] = {en='Diarmuid',skillchain={'Transfixion','Scission','Gravitation'}},
+    [142] = {en='Zesho Meppo',skillchain={'Induration','Reverberation','Fusion'}},
+    [159] = {en='Tachi: Mumei',skillchain={'Detonation','Compression','Distortion'}},
+    [234] = {en='Dagda',skillchain={'Transfixion','Scission','Gravitation'}},
+    [235] = {en='Oshala',skillchain={'Induration','Reverberation','Fusion'}},
+    [204] = {en='Sarv',skillchain={'Transfixion','Scission','Gravitation'}},
+    [222] = {en='Terminus',skillchain={'Induration','Reverberation','Fusion'}},
+
+
     }
 
 skills.spells = {
