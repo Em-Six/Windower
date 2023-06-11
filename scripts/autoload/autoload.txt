@@ -29,7 +29,6 @@ lua load ConsoleBG;
 lua load Debuffed;
 lua load DistancePlus;
 lua load DressUp;
-lua load enemybar;
 lua load enternity;
 lua load equipviewer;
 lua load FastCS;
