@@ -329,20 +329,20 @@ function init_gear_sets()
 	sets.midcast['Elemental Magic'].HighTierNuke = set_combine(sets.midcast['Elemental Magic'], {})
 	sets.midcast['Elemental Magic'].HighTierNuke.Burst = set_combine(sets.midcast['Elemental Magic'].Burst, {})
 	sets.midcast['Elemental Magic'].HighTierNuke.Fodder = set_combine(sets.midcast['Elemental Magic'].Fodder, {})
-	sets.midcast['Elemental Magic'].LowTierNuke = set_combine(sets.precast.FC, {})
+	sets.midcast['Elemental Magic'].LowTierNuke = set_combine(sets.precast.FC, {main=empty, sub=empty})
 
 	sets.midcast.Helix = set_combine(sets.midcast['Elemental Magic'], {})
 	sets.midcast.Helix.Burst = set_combine(sets.midcast.Helix, {ring1="Mujin Band"}) 
 	
 	--Sets to make Helices not do big damage during skillchains
-	sets.midcast['Geohelix'] = set_combine(sets.precast.FC, {})
-	sets.midcast['Hydrohelix'] = set_combine(sets.precast.FC, {})
-	sets.midcast['Anemohelix'] = set_combine(sets.precast.FC, {})
-	sets.midcast['Pyrohelix'] = set_combine(sets.precast.FC, {})
-	sets.midcast['Cryohelix'] = set_combine(sets.precast.FC, {})
-	sets.midcast['Ionohelix'] = set_combine(sets.precast.FC, {})
-	sets.midcast['Noctohelix'] = set_combine(sets.precast.FC, {})
-	sets.midcast['Luminohelix'] = set_combine(sets.precast.FC, {})
+	sets.midcast['Geohelix'] = sets.midcast['Elemental Magic'].LowTierNuke
+	sets.midcast['Hydrohelix'] = sets.midcast['Elemental Magic'].LowTierNuke
+	sets.midcast['Anemohelix'] = sets.midcast['Elemental Magic'].LowTierNuke
+	sets.midcast['Pyrohelix'] = sets.midcast['Elemental Magic'].LowTierNuke
+	sets.midcast['Cryohelix'] = sets.midcast['Elemental Magic'].LowTierNuke
+	sets.midcast['Ionohelix'] = sets.midcast['Elemental Magic'].LowTierNuke
+	sets.midcast['Noctohelix'] = sets.midcast['Elemental Magic'].LowTierNuke
+	sets.midcast['Luminohelix'] = sets.midcast['Elemental Magic'].LowTierNuke
 	
 	sets.midcast['Geohelix'].Burst = set_combine(sets.midcast['Geohelix'], {})
 	sets.midcast['Hydrohelix'].Burst = set_combine(sets.midcast['Hydrohelix'], {})

@@ -41,22 +41,10 @@ return {
             ["ready_reaction"]="input /ma Baraera <me>"
         }
     }, 
-    ["Odin"]={
-        ["Sanngetall"]={
-            ["complete_reaction"]="exec odin.txt", 
-            ["ready_reaction"]=""
-        }
-    }, 
     ["Glassy Thinker"]={
         ["Pain Sync"]={
             ["complete_reaction"]="facemob", 
             ["ready_reaction"]="turnaround"
         }
     }
-	["Kabandha"]={
-        ["Deathly Glare"]={
-            ["complete_reaction"]="facemob", 
-            ["ready_reaction"]="turnaround"
-        }
-    },
 }

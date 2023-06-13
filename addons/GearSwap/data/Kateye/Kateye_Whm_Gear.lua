@@ -475,6 +475,7 @@ function init_gear_sets()
 		back="Alaunus's Cape",waist="Eschan Stone",legs="Ebers Pant. +3",feet="Kaykaus Boots"}
 
 	sets.buff.Doom = set_combine(sets.buff.Doom, {})
+	sets.buff.Sleep = {main="Prime Maul"}
 
 end
 

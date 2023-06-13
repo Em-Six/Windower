@@ -58,7 +58,7 @@ lua load sheolhelper
 lua load react
 lua load trade
 lua load enemybar2
-lua load revisible
+lua load revisible //I think this is causing some sort of crashing
 lua load whereisdi
 lua load anchor
 lua load fastfollow
