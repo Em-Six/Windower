@@ -183,16 +183,15 @@ function init_gear_sets()
 		right_ring="Sroda Ring",
 		back=gear.wsd_str_jse_back,
 	}
-
-	sets.precast.WS.SomeAcc = set_combine(sets.precast.WS, {back="Letalis Mantle",})
-	sets.precast.WS.Acc = set_combine(sets.precast.WS, {neck="Combatant's Torque"})
-	sets.precast.WS.FullAcc = set_combine(sets.precast.WS, {neck="Combatant's Torque"})
-	sets.precast.WS.AttackCapped = set_combine(sets.precast.WS, {ammo="Crepuscular Pebble", body="Sakpata's Plate", hands="Sakpata's Gauntlets", legs="Sakpata's cuisses"})
+	
+	sets.precast.WS.Mighty = set_combine(sets.precast.WS, {ammo="Yetshila +1", legs="Boii Cuisses +3", feet="Boii Calligae +3"})
 
     -- Specific weaponskill sets.  Uses the base set if an appropriate WSMod version isn't found.	
     sets.precast.WS['Savage Blade'] = set_combine(sets.precast.WS, {})
+    sets.precast.WS['Savage Blade'].Mighty = set_combine(sets.precast.WS, {ammo="Yetshila +1", legs="Boii Cuisses +3", feet="Boii Calligae +3"})
 
-    sets.precast.WS['Upheaval'] = set_combine(sets.precast.WS, {back=gear.wsd_vit_jse_back,})
+
+    sets.precast.WS['Upheaval'] = set_combine(sets.precast.WS, {legs="Boii Cuisses +3", left_ring="Niqmaddu Ring", right_ring="Regal Ring", back=gear.wsd_vit_jse_back,})
 	
 	sets.precast.WS['Armor Break'] = {
 	    ammo="Crepuscular Pebble", -- Need Pemphredo Tathlum
@@ -214,13 +213,13 @@ function init_gear_sets()
 	
     sets.precast.WS['Resolution'] = set_combine(sets.precast.WS, {neck="Fotia Gorget",waist="Fotia Belt"})
 	
-    sets.precast.WS["Ukko's Fury"] = set_combine(sets.precast.WS, {})
+    sets.precast.WS["Ukko's Fury"] = set_combine(sets.precast.WS, {ammo="Yetshila +1", head="Boii mask +3", body="Hjarrandi Breast.", feet="Boii Calligae +3", right_ring="Lehko's Ring"}) 
 
-    sets.precast.WS["King's Justice"] = set_combine(sets.precast.WS, {})
+    sets.precast.WS["King's Justice"] = set_combine(sets.precast.WS, {left_ring="Niqmaddu Ring", right_ring="Regal Ring"})
 	
 	sets.precast.WS["Fell Cleave"] = set_combine(sets.precast.WS, {left_ear="Lugra Earring +1",})
 	
-	sets.precast.WS['Impulse Drive'] = set_combine(sets.precast.WS, { ammo="Yetshila +1", body="Hjarrandi Breast.", feet="Boii Calligae +3", right_ring="Lehko's Ring"}) 
+	sets.precast.WS['Impulse Drive'] = sets.precast.WS["Ukko's Fury"]
 	
 	sets.precast.WS["Aeolian Edge"] = {
 	    ammo="Seeth. Bomblet +1",

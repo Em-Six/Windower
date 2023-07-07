@@ -55,6 +55,8 @@ function party_status()
                         mob[7] = tostring(value)
                     elseif index == 'z' then
                         mob[8] = tostring(value)
+                    elseif index == 'is_npc' then
+                        mob[9] = tostring(value)
                     elseif index == 'pet_index' then
                         pet = windower.ffxi.get_mob_by_index(value)
                         if not pet then
@@ -73,18 +75,18 @@ function party_status()
                         end
                         local pet_string = pet.name..'|'..tostring(pet.id)..'|'..tostring(pet.index)..'|'..tostring(pet.hpp)..'|'..tostring(pet.tp)..'|'
                         ..tostring(pet.x)..'|'..tostring(pet.y)..'|'..tostring(pet.z)
-                        mob[9] = pet_string 
+                        mob[10] = pet_string
                     end
                 end
-                if not mob[9] then -- No pet active
+                if not mob[10] then -- No pet active
                     local pet_string = "0|0|0|0|0|0|0|0"
-                    mob[9] = pet_string 
+                    mob[10] = pet_string 
                 end
                 for index, value in ipairs(mob) do
                     formattedString = formattedString..','..value
                 end
             else
-                formattedString = formattedString..',0,0,0,0,0,0,0,0,0|0|0|0|0|0|0|0'
+                formattedString = formattedString..',0,0,0,0,0,0,0,0,false,|0|0|0|0|0|0|0'
             end
             party_data[party_position[position]] = formattedString
             --log(formattedString)
@@ -95,7 +97,7 @@ function party_status()
         party.party1_count = 1
     end
     for i = party.party1_count, 5 do
-        local formattedString = "party_"..tostring(i)..'_Empty,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0|0|0|0|0|0|0|0'
+        local formattedString = "party_"..tostring(i)..'_Empty,0,0,0,0,0,0,0,0,0,0,0,0,0,0,false,|0|0|0|0|0|0|0'
         party_data[i] = formattedString
     end
     --Fill in remainder of second party
@@ -103,7 +105,7 @@ function party_status()
         party.party2_count = 0
     end
     for i = party.party2_count + 6, 11 do
-        local formattedString = "party_"..tostring(i)..'_Empty,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0|0|0|0|0|0|0|0'
+        local formattedString = "party_"..tostring(i)..'_Empty,0,0,0,0,0,0,0,0,0,0,0,0,0,0,false,|0|0|0|0|0|0|0'
         party_data[i] = formattedString
     end
     --Fill in remainder of third part
@@ -111,7 +113,7 @@ function party_status()
         party.party3_count = 0
     end
     for i = party.party3_count + 12, 17 do
-        local formattedString = "party_"..tostring(i)..'_Empty,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0|0|0|0|0|0|0|0'
+        local formattedString = "party_"..tostring(i)..'_Empty,0,0,0,0,0,0,0,0,0,0,0,0,0,0,false,|0|0|0|0|0|0|0'
         party_data[i] = formattedString
     end
 end

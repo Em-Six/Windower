@@ -7,7 +7,7 @@ function user_job_setup()
     state.MagicalDefenseMode:options('MDT', 'MDTReraise')
 	state.ResistDefenseMode:options('MEVA')
 	state.IdleMode:options('Normal', 'PDT','Refresh','Reraise')
-	state.Weapons:options('Montante','Anguta')
+	state.Weapons:options('Anguta')
     state.ExtraMeleeMode = M{['description']='Extra Melee Mode','None'}
 	state.Passive = M{['description'] = 'Passive Mode','None','MP','Twilight'}
 	state.DrainSwapWeaponMode = M{'Always','Never','300','1000'}
@@ -254,116 +254,6 @@ function init_gear_sets()
 		back=gear.da_tp_jse_back,
 	}
 
---Example sets:
---[[
-    sets.engaged.Adoulin = {}
-	sets.engaged.SomeAcc.Adoulin = {}
-	sets.engaged.Acc.Adoulin = {}
-	sets.engaged.FullAcc.Adoulin = {}
-	sets.engaged.Fodder.Adoulin = {}
-	
-	sets.engaged.PDT = {}
-	sets.engaged.SomeAcc.PDT = {}
-	sets.engaged.Acc.PDT = {}
-	sets.engaged.FullAcc.PDT = {}
-	sets.engaged.Fodder.PDT = {}
-	
-	sets.engaged.PDT.Adoulin = {}
-	sets.engaged.SomeAcc.PDT.Adoulin = {}
-	sets.engaged.Acc.PDT.Adoulin = {}
-	sets.engaged.FullAcc.PDT.Adoulin = {}
-	sets.engaged.Fodder.PDT.Adoulin = {}
-	
-	sets.engaged.MDT = {}
-	sets.engaged.SomeAcc.MDT = {}
-	sets.engaged.Acc.MDT = {}
-	sets.engaged.FullAcc.MDT = {}
-	sets.engaged.Fodder.MDT = {}
-	
-	sets.engaged.MDT.Adoulin = {}
-	sets.engaged.SomeAcc.MDT.Adoulin = {}
-	sets.engaged.Acc.MDT.Adoulin = {}
-	sets.engaged.FullAcc.MDT.Adoulin = {}
-	sets.engaged.Fodder.MDT.Adoulin = {}
-	
-            -- Variations for TP weapon and (optional) offense/defense modes.  Code will fall back on previous
-            -- sets if more refined versions aren't defined.
-            -- If you create a set with both offense and defense modes, the offense mode should be first.
-            -- EG: sets.engaged.Dagger.Accuracy.Evasion
-
--- Liberator melee sets
-    sets.engaged.Liberator = {}
-	sets.engaged.Liberator.SomeAcc = {}
-	sets.engaged.Liberator.Acc = {}
-	sets.engaged.Liberator.FullAcc = {}
-	sets.engaged.Liberator.Fodder = {}
-	
-    sets.engaged.Liberator.Adoulin = {}
-	sets.engaged.Liberator.SomeAcc.Adoulin = {}
-	sets.engaged.Liberator.Acc.Adoulin = {}
-	sets.engaged.Liberator.FullAcc.Adoulin = {}
-	sets.engaged.Liberator.Fodder.Adoulin = {}
-	
-    sets.engaged.Liberator.AM = {}
-	sets.engaged.Liberator.SomeAcc.AM = {}
-	sets.engaged.Liberator.Acc.AM = {}
-	sets.engaged.Liberator.FullAcc.AM = {}
-	sets.engaged.Liberator.Fodder.AM = {}
-	
-    sets.engaged.Liberator.Adoulin.AM = {}
-	sets.engaged.Liberator.SomeAcc.Adoulin.AM = {}
-	sets.engaged.Liberator.Acc.Adoulin.AM = {}
-	sets.engaged.Liberator.FullAcc.Adoulin.AM = {}
-	sets.engaged.Liberator.Fodder.Adoulin.AM = {}
-
-	sets.engaged.Liberator.PDT = {}
-	sets.engaged.Liberator.SomeAcc.PDT = {}
-	sets.engaged.Liberator.Acc.PDT = {}
-	sets.engaged.Liberator.FullAcc.PDT = {}
-	sets.engaged.Liberator.Fodder.PDT = {}
-	
-	sets.engaged.Liberator.PDT.Adoulin = {}
-	sets.engaged.Liberator.SomeAcc.PDT.Adoulin = {}
-	sets.engaged.Liberator.Acc.PDT.Adoulin = {}
-	sets.engaged.Liberator.FullAcc.PDT.Adoulin = {}
-	sets.engaged.Liberator.Fodder.PDT.Adoulin = {}
-	
-	sets.engaged.Liberator.PDT.AM = {}
-	sets.engaged.Liberator.SomeAcc.PDT.AM = {}
-	sets.engaged.Liberator.Acc.PDT.AM = {}
-	sets.engaged.Liberator.FullAcc.PDT.AM = {}
-	sets.engaged.Liberator.Fodder.PDT.AM = {}
-	
-	sets.engaged.Liberator.PDT.Adoulin.AM = {}
-	sets.engaged.Liberator.SomeAcc.PDT.Adoulin.AM = {}
-	sets.engaged.Liberator.Acc.PDT.Adoulin.AM = {}
-	sets.engaged.Liberator.FullAcc.PDT.Adoulin.AM = {}
-	sets.engaged.Liberator.Fodder.PDT.Adoulin.AM = {}
-	
-	sets.engaged.Liberator.MDT = {}
-	sets.engaged.Liberator.SomeAcc.MDT = {}
-	sets.engaged.Liberator.Acc.MDT = {}
-	sets.engaged.Liberator.FullAcc.MDT = {}
-	sets.engaged.Liberator.Fodder.MDT = {}
-	
-	sets.engaged.Liberator.MDT.Adoulin = {}
-	sets.engaged.Liberator.SomeAcc.MDT.Adoulin = {}
-	sets.engaged.Liberator.Acc.MDT.Adoulin = {}
-	sets.engaged.Liberator.FullAcc.MDT.Adoulin = {}
-	sets.engaged.Liberator.Fodder.MDT.Adoulin = {}
-	
-	sets.engaged.Liberator.MDT.AM = {}
-	sets.engaged.Liberator.SomeAcc.MDT.AM = {}
-	sets.engaged.Liberator.Acc.MDT.AM = {}
-	sets.engaged.Liberator.FullAcc.MDT.AM = {}
-	sets.engaged.Liberator.Fodder.MDT.AM = {}
-	
-	sets.engaged.Liberator.MDT.Adoulin.AM = {}
-	sets.engaged.Liberator.SomeAcc.MDT.Adoulin.AM = {}
-	sets.engaged.Liberator.Acc.MDT.Adoulin.AM = {}
-	sets.engaged.Liberator.FullAcc.MDT.Adoulin.AM = {}
-	sets.engaged.Liberator.Fodder.MDT.Adoulin.AM = {}
-]]--
 	--Extra Special Sets
 	
 	sets.buff.Souleater = {}
@@ -392,4 +282,8 @@ function select_default_macro_book()
     else
         set_macro_page(5, 15)
     end
+end
+
+function user_job_lockstyle()
+	windower.chat.input('/lockstyleset 002')
 end

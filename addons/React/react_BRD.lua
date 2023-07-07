@@ -6,13 +6,19 @@ return {
         }
     }, 
     ["Lady Lilith"]={
-        ["Dark Thorn"]={
-            ["complete_reaction"]="", 
-            ["ready_reaction"]="turnaround"
-        }, 
         ["Fatal Allure"]={
             ["complete_reaction"]="facemob", 
             ["ready_reaction"]="turnaround"
+        }, 
+        ["Dark Thorn"]={
+            ["complete_reaction"]="", 
+            ["ready_reaction"]="turnaround"
+        }
+    }, 
+    ["Obstatrix"]={
+        ["Repulsor"]={
+            ["complete_reaction"]="turnaround", 
+            ["ready_reaction"]=""
         }
     }, 
     ["Bozzetto Breadwinner"]={
@@ -20,25 +26,25 @@ return {
             ["complete_reaction"]="", 
             ["ready_reaction"]="input /ma Barwatera <me>"
         }, 
-        ["Fire Meeble Warble"]={
+        ["Aero Meeble Warble"]={
             ["complete_reaction"]="", 
-            ["ready_reaction"]="input /ma Barfira <me>"
+            ["ready_reaction"]="input /ma Baraera <me>"
         }, 
         ["Stone Meeble Warble"]={
             ["complete_reaction"]="", 
             ["ready_reaction"]="input /ma Barstonra <me>"
         }, 
-        ["Thunder Meeble Warble"]={
+        ["Fire Meeble Warble"]={
             ["complete_reaction"]="", 
-            ["ready_reaction"]="input /ma Barthundra <me>"
+            ["ready_reaction"]="input /ma Barfira <me>"
         }, 
         ["Blizzard Meeble Warble"]={
             ["complete_reaction"]="", 
             ["ready_reaction"]="input /ma Barblizzara <me>"
         }, 
-        ["Aero Meeble Warble"]={
+        ["Thunder Meeble Warble"]={
             ["complete_reaction"]="", 
-            ["ready_reaction"]="input /ma Baraera <me>"
+            ["ready_reaction"]="input /ma Barthundra <me>"
         }
     }, 
     ["Glassy Thinker"]={

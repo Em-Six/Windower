@@ -74,7 +74,6 @@
         <troubadour>true</troubadour>
     </global>
     <arayala>
-        <actions>true</actions>
         <aoe>
             <p2>true</p2>
             <p3>true</p3>

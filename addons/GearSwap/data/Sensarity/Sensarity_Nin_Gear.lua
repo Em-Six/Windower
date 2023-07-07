@@ -349,7 +349,7 @@ function init_gear_sets()
 		ring1="Defending Ring",
 		ring2="Shadow Ring",
 		back="Shadow Mantle",
-		waist="Gold Mog. Belt",
+		waist="Carrier's Sash",
 		legs="Nyame Flanchard",
 		feet="Nyame Sollerets"
 	}

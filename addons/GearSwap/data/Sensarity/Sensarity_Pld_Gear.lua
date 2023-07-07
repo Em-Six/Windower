@@ -10,7 +10,7 @@ function user_job_setup()
     state.MagicalDefenseMode:options('BDT','MDT_HP','AegisMDT','AegisNoShellMDT','OchainMDT','OchainNoShellMDT','MDT_Reraise')
 	state.ResistDefenseMode:options('MEVA','MEVA_HP','Death','Charm')
 	state.IdleMode:options('Normal','Tank','KiteTank','PDT','MDT','Refresh','Reraise')
-	state.Weapons:options('Srivatsa','Duban','Aegis','Aeolian')
+	state.Weapons:options('Srivatsa','Duban','Aegis','Aeolian','Trial')
 	
     state.ExtraDefenseMode = M{['description']='Extra Defense Mode','None','MP','Twilight'}
 	
@@ -207,10 +207,21 @@ function init_gear_sets()
 
 	sets.precast.WS['Sanguine Blade'].Acc = sets.precast.WS['Sanguine Blade']
 
-    sets.precast.WS['Atonement'] = {ammo="Paeapua",
-		head="Loess Barbuta +1",neck="Fotia Gorget",ear1="Moonshade Earring",ear2="Ishvara Earring",
-		body=gear.valorous_wsd_body,hands=gear.odyssean_wsd_hands,ring1="Defending Ring",ring2="Moonlight Ring",
-		back=gear.enmity_PDT_back,waist="Fotia Belt",legs="Flamma Dirs +2",feet="Eschite Greaves"}
+    sets.precast.WS['Atonement'] = {
+		ammo="Sapience Orb",
+		head="Nyame Helm",
+		body="Nyame Mail",
+		hands="Nyame Gauntlets",
+		legs="Nyame Flanchard",
+		feet="Nyame Sollerets",
+		neck="Unmoving Collar +1",
+		waist="Plat. Mog. Belt",
+		left_ear="Odnowa Earring +1",
+		right_ear="Thrud Earring",
+		left_ring="Epaminondas's Ring",
+		right_ring="Eihwaz Ring",
+		back=gear.enmity_PDT_back,
+	}
 
     sets.precast.WS['Atonement'].Acc = sets.precast.WS['Atonement']
     sets.precast.WS['Spirits Within'] = sets.precast.WS['Atonement']
@@ -443,7 +454,7 @@ function init_gear_sets()
 		
     sets.idle.MDT = sets.idle
 	
-	sets.idle.Town = set_combine(sets.idle, sets,Kiting, {ammo="Homiliary",hands="Regal Gauntlets",waist="Platinum Moogle Belt",left_ring=gear.stikini1,right_ring=gear.stikini2,})
+	sets.idle.Town = set_combine(sets.idle, sets.Kiting, {ammo="Homiliary",body="Sacro breastplate", hands="Regal Gauntlets",waist="Platinum Moogle Belt",left_ring=gear.stikini1,right_ring=gear.stikini2,})
 		
 	sets.idle.Refresh = {main="Mafic Cudgel",sub="Ochain",ammo="Homiliary",
 		head="Jumalik Helm",neck="Coatl Gorget +1",ear1="Etiolation Earring",ear2="Ethereal Earring",
@@ -483,11 +494,11 @@ function init_gear_sets()
 	sets.TreasureHunter = set_combine(sets.TreasureHunter, {})
 	
 	-- Weapons sets
-	sets.weapons.Aegis = {main="Sakpata's Sword",sub="Aegis"}
-	sets.weapons.Duban = {main="Sakpata's Sword",sub="Duban"}
+	sets.weapons.Aegis = {main="Burtgang",sub="Aegis"}
+	sets.weapons.Duban = {main="Burtgang",sub="Duban"}
 	sets.weapons.Aeolian = {main="Kustawi +1",sub="Duban"}
-	sets.weapons.Srivatsa = {main="Sakpata's Sword",sub="Srivatsa"}
-	sets.weapons.Trial = {main="Sunblade",sub="Utu Grip"}
+	sets.weapons.Srivatsa = {main="Burtgang",sub="Srivatsa"}
+	sets.weapons.Trial = {main="Burtgang",sub="Joyeuse"}
     
     sets.defense.PDT = set_combine(sets.engaged.Tank, {})
 		
@@ -571,10 +582,23 @@ function init_gear_sets()
         body=gear.valorous_wsd_body,hands="Sulev. Gauntlets +2",ring1="Ramuh Ring +1",ring2="Ramuh Ring +1",
         back="Ground. Mantle +1",waist="Tempus Fugit",legs="Carmine Cuisses +1",feet="Sulev. Leggings +2"}
 
-    sets.engaged.DW = {ammo="Paeapua",
-		head="Flam. Zucchetto +2",neck="Asperity Necklace",ear1="Dudgeon Earring",ear2="Heartseeker Earring",
-		body=gear.valorous_wsd_body,hands="Sulev. Gauntlets +2",ring1="Flamma Ring",ring2="Petrov Ring",
-		back="Bleating Mantle",waist="Windbuffet Belt +1",legs="Sulev. Cuisses +2",feet="Founder's Greaves"}
+    sets.engaged.DW = {	    
+		ammo="Coiste Bodhar",
+		head="Sakpata's Helm",
+		body="Sakpata's Plate",
+		hands="Sakpata's Gauntlets",
+		legs="Sakpata's Cuisses",
+		feet="Sakpata's Leggings",
+		neck="Asperity Necklace",
+		waist="Windbuffet Belt +1",
+		left_ear="Supanomimi",
+		right_ear="Brutal Earring",
+		left_ring="Lehko's Ring",
+		right_ring=gear.moonlight2,
+		back=gear.enmity_PDT_back,
+	}
+
+	sets.engaged.Trial = sets.engaged.DW
 
     sets.engaged.DW.Acc = {ammo="Aurgelmir Orb +1",
 		head="Flam. Zucchetto +2",neck="Asperity Necklace",ear1="Dudgeon Earring",ear2="Heartseeker Earring",

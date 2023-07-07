@@ -138,7 +138,7 @@ alias blizzardrune gs c set RuneElement Gelus;
 alias waterrune gs c set RuneElement Unda;
 alias darkrune gs c set RuneElement Tenebrae;
 
---Usable item gearswap command aliases.
+//Usable item gearswap command aliases.
 alias nexus gs c useitem back Nexus Cape
 alias facilityring gs c useitem ring2 Facility Ring
 alias capacityring gs c useitem ring2 Capacity Ring

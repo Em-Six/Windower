@@ -6,7 +6,6 @@ do
 	local mov = {x=0, y=0, z=0}
 	local runtime = .5
 	local runsstart = os.clock()
-	local zone_time = os.clock()
 	local face_target_dir = false
 
 	function combat_movement()
@@ -77,7 +76,7 @@ do
 	end
 
 	function runto(target,distance)
-		if os.clock() - zone_time < 5 then
+		if move_to_exit then
 			log("Abort command - Zoning [RunTo]")
 			return
 		end
@@ -91,7 +90,7 @@ do
 	end
 
 	function runaway(target, distance) 
-		if os.clock() - zone_time < 5 then
+		if move_to_exit then
 			log("Abort command - Zoning [RunAway]")
 			return
 		end
@@ -108,7 +107,7 @@ do
 	end
 
 	function runStop()
-		if os.clock() - zone_time < 5 then
+		if move_to_exit then
 			log("Abort command - Zoning [RunStop]")
 			return
 		end
@@ -121,7 +120,7 @@ do
 	end
 
 	function follow (target,distance)
-		if os.clock() - zone_time < 5 then
+		if move_to_exit then
 			log("Abort command - Zoning [Follow]")
 			return
 		end
@@ -135,7 +134,7 @@ do
 	end
 
 	function fastfollow (target,distance,face)
-		if os.clock() - zone_time < 5 then
+		if move_to_exit then
 			log("Abort command - Zoning [FastFollow]")
 			return
 		end
@@ -154,7 +153,7 @@ do
 	end
 
 	function facemob(target)
-		if os.clock() - zone_time < 5 then
+		if move_to_exit then
 			log("Abort command - Zoning [FaceMob]")
 			return
 		end
@@ -185,32 +184,46 @@ do
 	end
 
 	function IPC_update()
-		player_location = windower.ffxi.get_mob_by_id(player.id) -- Update the player information
-		player_info()
-		if player_location then
-			local movement = math.sqrt((player_location.x-mov.x)^2 + (player_location.y-mov.y)^2 + (player_location.z-mov.z)^2 ) > 0.05
-			local character = { id = player.id, name = player.name, zone = world.zone, x = player_location.x, y = player_location.y, z = player_location.z, heading = player_location.heading, status = player.status, target_index = player.target_index}
-			party_location[player.id] = character -- Update the party table with player info also
-			if movement and not moving then
-				moving = true
-			elseif not movement and moving then
-				moving = false
+		if player then
+			player_location = windower.ffxi.get_mob_by_id(player.id) -- Update the player information
+			player_info()
+			if player_location then
+				local movement = math.sqrt((player_location.x-mov.x)^2 + (player_location.y-mov.y)^2 + (player_location.z-mov.z)^2 ) > 0.05
+				local character = { id = player.id, name = player.name, zone = world.zone, x = player_location.x, y = player_location.y, z = player_location.z, heading = player_location.heading, status = player.status, target_index = player.target_index}
+				party_location[player.id] = character -- Update the party table with player info also
+				if movement and not moving then
+					moving = true
+				elseif not movement and moving then
+					moving = false
+				end
+				windower.send_ipc_message('update '..player.id..' '..player.name..' '..world.zone..' '..player_location.x..' '..player_location.y..' '..player_location.z..' '..player_location.heading..' '..player.status..' '..player.target_index)
+				mov.x = player_location.x
+				mov.y = player_location.y
+				mov.z = player_location.z
+				combat_movement()
 			end
-			windower.send_ipc_message('update '..player.id..' '..player.name..' '..world.zone..' '..player_location.x..' '..player_location.y..' '..player_location.z..' '..player_location.heading..' '..player.status..' '..player.target_index)
-			mov.x = player_location.x
-			mov.y = player_location.y
-			mov.z = player_location.z
-			combat_movement()
 		end
 	end
 
-	function zone_check(player_id, player_x, player_y, player_z)
-		if autorun_target == player_id then
-			log('Zone Detected - turning and running towards zone')
-			zone_time = os.clock()
-			local angle = (math.atan2((player_y - player_location.y), (player_x - player_location.x))*180/math.pi)*-1
-			autorun = 0
-			windower.ffxi.run((angle):radian())
+	function zone_check(player_id, zone, player_x, player_y, player_z, type, zone_line)
+		if autorun_target == player_id and world.zone == zone then
+			local distance = (player_location.x-player_x)^2 + (player_location.y-player_y)^2 + (player_location.z-player_z)^2
+			if world.mog_house and following then
+				runStop()
+				log("Mog House zone packet injected")
+				local packet = packets.new('outgoing', 0x05E, 
+					{
+						['Zone Line'] = zone_line, 
+						['Type'] = type
+					})
+				packets.inject(packet)
+			else
+				log('Zone Detected - turning and running towards zone')
+				move_to_exit = true
+				local angle = (math.atan2((player_y - player_location.y), (player_x - player_location.x))*180/math.pi)*-1
+				autorun = 0
+				windower.ffxi.run((angle):radian())
+			end
 		end
 	end
 end

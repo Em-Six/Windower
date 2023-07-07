@@ -1,6 +1,6 @@
 _addon.name = 'Silmaril'
 _addon.author = 'Mirdain'
-_addon.version = '2.3 Beta'
+_addon.version = '2.4'
 _addon_description = 'Allows for buffs, debuffs, ranged attacks, skill chains, magic bursts, and casting data'
 _addon.commands = {'silmaril','sm'}
 
@@ -13,10 +13,12 @@ texts = require 'texts'
 
 require 'tables'
 require 'strings'
+require 'coroutine'
 
 -- These are Windower Raw values and refreshed via the "Update" function
 player = {} -- get_player() 
 pet = {}
+time = nil -- computer time
 party = {} -- get_party()
 inventory = {} -- get_bag_info(0)
 mob_array = {} -- grabs enemies via get_mob_array() under the tracking.lua
@@ -62,6 +64,18 @@ moving = false
 following = false
 delay_time = 0 -- Assign a random number to stagger the instances
 zoning = false -- Used to determine if you are zoning or not
+move_to_exit = false -- Used to run to exit line
+
+-- Mirroring globals
+player_mirror = false -- Player is set to mirror
+mirroring = false
+mirror_target = {} -- NPC the interaction for (used in Display)
+release_packet = {} -- Holds the NPC menu information
+mirror_message = {} -- Message to transmit
+message_time = os.clock() - 5
+injecting = false -- packets being sent
+mirroring_state = "" -- this is used to notify the player of the actions
+menu_id = 0
 
 update_rate = .2 -- rate at which the updates are sent to Silmaril
 last_update = os.clock()
@@ -79,7 +93,6 @@ port = 2025
 ip = "127.0.0.1"
 
 require 'lib./Abilities' --Gets information about the player abilities
-require 'lib./Actions' --Handles aciton messages
 require 'lib./Buffs' --Used to process incoming buff packets for other party members
 require 'lib./Burst' --Selects and returns the spell to burst
 require 'lib./Commands' --Handles addon commands
@@ -88,7 +101,9 @@ require 'lib./Display' --Send and Receive information
 require 'lib./Input' --Receive commands to execute
 require 'lib./Inventory' --Build the inventory information
 require 'lib./Maps' --Allows for Geomancy and any future Buff updates by remapping to Silmaril
+require 'lib./Mirror' -- Allows all members to mirror the main players actions
 require 'lib./Moving' --Controls moving of charater
+require 'lib./Packets' --Handles packet messages
 require 'lib./Party' --Gets information about the current party and alliance
 require 'lib./Player' --Gets information about the player
 require 'lib./Skillchain' --Monitors action packets to build skillchains with
@@ -114,7 +129,24 @@ windower.register_event('ipc message', function(msg)
         party_location[tonumber(args[1])] = character
     elseif command == 'zone' then
         log('recieved IPC message of zone')
-        zone_check(tonumber(args[1]),tonumber(args[2]),tonumber(args[3]),tonumber(args[4]))
+        zone_check(tonumber(args[1]),tonumber(args[2]),tonumber(args[3]),tonumber(args[4]),tonumber(args[5]),tonumber(args[6]),tonumber(args[7]))
+    elseif command == 'message' then
+    	local message = ""
+		for index, item in ipairs(args) do
+            if index ~= 0 then
+                message = message..item..' '
+            end
+        end
+        message = message:sub(1, #message - 1) -- remove last character
+        command = 'input /echo '..message..''
+        windower.send_command(command)
+        log('Message recieved ['..message.."]")
+    elseif command == 'mirror' then
+        player_mirror = false
+        mirroring = false
+        injecting = false
+        windower.add_to_chat(80,'------- Mirror [OFF]  -------')
+    -- Leave at end to be a catch for commands
     elseif command and args[2] then
         log("IPC: ["..command.."] ["..args[2].."]")
         commands(command, args[2])
@@ -126,12 +158,24 @@ end)
 
 -- Used to track incoming information
 windower.register_event('incoming chunk', function (id, original, modified, injected, blocked)
-    message_in(id, original) -- process the packets via Actions.lua
+    message_in(id, original, modified, injected, blocked) -- process the packets via Packets.lua
+    if injecting then
+        if id == 0x032 then -- NPC Interaction Type 1
+            log("Blocking on the 0x032 Packet")
+            return true
+        elseif id == 0x033 then -- String NPC Interaction
+            log("Blocking on the 0x033 Packet")
+            return true
+        elseif id == 0x034 then -- NPC Interaction Type 2
+            log("Blocking on the 0x034 Packet")
+            return true
+        end
+    end
 end)
 
 -- Used to track outgoing information
-windower.register_event('outgoing chunk', function (id, original)
-    message_out(id, original) -- process the packets via Actions.lua
+windower.register_event('outgoing chunk', function (id, original, modified, injected, blocked)
+    message_out(id, original, modified, injected, blocked) -- process the packets via Packets.lua
 end)
 
 windower.register_event('load', function()
@@ -180,6 +224,10 @@ windower.register_event('prerender', function()
             last_inventory = now
         end
         if now - last_update > update_rate then
+            if injecting and os.clock() - message_time > 10 then
+                debug("Time out of mirror reached - Trying to reset.")
+                npc_reset()
+            end
             if not connected then
                 request()
                 following = false
@@ -192,14 +240,20 @@ windower.register_event('prerender', function()
                     log(player.name..";load_"..res.jobs[player.main_job_id].ens.."_"..res.jobs[player.sub_job_id].ens.."_"..player.name)
                 end
             end
-            if settings.display == true and (enabled or following) then
+            if settings.display and (enabled or following or player_mirror) then
                 sm_display:show()
                 sm_display:text(display_box_refresh())
             else
                 sm_display:hide()
             end
-            if settings.debug == true then
+            if settings.debug then
                 sm_debug:text(debug_box_refresh())
+            end
+            if mirroring or injecting then
+                sm_npc:text(npc_box_refresh())
+                sm_npc:show()
+            else
+                sm_npc:hide()
             end
             last_update = now
         end
@@ -262,4 +316,19 @@ end
 function round(num, numDecimalPlaces)
   local mult = 10^(numDecimalPlaces or 0)
   return math.floor(num * mult + 0.5) / mult
+end
+
+do
+    local now = os.time()
+    local h, m = (os.difftime(now, os.time(os.date('!*t', now))) / 3600):modf()
+    local timezone = '%+.2d:%.2d':format(h, 60 * m)
+    local fn = function(ts)
+        return os.date('%Y-%m-%dT%H:%M:%S' .. timezone, ts)
+    end
+    time = function(ts)
+        return fn(os.time() - ts)
+    end
+    bufftime = function(ts)
+        return fn(1009810800 + (ts / 60) + 0x100000000 / 60 * 9) -- increment last number every 2.27 years
+    end
 end

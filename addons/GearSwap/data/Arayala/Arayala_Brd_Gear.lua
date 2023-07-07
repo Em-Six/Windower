@@ -3,7 +3,7 @@ function user_job_setup()
     state.OffenseMode:options('Normal','Acc')
     state.CastingMode:options('Normal','Resistant','Ody')
     state.IdleMode:options('Normal','Ody')
-	state.Weapons:options('DualCentovente','DualNaegling','Carnwenhan','Naegling','Evisceration','Aeolian','Xoanon')
+	state.Weapons:options('DualCentovente','DualNaegling','Carnwenhan','Naegling','Evisceration','Aeolian','Xoanon','Ody')
 	
 	autows = "Mordant Rime"
 	autowstp = 1000
@@ -87,7 +87,7 @@ function init_gear_sets()
 	sets.precast.FC = {main=gear.Kali_Refresh,sub=gear.Kali_Skill,ammo="Impatiens",
 		head="Vanya Hood",neck="Voltsurge Torque",ear1="Loquac. Earring",ear2="Etiolation Earring",
 		body="Inyanga Jubbah +2",hands="Gende. Gages +1",ring1="Kishar Ring",ring2="Weatherspoon Ring",
-		back=gear.fc_macc_jse_back,waist="Embla Sash",legs="Aya. Cosciales +2",feet="Fili Cothurnes +2"}
+		back=gear.fc_macc_jse_back,waist="Embla Sash",legs="Aya. Cosciales +2",feet="Fili Cothurnes +3"}
 
 	sets.precast.FC.Cure = sets.precast.FC
 
@@ -239,11 +239,13 @@ function init_gear_sets()
 	sets.midcast.Carol = {}
 	sets.midcast.Mambo = {feet="Mousai Crackows +1"}
 	sets.midcast.Etude = {head="Mousai Turban +1"}
-	sets.midcast["Sentinel's Scherzo"] = {feet="Fili Cothurnes +2"}
+	sets.midcast["Sentinel's Scherzo"] = {feet="Fili Cothurnes +3"}
 	sets.midcast['Magic Finale'] = {range="Gjallarhorn"}
 	sets.midcast['Shining Fantasia'] = set_combine(sets.precast.FC,{range="Daurdabla"})
-	sets.midcast['Fowl Aubade'] = set_combine(sets.precast.FC,{range="Daurdabla"})
-	sets.midcast['Scop\'s Operetta'] = {range="Daurdabla"}
+	sets.midcast['Fowl Aubade'] = sets.midcast['Shining Fantasia']
+	sets.midcast['Goblin Gavotte'] = sets.midcast['Shining Fantasia']
+	sets.midcast['Herb Pastoral'] = sets.midcast['Shining Fantasia']
+	sets.midcast['Scop\'s Operetta'] = sets.midcast['Shining Fantasia']
 	sets.midcast.Mazurka = {range="Marsyas"}
 	
 
@@ -412,7 +414,7 @@ function init_gear_sets()
 		body="Nyame Mail",
 		hands="Nyame Gauntlets",
 		legs="Nyame Flanchard",
-		feet="Nyame Sollerets",
+		feet="Fili Cothurnes +3",
 		neck="Bathy Choker +1",
 		waist="Svelt. Gouriz +1",
 		left_ear="Infused Earring",
@@ -428,8 +430,8 @@ function init_gear_sets()
 
 	sets.defense.MDT = sets.idle
 
-	sets.Kiting = {feet="Fili Cothurnes +2"}
-	sets.Kiting.Ody = {feet="Fili Cothurnes +2"}
+	sets.Kiting = {feet="Fili Cothurnes +3"}
+	sets.Kiting.Ody = {feet="Fili Cothurnes +3"}
 	sets.latent_refresh = {}
 	sets.latent_refresh_grip = {sub="Oneiros Grip"}
 	sets.TPEat = {neck="Chrys. Torque"}

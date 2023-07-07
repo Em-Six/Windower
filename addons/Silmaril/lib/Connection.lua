@@ -1,9 +1,9 @@
 function connect()
+    log("startup")
+    initialize() -- via update.lua
     udp = assert(socket.udp())
     udp:settimeout(0)
     udp:setpeername(ip, port)
-    log("startup")
-    initialize() -- via update.lua
 end
 
 function request()
@@ -19,9 +19,8 @@ function disconnect()
 end
 
 function send_packet (msg)
-    if msg ~= nil then
+    if msg and udp then
         assert(udp:send(msg))
-        --log(msg)
     else
         log('Unable to send data')
     end
@@ -63,8 +62,11 @@ function receive_info()
                     skillchain3(message[3],message[4],message[5],message[6])
                 elseif message[2] == "skillchain4" then
                     skillchain4(message[3],message[4],message[5],message[6])
+                elseif message[2] == "config" then
+                    log(message[3])
+                    npc_mirror_state(tonumber(message[3])) -- Toggles Mode of mirroring
                 end
-            else
+            elseif message[2] then
                 log("Wrong Message Recieved ["..message[2]..']')
             end
 		elseif msg ~= 'timeout' then 

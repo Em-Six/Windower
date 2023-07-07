@@ -6,10 +6,8 @@
         <Roll_ind_2>19</Roll_ind_2>
         <showdisplay>true</showdisplay>
     </global>
-    <kateye>
-        <Roll_ind_2>12</Roll_ind_2>
-    </kateye>
     <sensarity>
+        <Roll_ind_1>8</Roll_ind_1>
         <Roll_ind_2>12</Roll_ind_2>
     </sensarity>
 </settings>

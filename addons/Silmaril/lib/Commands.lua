@@ -6,11 +6,6 @@ function commands(cmd, args)
                 port = args[2]
                 windower.add_to_chat(1, ('\31\200[\31\05Silmaril Addon\31\200]\31\207 '.. "Connection:  IP address: " .. ip .. " / Port number: " .. port))
             end
-        elseif cmd == "check" then
-            windower.add_to_chat(1, ('\31\200[\31\05Silmaril Addon\31\200]\31\207 '.. "Connection:  IP address: " .. ip .. " / Port number: " .. port))
-        elseif cmd == "verify" then
-            windower.add_to_chat(8,'Silmaril Addon Loaded')
-            send_packet(player.name..";confirmed")
         elseif cmd == "stop" or cmd == "off" or (cmd == "toggle" and enabled) then
             windower.add_to_chat(1, ('\31\200[\31\05Silmaril\31\200]\31\207'..' Actions: \31\03[OFF]')) -- use \03
             send_packet(player.name..";stop")
@@ -27,51 +22,36 @@ function commands(cmd, args)
              if args[1] and args[1]:lower() == 'all' then
                 windower.send_ipc_message('start')
              end
+        elseif cmd == "input" then
+            -- sm input JobAbility 99 125
+            input_message(args[1], args[2], args[3])
         elseif cmd == "all" then
-             if args[1] and (args[1]:lower() == 'on' or args[1]:lower() == 'start') then
-                 get_player_spells()
-                 send_packet(player.name..";start")
-                 enabled = true
-                 windower.send_ipc_message('start')
-             elseif args[1] and (args[1]:lower() == 'off' or args[1]:lower() == 'stop') then
-                send_packet(player.name..";stop")
-                enabled = false
-                windower.ffxi.run(false)
-                windower.send_ipc_message('stop')
-             elseif args[1] and args[1]:lower() == 'follow' then
-                if following then
-                    windower.add_to_chat(1, ('\31\200[\31\05Silmaril\31\200]\31\207'..' Following: \31\03[OFF]'))
-                    send_packet(player.name..";follow_off_all")
+             local sub_command = args[1]:lower()
+             if sub_command then
+                 if sub_command == 'on' or sub_command == 'start' or (cmd == "toggle" and not enabled) then
+                     get_player_spells()
+                     send_packet(player.name..";start")
+                     enabled = true
+                     windower.send_ipc_message('start')
+                 elseif sub_command == 'off' or sub_command == 'stop' or (cmd == "toggle" and enabled) then
+                    send_packet(player.name..";stop")
+                    enabled = false
                     windower.ffxi.run(false)
-                    following = false
-                else
-                    following = true
-                    windower.add_to_chat(1, ('\31\200[\31\05Silmaril\31\200]\31\207'..' Following: \31\06[ON]'))
-                    send_packet(player.name..";follow_on_all")
-                    windower.send_ipc_message('follow on')
-                end
+                    windower.send_ipc_message('stop')
+                 elseif sub_command == 'follow' then
+                    if following then
+                        windower.add_to_chat(1, ('\31\200[\31\05Silmaril\31\200]\31\207'..' Following: \31\03[OFF]'))
+                        send_packet(player.name..";follow_off_all")
+                        windower.ffxi.run(false)
+                        following = false
+                    else
+                        following = true
+                        windower.add_to_chat(1, ('\31\200[\31\05Silmaril\31\200]\31\207'..' Following: \31\06[ON]'))
+                        send_packet(player.name..";follow_on_all")
+                        windower.send_ipc_message('follow on')
+                    end
+                 end
              end
-        elseif cmd == "follow" then
-            if args[1] and args[1]:lower() == 'on' then -- single box follow on
-                windower.add_to_chat(1, ('\31\200[\31\05Silmaril\31\200]\31\207'..' Following: \31\06[ON]'))
-                send_packet(player.name..";follow_on")
-            elseif args[1] and args[1]:lower() == 'off' then -- single box follow off
-                following = false
-                send_packet(player.name..";follow_off")
-                windower.add_to_chat(1, ('\31\200[\31\05Silmaril\31\200]\31\207'..' Following: \31\03[OFF]'))
-            elseif args[1] and args[1]:lower() == 'all' then -- multi-box following command
-                if following then
-                    windower.add_to_chat(1, ('\31\200[\31\05Silmaril\31\200]\31\207'..' Following: \31\03[OFF]'))
-                    send_packet(player.name..";follow_off_all")
-                    windower.send_ipc_message('follow off')
-                    windower.ffxi.run(false)
-                    following = false
-                else
-                    windower.add_to_chat(1, ('\31\200[\31\05Silmaril\31\200]\31\207'..' Following: \31\06[ON]'))
-                    send_packet(player.name..";follow_on_all")
-                    windower.send_ipc_message('follow on')
-                end
-            end
         elseif cmd == "load" then
             if args[3] then
                 send_packet(player.name..";load_"..args[1]:lower().."_"..args[2]:lower().." "..args[3]:lower())
@@ -137,8 +117,10 @@ function commands(cmd, args)
             coroutine.sleep(delay_time)
 		    config.save(settings, player.name:lower())
 		    windower.add_to_chat(8,'Silmaril Settings Saved')
-        elseif cmd == 'player' then
-            log(player)
+        elseif cmd == 'reset' then
+            npc_reset()
+        elseif cmd == 'mirror' then
+            send_packet(player.name..";packet_npc_request")
         end
     end
 end

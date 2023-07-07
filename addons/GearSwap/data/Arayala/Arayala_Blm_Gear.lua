@@ -3,7 +3,7 @@ function user_job_setup()
 	state.CastingMode:options('Burst','Normal','Resistant','Fodder','Proc','OccultAcumen')
 	state.OffenseMode:options('Normal')
 	state.IdleMode:options('Normal','DT')
-	state.Weapons:options('Marin','Bunzi','None')
+	state.Weapons:options('Laevateinn','None')
 
 	gear.obi_cure_waist = "Witful Belt"
 	gear.obi_low_nuke_waist = "Sekhmet Corset"
@@ -40,6 +40,7 @@ function user_job_setup()
 	select_default_macro_book()
 end
 
+
 function init_gear_sets()
 
     --------------------------------------
@@ -48,7 +49,7 @@ function init_gear_sets()
 	
 	-- Weapons sets
 	sets.weapons.Marin = {main="Marin Staff +1",sub="Enki Strap"}
-	sets.weapons.Bunzi = {main="Bunzi's Rod",sub="Ammurapi Shield"}
+	sets.weapons.Laevateinn = {main="Laevateinn",sub="Enki Strap"}
 	--sets.weapons.Khatvanga = {main="Khatvanga",sub="Bloodrain Strap"}
 	
     sets.buff.Sublimation = {waist="Embla Sash"}
@@ -109,18 +110,29 @@ function init_gear_sets()
 		back=gear.nuke_jse_back,waist="Fotia Belt",legs="Jhakri Slops +2",feet="Jhakri Pigaches +2"}
 
     -- Specific weaponskill sets.  Uses the base set if an appropriate WSMod version isn't found.
-    sets.precast.WS['Vidohunir'] = {ammo="Dosis Tathlum",
-		head="Hagondes Hat +1",neck="Saevus Pendant +1",ear1="Friomisi Earring",ear2="Crematio Earring",
-		body="Zendik Robe",hands="Hagondes Cuffs +1",ring1="Freke Ring",ring2="Shiva Ring +1",
-		back=gear.nuke_jse_back,waist="Fotia Belt",legs="Hagondes Pants +1",feet=gear.merlinic_nuke_feet}
+    sets.precast.WS['Vidohunir'] = {
+	    ammo="Ghastly Tathlum +1",
+		head="Wicce Petasos +3",
+		body="Wicce Coat +3",
+		hands="Wicce Gloves +3",
+		legs="Wicce Chausses +3",
+		feet="Wicce Sabots +3",
+		neck="Src. Stole +2",
+		waist="Acuity Belt +1",
+		left_ear="Regal Earring",
+		right_ear="Malignance Earring",
+		left_ring="Cornelia's Ring",
+		right_ring="Metamor. Ring +1",
+		back=gear.nuke_jse_back,
+	}
 
     sets.precast.WS['Myrkr'] = {    
 		ammo="Ghastly Tathlum +1",
-		head={ name="Vanya Hood", augments={'MP+50','"Fast Cast"+10','Haste+2%',}},
+		head="Wicce Petasos +3",
 		body="Wicce Coat +3",
-		hands="Nyame Gauntlets",
+		hands="Spae. Gloves +3",
 		legs="Wicce Chausses +3",
-		feet="Nyame Sollerets",
+		feet="Wicce Sabots +3",
 		neck="Nodens Gorget",
 		waist="Luminary Sash",
 		left_ear="Moonshade Earring",
@@ -132,7 +144,7 @@ function init_gear_sets()
 		
 	sets.MaxTPMyrkr = {left_ear="Mendicant's Earring"}
     
-    
+	
     ---- Midcast Sets ----
 
     sets.midcast.FastRecast = set_combine(sets.precast.FC, {})
@@ -431,6 +443,47 @@ function init_gear_sets()
 		
 end
 
+function job_customize_idle_set(idleSet)
+    if buffactive['Sublimation: Activated'] then
+        if (state.IdleMode.value == 'Normal' or state.IdleMode.value:contains('Sphere')) and sets.buff.Sublimation then
+            idleSet = set_combine(idleSet, sets.buff.Sublimation)
+        elseif state.IdleMode.value:contains('DT') and sets.buff.DTSublimation then
+            idleSet = set_combine(idleSet, sets.buff.DTSublimation)
+        end
+    end
+
+    if state.IdleMode.value == 'Normal' or state.IdleMode.value:contains('Sphere') then
+        if player.mpp < 51 then
+            if sets.latent_refresh then
+                idleSet = set_combine(idleSet, sets.latent_refresh)
+            end
+            
+            if (state.Weapons.value == 'None' or state.UnlockWeapons.value) and idleSet.main then
+                local main_table = get_item_table(idleSet.main)
+
+                if  main_table and main_table.skill == 12 and sets.latent_refresh_grip then
+                    idleSet = set_combine(idleSet, sets.latent_refresh_grip)
+                end
+                
+            end
+        end
+        if player.tp == 3000 and player.equipment.main == "Laevateinn" then
+            idleSet = set_combine(idleSet, {neck="Chrys. Torque"})
+        end
+
+   end
+    
+    if state.DeathMode.value ~= 'Off' then
+            idleSet = set_combine(idleSet, sets.idle.Death)
+    end
+
+    if state.Buff['Mana Wall'] then
+        idleSet = set_combine(idleSet, sets.buff['Mana Wall'])
+    end
+    
+    return idleSet
+end
+
 -- Select default macro book on initial load or subjob change.
 function select_default_macro_book()
     set_macro_page(1, 7)
@@ -439,3 +492,8 @@ end
 function user_job_lockstyle()
 	windower.chat.input('/lockstyleset 005')
 end
+
+
+
+
+

@@ -9,7 +9,7 @@ function user_job_setup()
     state.PhysicalDefenseMode:options('PDT','NukeLock')
 	state.MagicalDefenseMode:options('MDT')
 	state.ResistDefenseMode:options('MEVA')
-	state.Weapons:options('None','Naegling','Crocea','EnspellOnly','Aeolian','BlackHalo','Dyna')
+	state.Weapons:options('None','Naegling','CroceaSeraph','EnCrocea','EnspellOnly','Aeolian','BlackHalo','Dyna')
 	
 	gear.obi_cure_back = "Tempered Cape +1"
 	gear.obi_cure_waist = "Witful Belt"
@@ -23,7 +23,7 @@ function user_job_setup()
 	gear.stp_jse_back = { name="Sucellos's Cape", augments={'DEX+20','Accuracy+20 Attack+20','Accuracy+10','"Store TP"+10','Phys. dmg. taken-10%',}}
 	gear.mnd_macc_jse_back = { name="Sucellos's Cape", augments={'MND+20','Mag. Acc+20 /Mag. Dmg.+20','MND+10','"Fast Cast"+10','Spell interruption rate down-10%',}}
 	gear.wsd_jse_back = { name="Sucellos's Cape", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%',}}
-	gear.intwsd_jse_back = { name="Sucellos's Cape", augments={'MND+20','Mag. Acc+20 /Mag. Dmg.+20','MND+10','"Fast Cast"+10','Spell interruption rate down-10%',}}
+	gear.intwsd_jse_back = { name="Sucellos's Cape", augments={'INT+20','Mag. Acc+20 /Mag. Dmg.+20','INT+10','Weapon skill damage +10%','Phys. dmg. taken-10%',}}
 
 		-- Additional local binds
 	
@@ -119,27 +119,27 @@ function init_gear_sets()
 		waist="Sailfi Belt +1",
 		left_ear="Moonshade Earring",
 		right_ear="Ishvara Earring", -- Regal Earring beats this apparently
-		left_ring="Metamorph Ring +1", 
-		right_ring="Rufescent Ring",
+		left_ring="Regal Ring", 
+		right_ring="Epaminondas's Ring",
 		back=gear.wsd_jse_back,
 	}
 		
 	sets.precast.WS['Black Halo'] = sets.precast.WS['Savage Blade']
 		
 	sets.precast.WS['Aeolian Edge'] = {
-	    ammo="Ghastly Tathlum +1", 
+	    ammo="Sroda Tathlum", 
 		head="Nyame Helm",
 		body="Nyame Mail",
 		hands="Jhakri Cuffs +2",
-		legs="Nyame Flanchard", -- Need Almaric +1
-		feet="Leth. Houseaux +2",
+		legs="Leth. Fuseau +2", -- Leth +3
+		feet="Leth. Houseaux +2", -- +3
 		neck="Sibyl Scarf",
-		waist="Eschan Stone",
+		waist="Orpheus's Sash",
 		left_ear="Moonshade Earring",
 		right_ear="Malignance Earring",
-		left_ring="Metamor. Ring +1",
-		right_ring="Shiva Ring +1", -- Need Freke
-		back=gear.mnd_macc_jse_back, -- Need INT/WSD Back
+		left_ring="Metamor. Ring +1",-- Need Freke
+		right_ring="Epaminondas's Ring", 
+		back=gear.intwsd_jse_back,
 	}	
 		
 	sets.precast.WS['Sanguine Blade'] = set_combine(sets.precast.WS['Aeolian Edge'], {head="Pixie Hairpin +1",right_ring="Archon Ring",})
@@ -199,7 +199,7 @@ function init_gear_sets()
 		
 	--Red Mage enhancing sets are handled in a different way from most, layered on due to the way Composure works
 	--Don't set combine a full set with these spells, they should layer on Enhancing Set > Composure (If Applicable) > Spell
-	sets.EnhancingSkill = {main="Pukulatmuj +1",head="Umuthi Hat",hands="Viti. Gloves +3",legs="Atrophy Tights +1",neck="Enhancing Torque",waist="Olympus Sash"}
+	sets.EnhancingSkill = {main="Pukulatmuj +1",head="Befouled Crown",hands="Viti. Gloves +3",legs="Atrophy Tights +1",neck="Enhancing Torque",waist="Olympus Sash"}
 	sets.midcast.Refresh = {head="Amalric Coif +1",body="Atrophy Tabard +3",legs="Leth. Fuseau +2"}
 	sets.midcast.Aquaveil = {head="Amalric Coif +1",waist="Emphatikos Rope"}
 	sets.midcast.BarElement = {legs="Shedir Seraweels"}
@@ -339,8 +339,8 @@ function init_gear_sets()
 		hands="Bunzi's Gloves",
 		legs="Bunzi's Pants",
 		feet="Bunzi's Sabots",
-		--neck="Duelist's Torque +2", -- DYnamis RP Swap
-		neck="Warder's Charm +1",
+		neck="Duelist's Torque +2", -- DYnamis RP Swap
+		--neck="Warder's Charm +1",
 		waist="Carrier's Sash",
 		left_ear="Odnowa Earring +1",
 		right_ear="Etiolation Earring",
@@ -378,9 +378,10 @@ function init_gear_sets()
 	sets.weapons.Aeolian = {main="Tauret",sub="Bunzi's Rod"}
 	sets.weapons.EnspellOnly = {main="Aern Dagger II",sub="Aern Dagger"}
 	sets.weapons.BlackHalo = {main="Maxentius",sub="Machaera +2"}
-	sets.weapons.Crocea = {main="Crocea Mors",sub="Daybreak"}
+	sets.weapons.CroceaSeraph = {main="Crocea Mors",sub="Daybreak"}
+	sets.weapons.EnCrocea = {main="Crocea Mors",sub="Gleti's Knife"}
 	sets.weapons.Trial = {main="Machaera +1", sub="Gleti's Knife"}
-	sets.weapons.Dyna = {main="Naegling", sub="Crocea Mors"}
+	sets.weapons.Dyna = {main="Tauret", sub="Crocea Mors"}
 
     sets.buff.Sublimation = {waist="Embla Sash"}
     sets.buff.DTSublimation = {waist="Embla Sash"}
@@ -403,8 +404,8 @@ function init_gear_sets()
 		hands="Malignance Gloves",
 		legs="Malignance Tights",
 		feet="Malignance Boots",
-		--neck="Duelist's Torque +2", -- DYnamis RP Swap
-		neck="Anu Torque",
+		neck="Duelist's Torque +2", -- DYnamis RP Swap
+		--neck="Anu Torque",
 		waist="Windbuffet Belt +1",
 		left_ear="Telos Earring",
 		right_ear="Sherida Earring",
@@ -414,6 +415,7 @@ function init_gear_sets()
 	}
 		
 	sets.engaged.DW = set_combine(sets.engaged, {waist="Reiki Yotai",left_ear="Suppanomimi",})
+	sets.engaged.EnCrocea = set_combine(sets.engaged.DW, {waist="Orpheus's Sash"})
 	
 	sets.engaged.EnspellOnly = {
 		ammo="Coiste Bodhar",

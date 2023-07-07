@@ -9,6 +9,8 @@ function user_job_setup()
 	state.HybridMode:options('Normal','DT')
 	state.Weapons:options('None','DualWeapons','MeleeWeapons')
 	state.AutoCaress = M(false, 'Auto Caress Mode')
+	state.PWUnlock = M(true, 'PWUnlock')
+	--sets.IdleWakeUp = {main="Prime Staff",}
 	
 	autows = "Black Halo"
 	
@@ -141,7 +143,7 @@ function init_gear_sets()
 	sets.midcast['Full Cure'] = sets.midcast.FastRecast
 	
 	-- Sets to define Solace/Weather Gear - Purely used as set combines
-	sets.Solace = {body="Ebers Bliaut +2",back=gear.cure_jse_cape}
+	sets.Solace = {body="Ebers Bliaut +3",back=gear.cure_jse_cape}
 	sets.CureWeatherDay = {main="Chatoyant Staff", sub="Enki Strap", waist="Hachirin-no-Obi"}
 	
 	-- Normal Cure Sets
@@ -219,7 +221,7 @@ function init_gear_sets()
 		sub="Thuellaic Ecu +1",
 		ammo="Hasty Pinion +1",
 		head=gear.vanya_head_pathb, 
-		body="Ebers Bliaut +2",
+		body="Ebers Bliaut +3",
 		hands="Fanatic Gloves", -- Need perfect augments
 		legs="Th. Pantaloons +2", -- Need +3
 		feet=gear.vanya_feet_pathb, 
@@ -257,7 +259,7 @@ function init_gear_sets()
 	
 	sets.midcast.BarElement = {main="Beneficus",sub="Ammurapi Shield",ammo="Staunch Tathlum +1",
 		head="Ebers Cap +1",neck="Incanter's Torque",ear1="Andoaa Earring",ear2="Gifted Earring",
-		body="Ebers Bliaut +2",hands="Ebers Mitts +1",ring1="Stikini Ring +1",ring2="Stikini Ring +1",
+		body="Ebers Bliaut +3",hands="Ebers Mitts +1",ring1="Stikini Ring +1",ring2="Stikini Ring +1",
 		back="Alaunus's Cape",waist="Olympus Sash",legs="Piety Pantaln. +3",feet="Ebers Duckbills +1"}
 
 
@@ -384,7 +386,7 @@ function init_gear_sets()
 	}
 
 	sets.idle.DT = {
-		main="Mpaca's Staff",
+		main="Malignance Pole",
 		sub="Oneiros Grip",
 		ammo="Staunch Tathlum",
 		head="Nyame Helm",
@@ -475,7 +477,8 @@ function init_gear_sets()
 		back="Alaunus's Cape",waist="Eschan Stone",legs="Ebers Pant. +3",feet="Kaykaus Boots"}
 
 	sets.buff.Doom = set_combine(sets.buff.Doom, {})
-	sets.buff.Sleep = {main="Prime Maul"}
+	sets.buff.Sleep = set_combine(sets.idle.DT, {main="Prime Maul", sub="Genmei Shield"})
+	sets.IdleWakeUp = sets.buff.Sleep
 
 end
 

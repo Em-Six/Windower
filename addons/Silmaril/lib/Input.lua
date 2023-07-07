@@ -1,4 +1,4 @@
-function input_message(Type, Index, Param, Option)
+function input_message(type, index, param, option)
     --[[
 	enums['action'] = {
         [0x00] = 'NPC Interaction',
@@ -21,18 +21,18 @@ function input_message(Type, Index, Param, Option)
         [0x1A] = 'Mount',
     }
     ]]--
-    if Option then
-        log('Input - Type ['..Type..'], Index ['..Index..'], Param ['..Param..'], Option ['..Option..']')
+    if option then
+        log('Input - type ['..type..'], index ['..index..'], param ['..param..'], option ['..option..']')
     else
-        log('Input - Type ['..Type..'], Index ['..Index..'], Param ['..Param..']')
+        log('Input - type ['..type..'], index ['..index..'], param ['..param..']')
     end
-    Target = windower.ffxi.get_mob_by_index(Index)
-    if not Target then
-        Target = windower.ffxi.get_mob_by_id(Index)
-        if not Target then
-            Target = party_location[tonumber(Index)]
-            if not Target then
-                log("Target not found")
+    target = windower.ffxi.get_mob_by_index(index)
+    if not target then
+        target = windower.ffxi.get_mob_by_id(index)
+        if not target then
+            target = party_location[tonumber(index)]
+            if not target then
+                log("target not found")
                 if following then
                     runStop()
                 end
@@ -40,182 +40,225 @@ function input_message(Type, Index, Param, Option)
             end
         end
     end
-	if Type == "JobAbility" then
-        Action_Message('0x09',Target,Param)
+	if type == "JobAbility" then
+        Action_Message('0x09',target,param)
 		log("Job Ability")
-	elseif Type == "Magic" then
-        if Target.valid_target and math.sqrt(Target.distance) <= 25 then
-            Action_Message('0x03',Target,Param)
+	elseif type == "Magic" then
+        if target.valid_target and math.sqrt(target.distance) <= 25 then
+            Action_Message('0x03',target,param)
 		    log("Magic")
         else
-            log(Target)
+            log(target)
         end
-	elseif Type == "WeaponSkill" then
-        if Target.valid_target and math.sqrt(Target.distance) <= 23 then
-            Action_Message('0x07',Target,Param)
+	elseif type == "WeaponSkill" then
+        if target.valid_target and math.sqrt(target.distance) <= 23 then
+            Action_Message('0x07',target,param)
 		    log("Weapon Skill")
         else
             log("Distance is too far to weaponskill")
         end
-	elseif Type == "Engage" then
-        if Target.valid_target and Target.spawn_type == 16 and math.sqrt(Target.distance) <= 30 then
-            Action_Message('0x02',Target,Param)
+	elseif type == "Engage" then
+        if target.valid_target and target.spawn_type == 16 and math.sqrt(target.distance) <= 30 then
+            Action_Message('0x02',target,param)
 		    log("Engage")
         else
             log("Distance is too far to attack")
         end
-    elseif Type == "Assist" then
-        if Target.valid_target and Target.spawn_type == 16 and math.sqrt(Target.distance) <= 30 then
-            Action_Message('0x0C',Target,"")
+    elseif type == "Assist" then
+        if target.valid_target and target.spawn_type == 16 and math.sqrt(target.distance) <= 30 then
+            Action_Message('0x0C',target,"")
 		    log("Assist")
         else
             log("Distance is too far to attack")
         end
-    elseif Type == "Switch" then
-        if Target.valid_target and Target.spawn_type == 16 and math.sqrt(Target.distance) <= 30 then
-            Action_Message('0x0F',Target,Param)
+    elseif type == "Switch" then
+        if target.valid_target and target.spawn_type == 16 and math.sqrt(target.distance) <= 30 then
+            Action_Message('0x0F',target,param)
 		    log("Switch")
         else
-            log("Switch Target not found")
+            log("Switch target not found")
         end
-    elseif Type == "AcceptRaise" then
-            Action_Message('0x0D',Target,Param)
+    elseif type == "AcceptRaise" then
+            Action_Message('0x0D',target,param)
 		    log("Accept Raise")
-    elseif Type == "Shoot" then
-        if Target.valid_target and Target.spawn_type == 16 and math.sqrt(Target.distance) <= 25 then
-            Action_Message('0x10',Target,Param)
+    elseif type == "Shoot" then
+        if target.valid_target and target.spawn_type == 16 and math.sqrt(target.distance) <= 25 then
+            Action_Message('0x10',target,param)
 		    log("Shoot")
         else
             log("Distance is too far to shoot")
         end
-	elseif Type == "Disengage" then
-            Action_Message('0x04',Target,Param)
+	elseif type == "Disengage" then
+            Action_Message('0x04',target,param)
 		    log("Disengage")
-	elseif Type == "RunAway" then
-        if Target.valid_target and math.sqrt(Target.distance) <= 50 then
+	elseif type == "RunAway" then
+        if target.valid_target and math.sqrt(target.distance) <= 50 then
             -- Call the movement section
-            runaway(Target,Param)
+            runaway(target,param)
         else
             log("Distance is too far to run")
             runStop()
         end
-    elseif Type == "RunTo" then
-        if Target.valid_target and math.sqrt(Target.distance) <= 50 then
+    elseif type == "RunTo" then
+        if target.valid_target and math.sqrt(target.distance) <= 50 then
             -- Call the movement section
-            runto(Target,Param)
+            runto(target,param)
         else
             log("Distance is too far to run")
             runStop()
         end
-    elseif Type == "RunStop" then
-        if Target.valid_target and math.sqrt(Target.distance) <= 50 then
+    elseif type == "RunStop" then
+        if target.valid_target and math.sqrt(target.distance) <= 50 then
             -- Call the movement section
             runStop()
         else
             log("Stop Running")
             runStop()
         end
-    elseif Type == "Follow" then
-        if Target.valid_target and math.sqrt(Target.distance) <= 50 then
+    elseif type == "Follow" then
+        if target.valid_target and math.sqrt(target.distance) <= 50 then
             -- Call the movement section
-            follow(Target,Param)
+            follow(target,param)
         else
             log("Distance is too far to run")
             runStop()
         end
-    elseif Type == "FastFollow" then
-        if player.zone == Target.zone or world.mog_house then
+    elseif type == "FastFollow" then
+        if player.zone == target.zone or world.mog_house then
             -- Call the movement section
-            fastfollow(Target,Param, Option)
+            fastfollow(target,param, option)
         else
             log("Distance is too far to run")
             runStop()
         end
-    elseif Type == "Face" then
-        if Target.valid_target and math.sqrt(Target.distance) <= 50 then
+    elseif type == "Face" then
+        if target.valid_target and math.sqrt(target.distance) <= 50 then
             -- Call the movement section
-            facemob(Target)
+            facemob(target)
 		    log("Face on")
         else
             log("Distance is too far to face")
         end
-    elseif Type == "LockOn" then
-        if Target.valid_target and math.sqrt(Target.distance) <= 50 then
+    elseif type == "LockOn" then
+        if target.valid_target and math.sqrt(target.distance) <= 50 then
             -- Call the lockon section
-            lockon(Target,Param)
+            lockon(target,param)
 		    log("LockOn")
         else
             log("Distance is too far to Lock On to")
         end
-    elseif Type == "Script" then
-        if Target.valid_target and math.sqrt(Target.distance) <= 25 then
-            if Option then
-                Action_Message('0x??',Target,Option)
+    elseif type == "Script" then
+        if target.valid_target and math.sqrt(target.distance) <= 25 then
+            if option then
+                Action_Message('0x??',target,option)
 		        log("Script")
             else
-                log("Script missing Option text")
+                log("Script missing option text")
             end
         else
             log("Distance is too far to execute script")
         end
-    elseif Type == "Item" then
-        if Target.valid_target then
-            Action_Message('0x037',Target,Param)
-            if Option == "Party" then
+    elseif type == "Item" then
+        if target.valid_target then
+            Action_Message('0x037',target,param)
+            if option == "Party" then
                 log("Warn Party")
-                command = 'input /party Item Warning ['..all_items[tonumber(Param)].en..']!'
+                command = 'input /party Item Warning ['..all_items[tonumber(param)].en..']!'
                 windower.send_command(command)
-            elseif Option ~= "" then
-                log("Warn Player: "..Option)
-                command = 'input /tell '..Option..' Item Warning ['..all_items[tonumber(Param)].en..']!'
+            elseif option ~= "" then
+                log("Warn Player: "..option)
+                command = 'input /tell '..option..' Item Warning ['..all_items[tonumber(param)].en..']!'
                 windower.send_command(command)
             end
         else
-            log(Target)
+            log(target)
         end
-    elseif Type == "Message" then
-
+    elseif type == "Message" then
+        if param == "0" then -- Tell
+            command = 'input /tell '..target.name..' '..option..''
+            windower.send_command(command)
+        elseif param == "1" then -- Party
+            command = 'input /party '..option..''
+            windower.send_command(command)
+        elseif param == "2" then -- Echo player only
+            command = 'input /echo '..option..''
+            windower.send_command(command)
+        elseif param == "3" then -- Echo party
+            command = 'input /echo '..option..''
+            windower.send_command(command)
+            windower.send_ipc_message('message '..option)
+        end
+    elseif type == "Mirror" then
+        if target.index == player.index then
+            if tonumber(param) == 0 then
+                windower.add_to_chat(80,'------- License Not Found -------')
+            elseif tonumber(param) == 1 then
+                if player_mirror then
+                    player_mirror = false
+                    mirroring = false
+                    mirror_target = {}
+                    injecting = false
+                    mirror_sequence = false
+                    sm_npc:hide()
+                    windower.add_to_chat(1, ('\31\200[\31\05Silmaril\31\200]\31\207'..' Mirror: \31\03[OFF]'))
+                    windower.send_ipc_message('mirror')
+                else
+                    player_mirror = true
+                    mirror_target = {}
+                    injecting = false
+                    mirror_sequence = false
+                    windower.add_to_chat(1, ('\31\200[\31\05Silmaril\31\200]\31\207'..' Mirror: \31\06[ON]'))
+                    windower.send_ipc_message('mirror')
+                end
+            elseif tonumber(param) == 2 then
+               npc_mirror_state(1) -- Mirror once
+            elseif tonumber(param) == 3 then
+               npc_mirror_state(2) -- Leave active
+            end
+        else
+            npc_build_message(target, option)
+        end
 	end
 end
 
-function Action_Message(Category, Target, Param)
+function Action_Message(category, target, param)
     local command = ""
-	if not Target then
-        log("Target not found")
+	if not target then
+        log("target not found")
 		return
 	end
     -- use input commands so that gearswap can swap our gear for us - use target ID
-    if Category == '0x09' then
-        command = 'input /ja "'..all_job_abilities[tonumber(Param)].en..'" '..Target.id
+    if category == '0x09' then
+        command = 'input /ja "'..all_job_abilities[tonumber(param)].en..'" '..target.id
         windower.send_command(command)
         log(command)
-    elseif Category == '0x07' then
-        command = 'input /ws "'..all_weapon_skills[tonumber(Param)].en..'" '..Target.id
+    elseif category == '0x07' then
+        command = 'input /ws "'..all_weapon_skills[tonumber(param)].en..'" '..target.id
         windower.send_command(command)
         log(command)
-    elseif Category == '0x037' then
-        command = 'input /item "'..all_items[tonumber(Param)].en..'" '..Target.id
+    elseif category == '0x037' then
+        command = 'input /item "'..all_items[tonumber(param)].en..'" '..target.id
         windower.send_command(command)
         log(command)
-    elseif Category == '0x03' then
-        command = 'input /ma "'..all_spells[tonumber(Param)].en..'" '..Target.id
+    elseif category == '0x03' then
+        command = 'input /ma "'..all_spells[tonumber(param)].en..'" '..target.id
         windower.send_command(command)
         log(command)
-    elseif Category == '0x10' then
-        command = 'input /ra '..Target.id
+    elseif category == '0x10' then
+        command = 'input /ra '..target.id
         windower.send_command(command)
         log(command)
-    elseif Category == '0x??' then
-        command = 'input '..Param..' '..Target.id
+    elseif category == '0x??' then
+        command = 'input '..param..' '..target.id
         windower.send_command(command)
         log(command)
     else
         packets.inject(packets.new('outgoing', 0x1A, {
-			    ['Target'] = Target.id,
-			    ['Target Index'] = Target.index,
-			    ['Category'] = Category, -- Spell Cast
-                ['Param'] = Param, -- Spell ID
+			    ['Target'] = target.id,
+			    ['Target Index'] = target.index,
+			    ['Category'] = category, -- Spell Cast
+                ['Param'] = param, -- Spell ID
 	    }))
-        log("Packet Injected ["..Category..'] ['..Target.name..']')
+        log("Packet Injected ["..category..'] ['..target.name..']')
     end
 end
