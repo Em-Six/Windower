@@ -1,14 +1,1 @@
-<settings>
-    <global>
-        <!--If set to true will automatically determine the correct aspect ratio-->
-        <AdjustAspectRatio>true</AdjustAspectRatio>
-        <!--Explicitly define the aspect ratio (x:y resolution), will be ignored if "AdjustAspectRatio" is enabled-->
-        <AspectRatio>1.33333</AspectRatio>
-        <!--If set to true will automatically lock onto a target after engaging-->
-        <BattleAutoTarget>true</BattleAutoTarget>
-        <!--The maximum map draw distance, 1 being the game's maximum setting-->
-        <ClippingPlane>5</ClippingPlane>
-        <!--Time in minutes of inactivity until a disconnect, 0 to disable-->
-        <AutoDisconnectTime>0</AutoDisconnectTime>
-    </global>
-</settings>
+<settings />

@@ -4,12 +4,15 @@ do
 	local autorun_distance = 0
 	local autorun_tofrom = 0
 	local mov = {x=0, y=0, z=0}
-	local runtime = .5
+	local runtime = .25
 	local runsstart = os.clock()
 	local face_target_dir = false
 
 	function combat_movement()
-		if autorun == 1 and autorun_distance and autorun_tofrom then
+		if player.status ~= 0 and player.status ~=1 and player.status ~=5 and player.status ~=85 then
+			autorun = 0
+		end
+		if autorun == 1 and autorun_distance and autorun_tofrom and not injecting then
 			local now = os.clock()
 			if(now - runsstart > runtime) then
 				log('Time running ['..(now - runsstart)..'] now turning off running')

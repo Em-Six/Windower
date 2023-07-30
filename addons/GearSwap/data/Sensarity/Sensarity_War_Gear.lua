@@ -307,7 +307,7 @@ function init_gear_sets()
 		back="Moonlight Cape",waist="Flume Belt +1",legs="Sulev. Cuisses +2",feet="Amm Greaves"}
 
 	sets.Kiting = {feet="Hermes' Sandals"}
-	sets.idle.Town = set_combine(sets.idle, sets.Kiting, {body="Sacro Breastplate"})
+	sets.idle.Town = set_combine(sets.idle, sets.Kiting, {body="Sacro Breastplate", neck="Unmoving Collar +1", waist="Plat. Mog. Belt"})
 	sets.Reraise = {head="Twilight Helm",body="Twilight Mail"}
 	sets.buff.Doom = set_combine(sets.buff.Doom, {})
 	sets.buff.Sleep = {head="Frenzy Sallet"}
@@ -323,7 +323,7 @@ function init_gear_sets()
 		feet="Pummeler's Calligae +3", 
 		neck="Warrior's Bead Necklace +2", 
 		waist="Windbuffet Belt +1", 
-		left_ear="Telos Earring", 
+		left_ear="Boii Earring +1", 
 		right_ear="Schere Earring", 
 		left_ring="Niqmaddu Ring", 
 		right_ring="Lehko's Ring", 
@@ -340,8 +340,8 @@ function init_gear_sets()
 		feet="Sakpata's Leggings",
 		neck="Warrior's Bead Necklace +2",
 		waist="Ioskeha Belt +1",
-		left_ear="Telos Earring",
-		right_ear="Schere Earring",
+		left_ear="Boii Earring +1", 
+		right_ear="Schere Earring", 
 		left_ring=gear.moonlight1,
 		right_ring="Lehko's Ring", 
 		back=gear.da_jse_back,
@@ -406,7 +406,7 @@ function init_gear_sets()
 	sets.weapons.Xoanon = {main="Xoanon",sub="Utu Grip"}
 	sets.weapons.ProcDagger = {main="Aern Dagger",sub=empty}
 	sets.weapons.ProcSword = {main="Firetongue",sub=empty}
-	sets.weapons.ProcGreatSword = {main="Claymore",sub=empty}
+	sets.weapons.ProcGreatSword = {main="Irradiance Blade",sub=empty}
 	sets.weapons.ProcScythe = {main="Bronze Zaghnal",sub=empty}
 	sets.weapons.ProcPolearm = {main="Quint Spear",sub=empty}
 	sets.weapons.ProcKatana = {main="Debahocho",sub=empty}

@@ -17,7 +17,7 @@ function get_enemy_data()
             formattedString = formattedString..enemy.name..'|'..enemy.distance:sqrt()..'|'..enemy.hpp..'|'..enemy.id..'|'..enemy.index..'|'..enemy.status..'|'..enemy.x..'|'..enemy.y..'|'..enemy.z..'|'..enemy.spawn_type..'|'..enemy.claim_id..'|'..enemy.target_index..','
         elseif enemy and enemy.valid_target and not enemy.in_party and enemy.spawn_type == 1 and enemy.distance:sqrt() < 50 then
             formattedString2 = formattedString2..enemy.name..'|'..enemy.distance:sqrt()..'|'..enemy.hpp..'|'..enemy.id..'|'..enemy.index..'|'..enemy.status..'|'..enemy.x..'|'..enemy.y..'|'..enemy.z..'|'..enemy.spawn_type..'|'..enemy.claim_id..'|'..enemy.target_index..'|'
-            ..tostring(enemy.in_party)..'|'..tostring(enemy.in_alliance)..'|'..tostring(enemy.is_npc)..','
+            ..tostring(enemy.in_party)..'|'..tostring(enemy.in_alliance)..'|'..tostring(enemy.is_npc)..'|'..tostring(enemy.target_index)..','
         end
     end
     if(#formattedString > 6) then

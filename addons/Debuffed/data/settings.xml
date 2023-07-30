@@ -33,8 +33,8 @@
         <mode>blacklist</mode>
         <padding>0</padding>
         <pos>
-            <x>0</x>
-            <y>0</y>
+            <x>15</x>
+            <y>600</y>
         </pos>
         <text>
             <alpha>255</alpha>
@@ -57,22 +57,4 @@
         <timers>true</timers>
         <whitelist />
     </global>
-    <arayala>
-        <pos>
-            <x>7</x>
-            <y>789</y>
-        </pos>
-    </arayala>
-    <kateye>
-        <pos>
-            <x>71</x>
-            <y>460</y>
-        </pos>
-    </kateye>
-    <sensarity>
-        <pos>
-            <x>15</x>
-            <y>622</y>
-        </pos>
-    </sensarity>
 </settings>

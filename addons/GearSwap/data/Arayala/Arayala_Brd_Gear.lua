@@ -244,6 +244,7 @@ function init_gear_sets()
 	sets.midcast['Shining Fantasia'] = set_combine(sets.precast.FC,{range="Daurdabla"})
 	sets.midcast['Fowl Aubade'] = sets.midcast['Shining Fantasia']
 	sets.midcast['Goblin Gavotte'] = sets.midcast['Shining Fantasia']
+	sets.midcast['Warding Round'] = sets.midcast['Shining Fantasia']
 	sets.midcast['Herb Pastoral'] = sets.midcast['Shining Fantasia']
 	sets.midcast['Scop\'s Operetta'] = sets.midcast['Shining Fantasia']
 	sets.midcast.Mazurka = {range="Marsyas"}

@@ -6,12 +6,12 @@ return {
         }
     }, 
     ["Lady Lilith"]={
-        ["Fatal Allure"]={
-            ["complete_reaction"]="facemob", 
-            ["ready_reaction"]="turnaround"
-        }, 
         ["Dark Thorn"]={
             ["complete_reaction"]="", 
+            ["ready_reaction"]="turnaround"
+        }, 
+        ["Fatal Allure"]={
+            ["complete_reaction"]="facemob", 
             ["ready_reaction"]="turnaround"
         }
     }, 
@@ -26,9 +26,9 @@ return {
             ["complete_reaction"]="", 
             ["ready_reaction"]="input /ma Barwatera <me>"
         }, 
-        ["Aero Meeble Warble"]={
+        ["Thunder Meeble Warble"]={
             ["complete_reaction"]="", 
-            ["ready_reaction"]="input /ma Baraera <me>"
+            ["ready_reaction"]="input /ma Barthundra <me>"
         }, 
         ["Stone Meeble Warble"]={
             ["complete_reaction"]="", 
@@ -42,9 +42,9 @@ return {
             ["complete_reaction"]="", 
             ["ready_reaction"]="input /ma Barblizzara <me>"
         }, 
-        ["Thunder Meeble Warble"]={
+        ["Aero Meeble Warble"]={
             ["complete_reaction"]="", 
-            ["ready_reaction"]="input /ma Barthundra <me>"
+            ["ready_reaction"]="input /ma Baraera <me>"
         }
     }, 
     ["Glassy Thinker"]={

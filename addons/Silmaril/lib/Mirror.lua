@@ -3,6 +3,8 @@ do
     local retry_count = 1
     local message_count = 0
     local single_mirror = true
+    local action_packet = {}
+    local release_packet = {}
 
 ------------------------ MIRRORER SECTION ----------------------------------------------
 
@@ -12,12 +14,15 @@ do
         sent_messages = {}
         mirror_message = {}
 	    mirror_target = windower.ffxi.get_mob_by_id(packet['Target'])
-        mirror_target.zone = world.zone
-        local action = player.name..';packet_npc_interact'
-        log('NPC Interaction Starting')
-        mirroring_state = "Starting"
-        send_packet(action) -- used to clear a buffer in Silmaril
-        packet_log(packet)
+        if mirror_target and world.zone then
+            mirror_target.zone = world.zone
+            local action = player.name..';packet_npc_interact'
+            log('NPC Interaction Starting')
+            mirroring_state = "Starting"
+            sm_result:hide()
+            send_packet(action) -- used to clear a buffer in Silmaril
+            packet_log(packet)
+        end
     end
 
     function npc_buy()
@@ -75,13 +80,15 @@ do
 
     -- Once a NPC interaction is completed the server send a 0x037 packets with the player state change (4 -> 0)
     function npc_in_complete()
-        local action = player.name..';packet_npc_send_'..mirror_target.index..','..mirror_target.x..','..mirror_target.y..','..mirror_target.z..','..mirror_target.zone
-        log('NPC interaction completed')
-        mirroring_state = "Completed"
-        send_packet(action)
-        if single_mirror then
-            player_mirror = false
-            log("Turning off mirroring")
+        if mirror_target then
+            local action = player.name..';packet_npc_send_'..tostring(mirror_target.index)..','..tostring(mirror_target.x)..','..tostring(mirror_target.y)..','..tostring(mirror_target.z)..','..tostring(mirror_target.zone)
+            log('NPC interaction completed')
+            mirroring_state = "Completed"
+            send_packet(action)
+            if single_mirror then
+                player_mirror = false
+               windower.add_to_chat(1, ('\31\200[\31\05Silmaril\31\200]\31\207'..' Mirror: \31\03[OFF]'))
+            end
         end
     end
 
@@ -93,59 +100,90 @@ do
     -- Build the message que for when server asks for it.
     -- Only send the action packet here
     function npc_build_message(target, message)
+        local packet_out = {}
+        local packet_out2 = {}
         mirror_target = target
         mirror_target.zone = world.zone
         retry_count = 1
         sent_messages = {}
         mirror_message = {}
-        local packet_out = {}
+        action_packet = {}
+        release_packet = {}
+        recieved_packet = {}
+        menu_id = nil
         -- Builds the messages into a table
         for item in string.gmatch(message, "([^|]+)") do
             table.insert(mirror_message, item)
         end
+        -- Parse the first message
         message_count = #mirror_message
         for item in string.gmatch(mirror_message[1], "([^,]+)") do
             table.insert(packet_out, item)
         end
         if packet_out[1] == "0x05B" or packet_out[1] == "0x05C" then -- Dialog
             injecting = true
-            mirror_blocked = true
             -- Start the interation
-            local packet = packets.new('outgoing', 0x01A, 
+            action_packet = packets.new('outgoing', 0x01A, 
             {
                 ['Target'] = mirror_target.id,
                 ['Target Index'] = mirror_target.index,
                 ['Category'] = 0x00,
                 ['Param'] = 0
             })
-            packets.inject(packet)
+            packets.inject(action_packet)
             message_time = os.clock()
             mirroring_state = "Injecting [0x01A]"
             log(mirroring_state)
-            packet_log(packet)
+            packet_log(action_packet)
         elseif packet_out[1] == "0x036" then
             injecting = false
             log("Trade Action")
             -- Call NPC inject straight from here
         end
+        -- Parse the last message (should be a release)
+        for item in string.gmatch(mirror_message[#mirror_message], "([^,]+)") do
+            table.insert(packet_out2, item)
+        end
+        if packet_out2[1] == "0x05B" and packet_out2[6] == 'false' then
+            -- Build the release packet
+            release_packet = packets.new('outgoing', 0x05B, 
+            {
+                ['Target'] = tonumber(packet_out2[2]),
+                ['Option Index'] = tonumber(packet_out2[3]),
+                ['_unknown1'] = tonumber(packet_out2[4]),
+                ['Target Index'] = tonumber(packet_out2[5]),
+                ['Automated Message'] = false,
+                ['_unknown2'] = packet_out2[7],
+                ['Zone'] = tonumber(packet_out2[8]),
+                ['Menu ID'] = tonumber(packet_out2[9]),
+            })
+            log("Release Packet Built")
+        else
+            -- Build the release packet
+            release_packet = packets.new('outgoing', 0x05B, 
+            {
+                ['Target'] = tonumber(packet_out[2]),
+                ['Option Index'] = tonumber(packet_out[3]),
+                ['Target Index'] = tonumber(packet_out[5]),
+                ['Automated Message'] = false,
+                ['Zone'] = tonumber(packet_out[8]),
+                ['Menu ID'] = tonumber(packet_out[9]),
+            })
+            log("Release Packet Built (None Found - building from scratch)")
+        end
     end
 
     -- Called if an event release is not detected
     function npc_retry()
-        if injecting then
+        if injecting and release_packet['Zone'] ==  world.zone then
             retry_count = retry_count + 1
-            local packet = packets.new('outgoing', 0x01A, 
-            {
-                ['Target'] = mirror_target.id,
-                ['Target Index'] = mirror_target.index,
-                ['Category'] = 0x00,
-                ['Param'] = 0
-            })
-            packets.inject(packet)
+            packets.inject(action_packet)
             message_time = os.clock()
             mirroring_state = "Injecting [0x01A] - Retry"
             log(mirroring_state)
             packet_log(packet)
+        else
+            injecting = false
         end
     end
 
@@ -157,9 +195,27 @@ do
 		    for item in string.gmatch(mirror_message[1], "([^,]+)") do
                 table.insert(packet_out, item)
             end
-            if packet_out[1] == "0x05B" and tonumber(menu_id) ~= tonumber(packet_out[9]) then
+            if packet_out[1] == "0x05B" and menu_id and tonumber(menu_id) ~= tonumber(packet_out[9]) then
                 info("Incorrect Menu - Player Cannot Mirror")
                 log("Player Menu ["..menu_id..'] and Mirror Menu ['..packet_out[9]..']')
+                -- Build the release packet for the different menu
+                release_packet = packets.new('outgoing', 0x05B, 
+                {
+                    ['Target'] = recieved_packet['NPC'],
+                    ['Option Index'] = 0,
+                    ['Target Index'] = recieved_packet['NPC Index'],
+                    ['Automated Message'] = false,
+                    ['Zone'] = recieved_packet['Zone'],
+                    ['Menu ID'] = recieved_packet['Menu ID'],
+                })
+                log("Release Packet Built Due to wrong Menu")
+                packets.inject(release_packet)
+                message_time = os.clock()
+                packet_log(release_packet)
+                mirroring_state = "Injecting [0x05B] (Release Packet - Wrong Menu)"
+                log(mirroring_state)
+                send_packet(player.name..";packet_npc_status_failed")
+                recieved_packet = {}
                 sent_messages = {}
                 mirror_message = {}
             elseif packet_out[1] == "0x05B" then
@@ -201,7 +257,6 @@ do
                 message_time = os.clock()
                 table.insert(sent_messages, packet)
                 table.remove(mirror_message,1)
-                mirror_message = {} --Testing only injecting one warp packet and letting client close from warp
                 mirroring_state = "Injecting [0x05C] ("..#sent_messages..' of '..message_count..')'
                 log(mirroring_state)
                 packet_log(packet)
@@ -228,48 +283,38 @@ do
     function npc_in_release(packet)
         if packet['Type'] == 0x00 then
             log('NPC Release [Standard]')
-            if retry_count < 11 then
+            if retry_count < 11 and not menu_id then -- Poke the NPC
                 log("Retry Menu ["..retry_count..'/10]')
                 npc_retry()
                 send_packet(player.name..";packet_npc_status_retry_"..retry_count)
-            else
-                info("Mirroring Failed - Reseting")
-                npc_reset()
-                send_packet(player.name..";packet_npc_status_failed")
+            elseif #mirror_message ~= 0 then -- Continue to inject
+                npc_inject()
+                send_packet(player.name..";packet_npc_status_inject")
+            else -- zero message left so assuming completed
+                log("Injecting completed")
+                send_packet(player.name..";packet_npc_status_completed")
+                injecting = false
             end
         elseif packet['Type'] == 0x01 then
             log('NPC Release [Event]')
             if #mirror_message == 0 then
+                send_packet(player.name..";packet_npc_status_completed")
                 log("Injecting completed")
                 injecting = false
-                npc_reset()
-                send_packet(player.name..";packet_npc_status_completed")
             else
                 npc_inject()
                 send_packet(player.name..";packet_npc_status_inject")
             end
         elseif packet['Type'] == 0x02 then
             log('NPC Release [Event Skipped]')
-            if #mirror_message == 0 then
-                log("Injecting completed")
-                injecting = false
-                npc_reset()
-                send_packet(player.name..";packet_npc_status_completed")
-            else
-                npc_reset()
-                send_packet(player.name..";packet_npc_status_failed")
-            end
+            log("Injecting completed")
+            send_packet(player.name..";packet_npc_status_failed")
+            injecting = false
         elseif packet['Type'] == 0x03 then
             log('NPC Release [String Event]')
-            if #mirror_message == 0 then
-                log("Injecting completed")
-                injecting = false
-                npc_reset()
-                send_packet(player.name..";packet_npc_status_completed")
-            else
-                npc_inject()
-                send_packet(player.name..";packet_npc_status_inject")
-            end
+            log("Injecting completed")
+            send_packet(player.name..";packet_npc_status_completed")
+            injecting = false
         elseif packet['Type'] == 0x04 then
             log('NPC Release [Fishing]')
         end
@@ -277,10 +322,10 @@ do
 
     function npc_reset()
         if release_packet then
-            injecting = false
-            log("Silmaril Reset - Trying to release")
             packets.inject(release_packet)
+            message_time = os.clock()
             packet_log(release_packet)
+            injecting = false
         else
             log("No release packet was made.")
         end

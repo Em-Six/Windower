@@ -153,7 +153,7 @@ function init_gear_sets()
 		body="Nyame Mail",
 		hands="Nyame Gauntlets",
 		ring1="Gere Ring",
-		ring2="Epona's Ring",
+		ring2="Epaminondas's Ring",
 		back=gear.str_wsd_jse_back,
 		waist="Orpheus's Sash",
 		legs="Nyame Flanchard",

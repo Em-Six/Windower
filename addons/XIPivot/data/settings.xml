@@ -4,7 +4,7 @@
         <cache_enabled>false</cache_enabled>
         <cache_max_age>600</cache_max_age>
         <cache_size>2147483648</cache_size>
-        <debug_log>false</debug_log>                           <!-- - <overlays>remapster,Escha,XI-View,XI-Vision,FFXI-HD</overlays> - -->
-        <overlays>remapster,Escha,XI-View,XI-Vision</overlays>
+        <debug_log>false</debug_log>                 <!-- - <overlays>remapster,Escha,XI-View,XI-Vision,FFXI-HD</overlays> - -->
+        <overlays>Escha,XI-View,XI-Vision</overlays>
     </global>
 </settings>

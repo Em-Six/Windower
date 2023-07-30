@@ -7,7 +7,7 @@ default =
 	Debug_Box = 
 	{
 		text={size=10,font='Consolas',red=255,green=255,blue=255,alpha=255},
-		pos={x=1473,y=763},
+		pos={x=1440,y=732},
 		bg={visible=true,red=0,green=0,blue=0,alpha=70},
 	},
 	Update_Box = 
@@ -18,9 +18,15 @@ default =
 	},
 	NPC_Box = 
 	{
-		text={size=16,font='Consolas',red=255,green=255,blue=255,alpha=255},
-		pos={x=700,y=30},
-		bg={visible=true,red=255,green=0,blue=0,alpha=30},
+		text={size=14,font='Consolas',red=255,green=255,blue=255,alpha=255},
+		pos={x=0,y=0},
+		bg={visible=true,red=255,green=0,blue=0,alpha=90},
+	},
+	NPC_Results = 
+	{
+		text={size=14,font='Consolas',red=255,green=255,blue=255,alpha=255},
+		pos={x=0,y=0},
+		bg={visible=true,red=255,green=0,blue=0,alpha=90},
 	},
 }
 
@@ -37,6 +43,9 @@ sm_display = texts.new("",settings.Update_Box)
 
 sm_npc = {}
 sm_npc= texts.new("",settings.NPC_Box)
+
+sm_result = {}
+sm_result= texts.new("",settings.NPC_Results)
 
 --Variable to monitor during debug mode
 debug_value = 0
@@ -55,6 +64,7 @@ end
 
 if player_mirror then
 	sm_npc:show()
+	sm_result:hide()
 else
 	sm_npc:hide()
 end
@@ -66,7 +76,7 @@ function debug_box_refresh()
 	lines:insert('Enabled' ..string.format('[%s]',tostring(enabled)):lpad(' ',13))
 	lines:insert('Following' ..string.format('[%s]',tostring(following)):lpad(' ',11))
 	lines:insert('Connected' ..string.format('[%s]',tostring(connected)):lpad(' ',11))
-	lines:insert('Update (s)' ..string.format('[%s]',tostring(update_time)):lpad(' ',10))
+	lines:insert('Update (s)' ..string.format('[%s]',tostring(update_rate)):lpad(' ',10))
 	lines:insert('Delay' ..string.format('[%s]',tostring(delay_time)):lpad(' ',15))
 	lines:insert('Moving' ..string.format('[%s]',tostring(moving)):lpad(' ',14))
 	lines:insert('Claim ID' ..string.format('[%s]',tostring(claim_id)):lpad(' ',12))
@@ -102,6 +112,7 @@ function display_box_refresh()
     sm_display:text(lines:concat('\n'))
 end
 
+-- Used to show when a player is begining and status of Mirroring
 function npc_box_refresh()
 	if mirror_target and mirror_target.name then
 		lines = T{}
@@ -115,9 +126,60 @@ function npc_box_refresh()
 	end
 end
 
+function npc_box_status(mirror_players)
+	if mirror_players then
+		sm_result:bg_color(255,0,0)
+		sm_result:show()
+		lines = T{}
+		lines:insert('')
+		lines:insert(string.format("%-40s",string.format("Mirroring Results"):lpad(' ',29)))
+		lines:insert('')
+		local completed = 0
+		local count = 0
+        for index, item in pairs(mirror_players) do
+			local result = index..' - '..item
+			count = count + 1
+			lines:insert(string.format("%-40s",string.format('[%s]',result):lpad(' ',21 + #result/2)))
+			if item == "Completed" then
+				completed = completed + 1
+			end
+        end
+		if completed == count then
+			sm_result:bg_color(0,255,0)
+		end
+		lines:insert('')
+	    lines:insert('')
+		sm_result:text(lines:concat('\n'))
+	end
+end
+
 function gear_update()
 	gear = gear +1
 	if gear > 4 then
 		gear = 1
+	end
+end
+
+function mirror_fade()
+	if status_time then
+		local opacity = 1
+		local fade_duration = 1.5
+		local fade = 9
+		local diff = os.clock() - status_time
+		local alpha = 110
+		if diff < fade then
+			opacity = 1
+		elseif diff < fade + fade_duration then
+			opacity = 1 - (diff-fade) / fade_duration
+		else
+			opacity = 0
+		end
+		sm_result:bg_alpha(opacity*alpha)
+		sm_result:alpha(opacity*alpha*2)
+		if opacity == 0 then 
+			log("Hide screen")
+			sm_result:hide()
+			status_time = nil
+		end
 	end
 end

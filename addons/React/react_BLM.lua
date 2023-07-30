@@ -49,4 +49,10 @@ return {
         ["complete_reaction"]="input /p Fulminous Smash use -- Stone -- <call1>"
     }
 },
+    ["Esurient Botulus"]={
+        ["Slimy Proposal"]={
+            ["complete_reaction"]="", 
+            ["ready_reaction"]="input /ma Stun <bt>"
+        }
+    }
 }

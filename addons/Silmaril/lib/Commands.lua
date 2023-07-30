@@ -28,12 +28,12 @@ function commands(cmd, args)
         elseif cmd == "all" then
              local sub_command = args[1]:lower()
              if sub_command then
-                 if sub_command == 'on' or sub_command == 'start' or (cmd == "toggle" and not enabled) then
+                 if sub_command == 'on' or sub_command == 'start' or (sub_command == "toggle" and not enabled) then
                      get_player_spells()
                      send_packet(player.name..";start")
                      enabled = true
                      windower.send_ipc_message('start')
-                 elseif sub_command == 'off' or sub_command == 'stop' or (cmd == "toggle" and enabled) then
+                 elseif sub_command == 'off' or sub_command == 'stop' or (sub_command == "toggle" and enabled) then
                     send_packet(player.name..";stop")
                     enabled = false
                     windower.ffxi.run(false)

@@ -211,9 +211,18 @@ function input_message(type, index, param, option)
                     windower.send_ipc_message('mirror')
                 end
             elseif tonumber(param) == 2 then
-               npc_mirror_state(1) -- Mirror once
+                -- Spared out
             elseif tonumber(param) == 3 then
-               npc_mirror_state(2) -- Leave active
+                local players = {}
+                -- Builds the messages into a table
+                for item in string.gmatch(option, "([^|]+)") do
+                    local player = string.split(item,",",2)
+                    players[player[1]] = player[2]
+                end
+                if not status_time then
+                    status_time = os.clock()
+                end
+                npc_box_status(players)
             end
         else
             npc_build_message(target, option)

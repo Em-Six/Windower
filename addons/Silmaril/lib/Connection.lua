@@ -63,8 +63,15 @@ function receive_info()
                 elseif message[2] == "skillchain4" then
                     skillchain4(message[3],message[4],message[5],message[6])
                 elseif message[2] == "config" then
-                    log(message[3])
-                    npc_mirror_state(tonumber(message[3])) -- Toggles Mode of mirroring
+                    local commands = {}
+                    for item in string.gmatch(message[3], "([^,]+)") do
+                        table.insert(commands, item)
+                    end
+                    npc_mirror_state(tonumber(commands[1]))     -- Toggles Mode of mirroring
+                    update_rate = tonumber(commands[2])         -- Changes the update rate
+                    update_inventory = tonumber(commands[3])    -- Changes the update rate
+                    update_sync = tonumber(commands[4]) * 60    -- Changes the update rate
+                    update_movement = tonumber(commands[5])     -- Changes the update rate
                 end
             elseif message[2] then
                 log("Wrong Message Recieved ["..message[2]..']')

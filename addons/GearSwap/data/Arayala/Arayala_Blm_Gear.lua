@@ -185,14 +185,14 @@ function init_gear_sets()
 	sets.midcast.BarElement = set_combine(sets.precast.FC['Enhancing Magic'], {legs="Shedir Seraweels"})
 
     sets.midcast['Enfeebling Magic'] = { -- NEEDS MAJOR WORK DO AT A LATER DATE
-		ammo="Ghastly Tathlum +1", --Pemp
-		head="Ea Hat +1", --Wicce +3
-		body="Spaekona's Coat +2", -- +3
+	    ammo="Pemphredo Tathlum",
+		head="Wicce Petasos +3", 
+		body="Spaekona's Coat +3", -- +3
 		hands="Spae. Gloves +3", -- +3
 		legs="Wicce Chausses +3", -- Relic +3
-		feet="Agwu's Pigaches", -- Relic +3
+		feet="Spae. Sabots +3",
 		neck="Src. Stole +2",
-		waist="Luminary Sash", -- Acuity +1
+		waist="Acuity Belt +1", -- Acuity +1
 		left_ear="Malignance Earring",
 		right_ear="Regal Earring",
 		left_ring=gear.stikini1,
@@ -280,8 +280,8 @@ function init_gear_sets()
 		body="Twilight Cloak",
 		hands="Spae. Gloves +3",
 		legs="Wicce Chausses +3",
-		feet="Wicce Sabots +3",
-		neck="Src. Stole +2", -- need Spaekona +3
+		feet="Spae. Sabots +3",
+		neck="Src. Stole +2", 
 		waist="Acuity Belt +1",
 		left_ear="Regal Earring",
 		right_ear="Malignance Earring",
@@ -490,7 +490,7 @@ function select_default_macro_book()
 end
 
 function user_job_lockstyle()
-	windower.chat.input('/lockstyleset 005')
+	windower.chat.input('/lockstyleset 011')
 end
 
 

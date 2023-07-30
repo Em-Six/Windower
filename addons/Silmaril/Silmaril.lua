@@ -1,7 +1,7 @@
 _addon.name = 'Silmaril'
 _addon.author = 'Mirdain'
-_addon.version = '2.4'
-_addon_description = 'Allows for buffs, debuffs, ranged attacks, skill chains, magic bursts, and casting data'
+_addon.version = '2.5.7 Beta'
+_addon.description = 'Allows for buffs, debuffs, ranged attacks, skill chains, magic bursts, and casting data'
 _addon.commands = {'silmaril','sm'}
 
 os.setlocale ("en")
@@ -70,12 +70,13 @@ move_to_exit = false -- Used to run to exit line
 player_mirror = false -- Player is set to mirror
 mirroring = false
 mirror_target = {} -- NPC the interaction for (used in Display)
-release_packet = {} -- Holds the NPC menu information
 mirror_message = {} -- Message to transmit
+recieved_packet = {} -- Response from server of a poke
 message_time = os.clock() - 5
+status_time = nil
 injecting = false -- packets being sent
 mirroring_state = "" -- this is used to notify the player of the actions
-menu_id = 0
+menu_id = nil
 
 update_rate = .2 -- rate at which the updates are sent to Silmaril
 last_update = os.clock()
@@ -85,6 +86,9 @@ last_movement = os.clock()
 
 update_inventory = 2 -- rate at which the game checks the players inventory
 last_inventory = os.clock()
+
+update_sync = 5*60 -- rate at which there is a full sync
+last_sync = os.clock()
 
 -- socket
 socket = require("socket")
@@ -145,7 +149,6 @@ windower.register_event('ipc message', function(msg)
         player_mirror = false
         mirroring = false
         injecting = false
-        windower.add_to_chat(80,'------- Mirror [OFF]  -------')
     -- Leave at end to be a catch for commands
     elseif command and args[2] then
         log("IPC: ["..command.."] ["..args[2].."]")
@@ -218,15 +221,26 @@ windower.register_event('prerender', function()
         if now - last_movement > update_movement then
             IPC_update() -- Update the player data via Moving.lua.  This allows accurate info
             last_movement = now
+            mirror_fade() -- used to fade the mirror screen
         end
         if now - last_inventory > update_inventory then
             get_inventory()
             last_inventory = now
         end
+        if now - last_sync > update_sync then
+            get_player_spells()
+            log("Updated Sync")
+            last_sync = now
+        end
         if now - last_update > update_rate then
-            if injecting and os.clock() - message_time > 10 then
-                debug("Time out of mirror reached - Trying to reset.")
-                npc_reset()
+            if injecting then
+                if os.clock() - message_time > 2 and not menu_id then
+                    log("No Response from poke so retrying")
+                    npc_retry()
+                elseif os.clock() - message_time > 15 and menu_id then
+                    log("Time out of mirror reached - Trying to reset.")
+                    npc_reset()
+                end
             end
             if not connected then
                 request()

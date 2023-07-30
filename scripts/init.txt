@@ -140,22 +140,12 @@ alias darkrune gs c set RuneElement Tenebrae;
 
 //Usable item gearswap command aliases.
 alias nexus gs c useitem back Nexus Cape
-alias facilityring gs c useitem ring2 Facility Ring
-alias capacityring gs c useitem ring2 Capacity Ring
 alias warp gs c useitem ring2 Warp Ring
 alias holla gs c useitem ring2 Dim. Ring (Holla)
 alias dem gs c useitem ring2 Dim. Ring (Dem)
 alias mea gs c useitem ring2 Dim. Ring (Mea)
 alias tav gs c useitem ring2 Tavnazian Ring
 alias capacity gs c set Capacity true
-alias behedom gs c useitem head Behe. Masque +1
-alias bacon gs c useitem set BehemothSuit
-alias reisen gs c useitem head Cumulus Masque +1
-alias jeuno gs c useitem head Maat\'s Cap
-alias cobra gs c useitem main Cobra Staff
-alias ram gs c useitem main Ram Staff
-alias republic gs c useitem main Republic Staff
-alias kitty gs c useitem main Kitty Rod
 alias livingbullets gs c useitem waist Liv. Bul. Pouch
 alias chronobullets gs c useitem waist Chr. Bul. Pouch
 
@@ -217,10 +207,10 @@ alias sacro send Kateye /ja \"Sacrosanctity\" <me>
 alias mmm send @all /item \"Maze Compass"\ <me>
 alias rdm send Sensarity exec rdmbuffs.txt
 alias whm send Kateye exec whmbuffs.txt
-alias d2 send Arayala /ma \"Warp II\" <t>
 
 //Multiboxing
-alias invall send Sensarity /pcmd add Arayala; wait 5; send Sensarity /pcmd add Kateye
+alias invall send Sensarity /pcmd add Arayala; wait 3; send Sensarity /pcmd add Kateye
+alias invalts send Sensarity /pcmd add Arayala; wait 3; send Sensarity /pcmd add Kateye; wait 3; send Sensarity /pcmd add Merako; wait 3; send Sensarity /pcmd add Luicia; wait 3; send Sensarity /pcmd add Ysara
 alias allattack send @all lua load attackwithme;wait 1;send Sensarity atkwm master;send Arayala atkwm slave on
 alias araattack send @all lua load attackwithme;wait 1;send Arayala atkwm master;send Sensarity atkwm slave on
 alias stopattack send @all lua unload attackwithme
@@ -229,15 +219,10 @@ alias madbuffs send Arayala exec mad.txt; send Kateye exec whmbuffs.txt; send Se
 alias ditrusts send Sensarity tru disens; send Arayala tru dia; send Kateye tru dikat
 alias whmbuffs send Kateye exec whmbuffs.txt
 bind %delete send Kateye gs c smartcure Sensarity
-bind %home send Kateye /ma \"Curaga III\" Sensarity
-bind ~%home send Kateye /ma \"Curaga V\" Sensarity
-bind %end send Kateye /ma \"Erase\" Sensarity
 bind %- ffo me
 bind %= ffo stopall
-bind f11 sm toggle
-bind f12 sm toggle all
 
 
 //Blockhelp
-wait 60;ffo pauseon any;input /blockhelp;input /cm p;load guildwork
+wait 60;ffo pauseon any;input /blockhelp;input /cm p
 

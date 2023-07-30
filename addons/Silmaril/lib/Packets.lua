@@ -119,20 +119,9 @@ function message_in(id, original, modified, injected, blocked)
         end
     elseif id == 0x032 or id == 0x033 or id == 0x034 then -- NPC Interaction
         -- This is in response to the client sending a Action packet to start interaction.
-        if injecting then
-            local packet = packets.parse('incoming', original)
-            menu_id = packet['Menu ID']
-            release_packet = packets.new('outgoing', 0x05B, 
-            {
-                ['Target'] = packet['NPC'],
-                ['Option Index'] = 0,
-                ['Target Index'] = packet['NPC Index'],
-                ['Automated Message'] = false,
-                ['Zone'] = packet['Zone'],
-                ['Menu ID'] = packet['Menu ID'],
-            })
-            log("Release Packet Built")
-            packet_log(release_packet)
+        if injecting and not menu_id then
+            recieved_packet = packets.parse('incoming', original)
+            menu_id = recieved_packet['Menu ID']
             if id == 0x032 then
                 log("npc_inject() called from [0x032]")
             elseif id == 0x033 then
@@ -289,9 +278,11 @@ function message_out(id, original, modified, injected, blocked)
 end
 
 function packet_log(packet)
-    for index, item in pairs(packet) do
-        if not string.find(tostring(index), "_") then
-            log("Packet: ["..tostring(index)..'] ['..tostring(item)..']')
+    if packet then
+        for index, item in pairs(packet) do
+            if not string.find(tostring(index), "_") then
+                log("Packet: ["..tostring(index)..'] ['..tostring(item)..']')
+            end
         end
     end
 end

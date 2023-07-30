@@ -10,7 +10,7 @@ function get_spell_recast()
     --log(player_spell_recasts)
 end
 
-function get_player_spells() -- Call this on initial load, job change, and start of Silmaril
+function get_player_spells() -- Call this on initial load, job change, and start of Silmaril - added via "Sync Option"
     local formattedString = nil
     player_spell_usable = {}
     for id, spell in pairs (all_spells) do

@@ -61,7 +61,7 @@ function init_gear_sets()
     sets.precast.JA['Snake Eye'] = {legs="Lanun Trews"}
     sets.precast.JA['Wild Card'] = {feet="Lanun Bottes +3"}
     sets.precast.JA['Random Deal'] = {body="Lanun Frac +3"}
-    sets.precast.FoldDoubleBust = {hands="Lanun Gants +1"}
+    sets.precast.FoldDoubleBust = {hands="Lanun Gants"}
 
 	sets.precast.CorsairRoll = set_combine(sets.idle, {main=gear.rostam_c,range="Compensator",head="Lanun Tricorne",neck="Regal Necklace",hands="Chasseur's Gants +3",legs="Desultor Tassets",back=gear.tp_da_jse_back})
 
