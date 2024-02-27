@@ -201,7 +201,7 @@ function init_gear_sets()
 		legs="Nyame Flanchard",
 		feet="Lanun Bottes +3",
 		neck="Comm. Charm +2",
-		waist="Eschan Stone",
+		waist="Eschan Stone", -- Osash in another function
 		left_ear="Moonshade Earring",
 		right_ear="Friomisi Earring",
 		left_ring="Epaminondas's Ring",

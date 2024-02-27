@@ -338,7 +338,7 @@ function init_gear_sets()
     -- Normal refresh idle set
     sets.idle = {    
 		ammo="Staunch Tathlum",
-		head="Nyame Helm",
+		head="Wicce Petasos +3",
 		body="Wicce Coat +3",
 		hands="Volte Gloves",
 		legs="Nyame Flanchard",

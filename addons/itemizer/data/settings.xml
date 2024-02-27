@@ -3,6 +3,7 @@
     <global>
         <AutoItems>true</AutoItems>
         <AutoNinjaTools>true</AutoNinjaTools>
+        <AutoStack>true</AutoStack>
         <Delay>0.5</Delay>
         <UseUniversalTools>
             <Aisha>true</Aisha>
@@ -29,15 +30,24 @@
         <version>3.0.1.1</version>
     </global>
     <arayala>
-        <version>3.0.1.2</version>
+        <version>3.1.0.0</version>
     </arayala>
     <emsix>
         <version>3.0.1.2</version>
     </emsix>
     <kateye>
-        <version>3.0.1.2</version>
+        <version>3.1.0.0</version>
     </kateye>
+    <luicia>
+        <version>3.1.0.0</version>
+    </luicia>
+    <merako>
+        <version>3.1.0.0</version>
+    </merako>
     <sensarity>
-        <version>3.0.1.2</version>
+        <version>3.1.0.0</version>
     </sensarity>
+    <ysara>
+        <version>3.1.0.0</version>
+    </ysara>
 </settings>

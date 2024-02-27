@@ -1,126 +1,125 @@
 function commands(cmd, args)
-    if cmd ~= nil and player.name then
-        if cmd == "settings" then
-            if args[1] and args[2] then
-                ip = args[1]
-                port = args[2]
-                windower.add_to_chat(1, ('\31\200[\31\05Silmaril Addon\31\200]\31\207 '.. "Connection:  IP address: " .. ip .. " / Port number: " .. port))
-            end
-        elseif cmd == "stop" or cmd == "off" or (cmd == "toggle" and enabled) then
-            windower.add_to_chat(1, ('\31\200[\31\05Silmaril\31\200]\31\207'..' Actions: \31\03[OFF]')) -- use \03
-            send_packet(player.name..";stop")
-            enabled = false
-            windower.ffxi.run(false)
-            if args[1] and args[1]:lower() == 'all' then
-                windower.send_ipc_message('stop')
-            end
-        elseif cmd == "start" or cmd == "on" or (cmd == "toggle" and not enabled) then
-             windower.add_to_chat(1, ('\31\200[\31\05Silmaril\31\200]\31\207'..' Actions: \31\06[ON]')) -- use \06
-             get_player_spells()
-             send_packet(player.name..";start")
-             enabled = true
-             if args[1] and args[1]:lower() == 'all' then
-                windower.send_ipc_message('start')
-             end
-        elseif cmd == "input" then
-            -- sm input JobAbility 99 125
-            input_message(args[1], args[2], args[3])
+    if cmd ~= nil then
+        cmd = cmd:lower()
+        log(args)
+        if cmd == "start" or cmd == "on" or (cmd == "toggle" and not get_enabled()) then
+            start_command(args)
+        elseif cmd == "stop" or cmd == "off" or (cmd == "toggle" and get_enabled()) then
+            stop_command(args)
+        elseif cmd == "follow" then
+            follow_command(args)
         elseif cmd == "all" then
-             local sub_command = args[1]:lower()
-             if sub_command then
-                 if sub_command == 'on' or sub_command == 'start' or (sub_command == "toggle" and not enabled) then
-                     get_player_spells()
-                     send_packet(player.name..";start")
-                     enabled = true
-                     windower.send_ipc_message('start')
-                 elseif sub_command == 'off' or sub_command == 'stop' or (sub_command == "toggle" and enabled) then
-                    send_packet(player.name..";stop")
-                    enabled = false
-                    windower.ffxi.run(false)
-                    windower.send_ipc_message('stop')
-                 elseif sub_command == 'follow' then
-                    if following then
-                        windower.add_to_chat(1, ('\31\200[\31\05Silmaril\31\200]\31\207'..' Following: \31\03[OFF]'))
-                        send_packet(player.name..";follow_off_all")
-                        windower.ffxi.run(false)
-                        following = false
-                    else
-                        following = true
-                        windower.add_to_chat(1, ('\31\200[\31\05Silmaril\31\200]\31\207'..' Following: \31\06[ON]'))
-                        send_packet(player.name..";follow_on_all")
-                        windower.send_ipc_message('follow on')
-                    end
-                 end
-             end
+            all_command(args)
         elseif cmd == "load" then
-            if args[3] then
-                send_packet(player.name..";load_"..args[1]:lower().."_"..args[2]:lower().." "..args[3]:lower())
-                log(player.name..";load_"..args[1]:lower().."_"..args[2]:lower().." "..args[3]:lower())
-            elseif args[2] then
-                send_packet(player.name..";load_"..args[1]:lower().."_"..args[2]:lower())
-                log(player.name..";load_"..args[1]:lower().."_"..args[2]:lower())
-            elseif args[1] then
-                send_packet(player.name..";load_"..args[1]:lower())
-                log(player.name..";load_"..args[1]:lower())
-            else
-                send_packet(player.name..";load_")
-                log(player.name..";load_")
-            end
-        elseif cmd == "file" then
-            if args[3] then
-                send_packet(player.name..";load_"..args[1].."_"..args[2].." "..args[3].."_"..player.main_job.."_"..player.sub_job.."_"..player.name)
-                log(player.name..";load_"..args[1].."_"..args[2].." "..args[3].."_"..player.main_job.."_"..player.sub_job.."_"..player.name)
-            elseif args[2] then
-                send_packet(player.name..";load_"..args[1].."_"..args[2].."_"..player.main_job.."_"..player.sub_job.."_"..player.name)
-                log(player.name..";load_"..args[1].."_"..args[2].."_"..player.main_job.."_"..player.sub_job.."_"..player.name)
-            elseif args[1] then
-                send_packet(player.name..";load_"..args[1].."_"..player.main_job.."_"..player.sub_job.."_"..player.name)
-                log(player.name..";load_"..args[1].."_"..player.main_job.."_"..player.sub_job.."_"..player.name)
-            else
-                send_packet(player.name..";load_"..player.main_job.."_"..player.sub_job.."_"..player.name)
-                log(player.name..";load_"..player.main_job.."_"..player.sub_job.."_"..player.name)
-            end
-        elseif cmd == "send" then
-            send_packet(player.name..';echo_Test')
-            log(player.name..';echo_Test')
+            load_command(args)
         elseif cmd == 'debug' then
-        	if settings.debug == true then
-                settings.debug = false
-                sm_debug:hide()
-			    windower.add_to_chat(80,'------- Debugging [OFF] -------')
-		    else
-			    settings.debug = true
-                sm_debug:show()
-			    windower.add_to_chat(80,'------- Debugging [ON]  -------')
-		    end
-        elseif cmd == 'locale' then
-			windower.add_to_chat(80,'------- Locale is '..tostring(os.setlocale ("en"))..' -------')
+            debug_command() -- via Display.lua
         elseif cmd == 'info' then
-        	if settings.info == true then
-                settings.info = false
-			    windower.add_to_chat(80,'------- Info [OFF] -------')
-		    else
-			    settings.info = true
-			    windower.add_to_chat(80,'------- Info [ON]  -------')
-		    end
+            info_command() -- via Display.lua
         elseif cmd == 'display' then
-        	if settings.display == true then
-                settings.display = false
-                sm_display:hide()
-			    windower.add_to_chat(80,'------- Display [OFF] -------')
-		    else
-			    settings.display = true
-                sm_display:show()
-			    windower.add_to_chat(80,'------- Display [ON]  -------')
-		    end
+            display_command() -- via Display.lua
         elseif cmd == 'save' then
-            coroutine.sleep(delay_time)
-		    config.save(settings, player.name:lower())
-		    windower.add_to_chat(8,'Silmaril Settings Saved')
+            save_command() -- via Display.lua
         elseif cmd == 'reset' then
-            npc_reset()
+            reset_command(args)
+        elseif cmd == "input" then
+            input_message(args[1], args[2], args[3]) -- sm input JobAbility 99 125
+        elseif cmd == "script" then
+            send_packet(get_player_id()..";script")
         elseif cmd == 'mirror' then
-            send_packet(player.name..";packet_npc_request")
+            send_packet(get_player_id()..";mirror_request")
         end
+    end
+end
+
+function start_command(args)
+    if args[1] then
+        local sub_command = args[1]:lower()
+        if sub_command == "all" then
+            send_packet(get_player_id()..";start_all")
+        end
+    else
+        send_packet(get_player_id()..";start")
+    end
+end
+
+function stop_command(args)
+    if args[1] then
+        local sub_command = args[1]:lower()
+        if sub_command == "all" then
+            send_packet(get_player_id()..";stop_all")
+        end
+    else
+        send_packet(get_player_id()..";stop")
+    end
+end
+
+function reset_command(args)
+    if args and #args > 1 then
+        log('Defined Reset Menu ID: ['..args[1]..'] NPC Index: ['..args[2]..']')
+        npc_reset(args[1], args[2]) -- via Mirror.lua
+    else
+        log('Default Reset')
+        npc_reset(nil, nil) -- via Mirror.lua
+    end
+end
+
+function follow_command(args)
+    if not args[1] then return end
+    local sub_command = args[1]:lower()
+    if sub_command == 'off' then
+        send_packet(get_player_id()..";follow_off_none")
+    elseif sub_command == 'on' then
+        send_packet(get_player_id()..";follow_on_"..get_player_name())
+    elseif sub_command == 'toggle' then
+        if get_following() then
+            send_packet(get_player_id()..";follow_off_none")
+        else
+            send_packet(get_player_id()..";follow_on_"..get_player_name())
+        end
+    elseif sub_command and #sub_command > 0 then
+        send_packet(get_player_id()..";follow_on_"..sub_command)
+    end
+end
+
+function all_command(args)
+    if not args[1] then return end
+    local sub_command = args[1]:lower()
+    if sub_command == 'start' or sub_command == 'on' or (sub_command == "toggle" and not get_enabled()) then
+        send_packet(get_player_id()..";start_all")
+    elseif sub_command == 'off' or sub_command == 'stop' or (sub_command == "toggle" and get_enabled()) then
+        send_packet(get_player_id()..";stop_all")
+    elseif sub_command == 'follow' then
+        if get_following() then -- Set follow to off if you are following
+            send_packet(get_player_id()..";follow_all_none")
+        else
+            send_packet(get_player_id()..";follow_all_"..get_player_name())
+        end
+    elseif sub_command == 'load' then
+        local command_string = ""
+        for i = 1, #args do
+            command_string = command_string..args[i].." "
+        end
+        command_string = command_string:sub(1, #command_string - 1)
+        windower.send_ipc_message(command_string)
+        windower.send_command('sm '..command_string)
+        log(command_string)
+    end
+end
+
+function load_command(args)
+    local p = get_player()
+    if not p then return end
+
+    local smModePath = ""
+
+    for i = 1, #args do
+        smModePath = smModePath..args[i].."_"
+    end
+
+    if p.sub_job then
+        send_packet(p.id..";load_"..smModePath..p.main_job.."_"..p.sub_job.."_"..get_player_name())
+    else
+        send_packet(p.id..";load_"..smModePath..p.main_job.."_"..get_player_name())
     end
 end

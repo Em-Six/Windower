@@ -1,232 +1,116 @@
 function input_message(type, index, param, option)
-    --[[
-	enums['action'] = {
-        [0x00] = 'NPC Interaction',
-        [0x02] = 'Engage monster',
-        [0x03] = 'Magic cast',
-        [0x04] = 'Disengage',
-        [0x05] = 'Call for Help',
-        [0x07] = 'Weaponskill usage',
-        [0x09] = 'Job ability usage',
-        [0x0C] = 'Assist',
-        [0x0D] = 'Reraise dialogue',
-        [0x0E] = 'Cast Fishing Rod',
-        [0x0F] = 'Switch target',
-        [0x10] = 'Ranged attack',
-        [0x11] = 'Chocobo dig',
-        [0x12] = 'Dismount Chocobo',
-        [0x13] = 'Tractor Dialogue',
-        [0x14] = 'Zoning/Appear', -- I think, the resource for this is ambiguous.
-        [0x19] = 'Monsterskill',
-        [0x1A] = 'Mount',
-    }
-    ]]--
-    if option then
-        log('Input - type ['..type..'], index ['..index..'], param ['..param..'], option ['..option..']')
-    else
-        log('Input - type ['..type..'], index ['..index..'], param ['..param..']')
-    end
-    target = windower.ffxi.get_mob_by_index(index)
+
+    local target = windower.ffxi.get_mob_by_index(index)
     if not target then
         target = windower.ffxi.get_mob_by_id(index)
         if not target then
-            target = party_location[tonumber(index)]
+            local pt_loc = get_party_location()
+            target = pt_loc[tonumber(index)]
             if not target then
-                log("target not found")
-                if following then
-                    runStop()
-                end
+                log("Target not found Type: ["..type.."] Index ["..index.."] Param ["..param.."] Option ["..option.."]")
                 return
+            else
+                log("Using Party Table")
             end
         end
     end
+
 	if type == "JobAbility" then
         Action_Message('0x09',target,param)
-		log("Job Ability")
+
 	elseif type == "Magic" then
-        if target.valid_target and math.sqrt(target.distance) <= 25 then
-            Action_Message('0x03',target,param)
-		    log("Magic")
-        else
-            log(target)
-        end
+        if not target.valid_target then return end
+        if math.sqrt(target.distance) > 22 then return end
+        Action_Message('0x03',target,param)
+
 	elseif type == "WeaponSkill" then
-        if target.valid_target and math.sqrt(target.distance) <= 23 then
-            Action_Message('0x07',target,param)
-		    log("Weapon Skill")
-        else
-            log("Distance is too far to weaponskill")
-        end
+        if not target.valid_target then return end
+        Action_Message('0x07',target,param)
+
 	elseif type == "Engage" then
-        if target.valid_target and target.spawn_type == 16 and math.sqrt(target.distance) <= 30 then
-            Action_Message('0x02',target,param)
-		    log("Engage")
-        else
-            log("Distance is too far to attack")
-        end
+        if not target.valid_target then return end
+        if target.spawn_type ~= 16 then return end
+        if math.sqrt(target.distance) > 30 then return end
+        if target.hpp == 0 then return end
+        Action_Message('0x02',target,param)
+
     elseif type == "Assist" then
-        if target.valid_target and target.spawn_type == 16 and math.sqrt(target.distance) <= 30 then
-            Action_Message('0x0C',target,"")
-		    log("Assist")
-        else
-            log("Distance is too far to attack")
-        end
+        if not target.valid_target then return end
+        if target.spawn_type ~= 16 then return end
+        if math.sqrt(target.distance) > 30 then return end
+        if target.hpp == 0 then return end
+        Action_Message('0x0C',target,"")
+
     elseif type == "Switch" then
-        if target.valid_target and target.spawn_type == 16 and math.sqrt(target.distance) <= 30 then
-            Action_Message('0x0F',target,param)
-		    log("Switch")
-        else
-            log("Switch target not found")
-        end
+        if not target.valid_target then return end
+        if target.spawn_type ~= 16 then return end
+        if math.sqrt(target.distance) > 30 then return end
+        if target.hpp == 0 then return end
+        Action_Message('0x0F',target,param)
+
     elseif type == "AcceptRaise" then
-            Action_Message('0x0D',target,param)
-		    log("Accept Raise")
+        Action_Message('0x0D',target,param)
+
     elseif type == "Shoot" then
-        if target.valid_target and target.spawn_type == 16 and math.sqrt(target.distance) <= 25 then
-            Action_Message('0x10',target,param)
-		    log("Shoot")
-        else
-            log("Distance is too far to shoot")
-        end
+        if not target.valid_target then return end
+        if target.spawn_type ~= 16 then return end
+        if math.sqrt(target.distance) > 30 then return end
+        if target.hpp == 0 then return end
+        Action_Message('0x10',target,param)
+
 	elseif type == "Disengage" then
-            Action_Message('0x04',target,param)
-		    log("Disengage")
-	elseif type == "RunAway" then
-        if target.valid_target and math.sqrt(target.distance) <= 50 then
-            -- Call the movement section
-            runaway(target,param)
+        Action_Message('0x04',target,param)
+
+	elseif type == "RunAway" then -- done via Moving.lua
+        runaway(target,param)
+
+    elseif type == "RunTo" then -- done via Moving.lua
+        runto(target,param)
+
+    elseif type == "RunToLocation" then -- done via Moving.lua
+        runtolocation(target,param,option)
+
+    elseif type == "RunStop" then -- done via Moving.lua
+        runstop()
+
+    elseif type == "FastFollow" then -- done via Moving.lua
+        if option == "True" then
+            set_fast_follow(true, target)
         else
-            log("Distance is too far to run")
-            runStop()
+            set_fast_follow(false, target)
         end
-    elseif type == "RunTo" then
-        if target.valid_target and math.sqrt(target.distance) <= 50 then
-            -- Call the movement section
-            runto(target,param)
-        else
-            log("Distance is too far to run")
-            runStop()
-        end
-    elseif type == "RunStop" then
-        if target.valid_target and math.sqrt(target.distance) <= 50 then
-            -- Call the movement section
-            runStop()
-        else
-            log("Stop Running")
-            runStop()
-        end
-    elseif type == "Follow" then
-        if target.valid_target and math.sqrt(target.distance) <= 50 then
-            -- Call the movement section
-            follow(target,param)
-        else
-            log("Distance is too far to run")
-            runStop()
-        end
-    elseif type == "FastFollow" then
-        if player.zone == target.zone or world.mog_house then
-            -- Call the movement section
-            fastfollow(target,param, option)
-        else
-            log("Distance is too far to run")
-            runStop()
-        end
-    elseif type == "Face" then
-        if target.valid_target and math.sqrt(target.distance) <= 50 then
-            -- Call the movement section
-            facemob(target)
-		    log("Face on")
-        else
-            log("Distance is too far to face")
-        end
-    elseif type == "LockOn" then
-        if target.valid_target and math.sqrt(target.distance) <= 50 then
-            -- Call the lockon section
-            lockon(target,param)
-		    log("LockOn")
-        else
-            log("Distance is too far to Lock On to")
-        end
+
+    elseif type == "Face" then -- done via Moving.lua
+        face_target(target, param)
+
+    elseif type == "LockOn" then -- done via Moving.lua
+        if not target.valid_target then return end
+        if math.sqrt(target.distance) > 50 then return end
+        lockon(target,param)
+
+    elseif type == "Cancel" then
+        windower.packets.inject_outgoing(0xF1,string.char(0xF1,0x04,0,0,tostring(param)%256,math.floor(tostring(param)/256),0,0))
+		log("Cancel ["..tostring(param)..']')
+
     elseif type == "Script" then
-        if target.valid_target and math.sqrt(target.distance) <= 25 then
-            if option then
-                Action_Message('0x??',target,option)
-		        log("Script")
-            else
-                log("Script missing option text")
-            end
-        else
-            log("Distance is too far to execute script")
-        end
+        if not option then log("Script missing option text") return end
+        Action_Message('0x??',target,option)
+
+    elseif type == "RawInput" then
+        Action_Message('raw',target,option)
+
     elseif type == "Item" then
-        if target.valid_target then
-            Action_Message('0x037',target,param)
-            if option == "Party" then
-                log("Warn Party")
-                command = 'input /party Item Warning ['..all_items[tonumber(param)].en..']!'
-                windower.send_command(command)
-            elseif option ~= "" then
-                log("Warn Player: "..option)
-                command = 'input /tell '..option..' Item Warning ['..all_items[tonumber(param)].en..']!'
-                windower.send_command(command)
-            end
-        else
-            log(target)
-        end
+        Action_Message('0x037',target,param)
+
     elseif type == "Message" then
-        if param == "0" then -- Tell
-            command = 'input /tell '..target.name..' '..option..''
-            windower.send_command(command)
-        elseif param == "1" then -- Party
-            command = 'input /party '..option..''
-            windower.send_command(command)
-        elseif param == "2" then -- Echo player only
-            command = 'input /echo '..option..''
-            windower.send_command(command)
-        elseif param == "3" then -- Echo party
-            command = 'input /echo '..option..''
-            windower.send_command(command)
-            windower.send_ipc_message('message '..option)
-        end
+        if param == "0" then windower.send_command('input /tell '..target.name..' '..option..'') -- Tell
+        elseif param == "1" then windower.send_command('input /party '..option..'') -- Party
+        elseif param == "2" then windower.send_command('input /echo '..option..'') -- Echo player only
+        elseif param == "3" then windower.send_command('input /echo '..option..'') windower.send_ipc_message('message '..option) end -- Echo party
+
     elseif type == "Mirror" then
-        if target.index == player.index then
-            if tonumber(param) == 0 then
-                windower.add_to_chat(80,'------- License Not Found -------')
-            elseif tonumber(param) == 1 then
-                if player_mirror then
-                    player_mirror = false
-                    mirroring = false
-                    mirror_target = {}
-                    injecting = false
-                    mirror_sequence = false
-                    sm_npc:hide()
-                    windower.add_to_chat(1, ('\31\200[\31\05Silmaril\31\200]\31\207'..' Mirror: \31\03[OFF]'))
-                    windower.send_ipc_message('mirror')
-                else
-                    player_mirror = true
-                    mirror_target = {}
-                    injecting = false
-                    mirror_sequence = false
-                    windower.add_to_chat(1, ('\31\200[\31\05Silmaril\31\200]\31\207'..' Mirror: \31\06[ON]'))
-                    windower.send_ipc_message('mirror')
-                end
-            elseif tonumber(param) == 2 then
-                -- Spared out
-            elseif tonumber(param) == 3 then
-                local players = {}
-                -- Builds the messages into a table
-                for item in string.gmatch(option, "([^|]+)") do
-                    local player = string.split(item,",",2)
-                    players[player[1]] = player[2]
-                end
-                if not status_time then
-                    status_time = os.clock()
-                end
-                npc_box_status(players)
-            end
-        else
-            npc_build_message(target, option)
-        end
+        Mirror_Message(target, param, option)
+
 	end
 end
 
@@ -238,19 +122,19 @@ function Action_Message(category, target, param)
 	end
     -- use input commands so that gearswap can swap our gear for us - use target ID
     if category == '0x09' then
-        command = 'input /ja "'..all_job_abilities[tonumber(param)].en..'" '..target.id
+        command = 'input /ja "'..get_ability(tonumber(param)).en..'" '..target.id
         windower.send_command(command)
         log(command)
     elseif category == '0x07' then
-        command = 'input /ws "'..all_weapon_skills[tonumber(param)].en..'" '..target.id
+        command = 'input /ws "'..get_weaponskill(tonumber(param)).en..'" '..target.id
         windower.send_command(command)
         log(command)
     elseif category == '0x037' then
-        command = 'input /item "'..all_items[tonumber(param)].en..'" '..target.id
+        command = 'input /item "'..get_item(tonumber(param)).en..'" '..target.id
         windower.send_command(command)
         log(command)
     elseif category == '0x03' then
-        command = 'input /ma "'..all_spells[tonumber(param)].en..'" '..target.id
+        command = 'input /ma "'..get_spell(tonumber(param)).en..'" '..target.id
         windower.send_command(command)
         log(command)
     elseif category == '0x10' then
@@ -261,13 +145,61 @@ function Action_Message(category, target, param)
         command = 'input '..param..' '..target.id
         windower.send_command(command)
         log(command)
+    elseif category == 'raw' then
+        windower.send_command(param)
+        log(param)
     else
         packets.inject(packets.new('outgoing', 0x1A, {
-			    ['Target'] = target.id,
-			    ['Target Index'] = target.index,
-			    ['Category'] = category, -- Spell Cast
-                ['Param'] = param, -- Spell ID
+			['Target'] = target.id,
+			['Target Index'] = target.index,
+			['Category'] = category, -- Spell Cast
+            ['Param'] = param, -- Spell ID
 	    }))
         log("Packet Injected ["..category..'] ['..target.name..']')
     end
 end
+
+function Mirror_Message(target, param, option)
+    local type =  tonumber(param)
+
+    -- License was not found
+    if type == 0 then
+        windower.add_to_chat(80,'------- License Not Found -------')
+
+    -- Turns on/off Mirroring
+    elseif type == 1 then
+        if get_mirror_on() then
+            set_mirror_on(false)
+            windower.add_to_chat(1, ('\31\200[\31\05Silmaril\31\200]\31\207'..' Mirror: \31\03[OFF]'))
+        else
+            set_mirror_on(true)
+            windower.add_to_chat(1, ('\31\200[\31\05Silmaril\31\200]\31\207'..' Mirror: \31\06[ON]'))
+        end
+        clear_npc_data()
+        npc_box_status() -- done via Display.lua
+        send_packet(get_player_id()..";mirror_off") -- Send to other players to turn off via Silmaril.exe
+
+    -- Inject messages
+    elseif type == 2 then
+        clear_npc_data()
+        set_injecting(true)
+        npc_build_message(target, option)
+
+    -- Spare
+    elseif type == 3 then
+
+
+    -- Turn off mirroring for other toons
+    elseif type == 4 then 
+        set_mirror_on(false)
+        clear_npc_data()
+        npc_box_status()
+
+    -- Turn off screen
+    elseif type == 5 then 
+        sm_result_hide()
+        clear_npc_data()
+
+    end
+end
+
