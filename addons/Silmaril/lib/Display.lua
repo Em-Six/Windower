@@ -1,53 +1,39 @@
 do
-	config = require 'config'
-
+	local settings = { debug = false, info = true, npc = true, display = true, }
 	local status_time = nil
-	local gears = {'|','/','-','\\\\'}
+	local gears = {' | ',' / ',' - ',' \\\\ '}
 	local gear = 1
-	local default_settings = {
-		debug = false,
-		info = true,
-		npc = true,
-		display = true,
-		Debug_Box = 
-		{
-			text={size=10,font='Consolas',red=255,green=255,blue=255,alpha=255},
-			pos={x=1440,y=732},
-			bg={visible=true,red=0,green=0,blue=0,alpha=125},
-		},
-		Hover_Box = 
-		{
-			text={size=10,font='Consolas',red=255,green=255,blue=255,alpha=255},
-			pos={x=0,y=0},
-			bg={visible=true,red=0,green=0,blue=0,alpha=125},
-		},
-		Update_Box = 
-		{
-			text={size=10,font='Consolas',red=255,green=255,blue=255,alpha=255},
-			pos={x=1615,y=663},
-			bg={visible=true,red=0,green=0,blue=0,alpha=125},
-		},
-		NPC_Box = 
-		{
-			text={size=14,font='Consolas',red=255,green=255,blue=255,alpha=255},
-			pos={x=0,y=0},
-			bg={visible=true,red=255,green=0,blue=0,alpha=90},
-		},
-		NPC_Results = 
-		{
-			text={size=14,font='Consolas',red=255,green=255,blue=255,alpha=255},
-			pos={x=0,y=0},
-			bg={visible=true,red=255,green=0,blue=0,alpha=125},
-		},
-	}
 
-	-- Loads the default settings
-	local settings = config.load(default_settings)
-	local sm_debug = texts.new("",settings.Debug_Box)
-	local sm_hover = texts.new("",settings.Hover_Box)
-	local sm_display = texts.new("",settings.Update_Box)
-	local sm_npc= texts.new("",settings.NPC_Box)
-	local sm_result= texts.new("",settings.NPC_Results)
+	-- Default Text Boxes settings
+
+	-- Silmaril UI box
+	local sm_display = texts.new("",{
+		text={size=10,font='Consolas',red=255,green=255,blue=255,alpha=255},
+		pos={x=0,y=0},
+		bg={visible=true,red=0,green=0,blue=0,alpha=125},})
+
+	-- NPC Mirror UI Box
+	local sm_npc= texts.new("",{
+		text={size=14,font='Consolas',red=255,green=255,blue=255,alpha=255},
+		pos={x=0,y=0},
+		bg={visible=true,red=255,green=0,blue=0,alpha=90},})
+
+	-- Mirroring Results
+	local sm_result= texts.new("",{
+		text={size=14,font='Consolas',red=255,green=255,blue=255,alpha=255},
+		pos={x=0,y=0},
+		bg={visible=true,red=255,green=0,blue=0,alpha=125},})
+
+	-- Debug Window
+	local sm_debug = texts.new("",{ 
+		text={size=10,font='Consolas',red=255,green=255,blue=255,alpha=255}, 
+		pos={x=0,y=0}, 
+		bg={visible=true,red=0,green=0,blue=0,alpha=125},})
+
+	function zero_command()
+		sm_display:pos_x(0)
+		sm_display:pos_y(0)
+	end
 
 	function update_display()
 		-- used to fade the mirror screen
@@ -63,7 +49,10 @@ do
 
         -- Debug window
         if settings.debug then
+			sm_debug:show()
             sm_debug:text(debug_box_refresh())
+        else
+            sm_debug:hide()
         end
 
         -- Mirroring Window
@@ -73,20 +62,22 @@ do
         else
             sm_npc:hide()
         end
-
     end
 
 	-- Used to show if Silmaril is running
 	function display_box_refresh()
 		local pt_loc = get_party_location()
-		local p_loc = get_player_location()
+		local p_loc = get_player_info()
 		local w = get_world()
 		local maxWidth = 23
 
 		gear_update()
 
 		lines = T{}
-		lines:insert(' Silmaril...'..string.format('[%s]',tostring(gears[gear])):lpad(' ',maxWidth - 12 + string.len(gears[gear]))..' ')
+		local gear_string = gears[gear]
+		if not gear_string then gear_string = "" end
+		lines:insert(' Silmaril...'..string.format('[%s]',gear_string):lpad(' ',maxWidth - 15 + string.len(gears[gear])))
+
 		if get_mirror_on() and get_following() then
 			sm_display:bg_color(255,0,0)
 			lines:insert(' [Following] [Mirroring]')
@@ -100,37 +91,39 @@ do
 			lines:insert('')
 			sm_display:bg_color(0,0,0)
 		end
+
 		for index, member in pairs(pt_loc) do
-			if member.zone == w.zone and p_loc and member.id ~= get_player_id() then
+			if member.zone == w.zone and p_loc and tostring(member.id) ~= get_player_id() then
 				local delta = {x = member.x - p_loc.x, y = member.y - p_loc.y}
-				local distance = math.round(math.sqrt(delta.x^2 + delta.y^2),2)
-				lines:insert('  '..member.name..string.format('[%s]',tostring(distance)):lpad(' ',maxWidth - string.len(member.name) - 2))
+				local distance = math.sqrt(delta.x^2 + delta.y^2)
+				lines:insert('  '..member.name..string.format('[%3.1f]',distance):lpad(' ',maxWidth - string.len(member.name) - 2)..'  ')
 			end
 		end
+
 		lines:insert('')
 		local maxWidth = math.max(1, table.reduce(lines, function(a, b) return math.max(a, #b) end, '1'))
 		for i,line in ipairs(lines) do lines[i] = lines[i]:rpad(' ', maxWidth - string.len(gears[gear])) end
 		sm_display:text(lines:concat('\n'))
 	end
 
-	-- Used to help debug issues - 20 chacaters long
+	-- Used to help debug issues 
 	function debug_box_refresh()
-		local maxWidth = 20
+		local maxWidth = 20 -- 20 chacaters long
 		local target = get_mirror_target()
 		local target_index = 'nil'
 		if target and target.index then
 			target_index = target.index
 		end
 		lines = T{}
-		lines:insert('Enabled' ..string.format('[%s]',tostring(get_enabled())):lpad(' ',13))
-		lines:insert('Following' ..string.format('[%s]',tostring(get_following())):lpad(' ',11))
-		lines:insert('injecting' ..string.format('[%s]',tostring(get_injecting())):lpad(' ',11))
-		lines:insert('mirroring' ..string.format('[%s]',tostring(get_mirror_on())):lpad(' ',11))
-		lines:insert('mirror menu' ..string.format('[%s]',tostring(get_menu_id())):lpad(' ',9))
-		lines:insert('mirror target' ..string.format('[%s]',tostring(target_index)):lpad(' ',7))
-		lines:insert('protection' ..string.format('[%s]',tostring(get_protection())):lpad(' ',10))
-		lines:insert('Delay' ..string.format('[%s]',tostring(get_delay_time())):lpad(' ',15))
-		for i,line in ipairs(lines) do lines[i] = lines[i]:rpad(' ', maxWidth) end
+		lines:insert('Enabled'..string.format('[%s]',tostring(get_enabled())):lpad(' ',13))
+		lines:insert('Following'..string.format('[%s]',tostring(get_following())):lpad(' ',11))
+		lines:insert('Injecting'..string.format('[%s]',tostring(get_injecting())):lpad(' ',11))
+		lines:insert('Mirroring'..string.format('[%s]',tostring(get_mirroring())):lpad(' ',11))
+		lines:insert('Mirror Menu'..string.format('[%s]',tostring(get_menu_id())):lpad(' ',9))
+		lines:insert('Mirror Target'..string.format('[%s]',tostring(target_index)):lpad(' ',7))
+		lines:insert('Protection'..string.format('[%s]',tostring(get_protection())):lpad(' ',10))
+		lines:insert('Delay'..string.format('[%.4f]',get_delay_time()):lpad(' ',15))
+		for i,line in ipairs(lines) do lines[i] = ' '..lines[i]:rpad(' ', maxWidth)..' ' end
 		sm_debug:text(lines:concat('\n'))
 	end
 
@@ -148,7 +141,6 @@ do
 			lines:insert('')
 			sm_npc:text(lines:concat('\n'))
 		end
-
 	end
 
 	-- Displays the current status of the mirroring action
@@ -182,7 +174,7 @@ do
 	end
 
 	function gear_update()
-		gear = gear +1
+		gear = gear + 1
 		if gear > 4 then
 			gear = 1
 		end
@@ -221,43 +213,55 @@ do
 	end
 
 	function debug_command()
-        if settings.debug == true then
+        if settings.debug then
             settings.debug = false
             sm_debug:hide()
-			windower.add_to_chat(80,'------- Debugging [OFF] -------')
+			send_to_chat(80,'------- Debugging [OFF] -------')
 		else
 			settings.debug = true
             sm_debug:show()
-			windower.add_to_chat(80,'------- Debugging [ON]  -------')
+			send_to_chat(80,'------- Debugging [ON]  -------')
 		end
 	end
 
-	function info_command()
-	    if settings.info == true then
-            settings.info = false
-			windower.add_to_chat(80,'------- Info [OFF] -------')
+	function info_command(value)
+		if value ~= nil then
+			if value then
+				settings.info = true
+			else
+				settings.info = false
+			end
 		else
-			settings.info = true
-			windower.add_to_chat(80,'------- Info [ON]  -------')
+			if settings.info then
+				settings.info = false
+				send_to_chat(80,'------- Info [OFF] -------')
+			else
+				settings.info = true
+				send_to_chat(80,'------- Info [ON]  -------')
+			end
 		end
 	end
 
-	function display_command()
-		if settings.display == true then
-			settings.display = false
-			sm_display:hide()
-			windower.add_to_chat(80,'------- Display [OFF] -------')
+	function display_command(value)
+		if value ~= nil then
+			if value then
+				settings.display = true
+				sm_display:show()
+			else
+				settings.display = false
+				sm_display:hide()
+			end
 		else
-			settings.display = true
-			sm_display:show()
-			windower.add_to_chat(80,'------- Display [ON]  -------')
+			if settings.display then
+				settings.display = false
+				sm_display:hide()
+				send_to_chat(80,'------- Display [OFF] -------')
+			else
+				settings.display = true
+				sm_display:show()
+				send_to_chat(80,'------- Display [ON]  -------')
+			end
 		end
-	end
-
-	function save_command()
-        coroutine.sleep(math.random(100,200)/1000)
-		config.save(settings, get_player_name():lower())
-		windower.add_to_chat(80,'Silmaril Settings Saved')
 	end
 
 	function set_status_time()
@@ -265,6 +269,30 @@ do
 			log('Status Time set for NPC Results')
 			status_time = os.clock()
 		end
+	end
+
+	function get_sm_window()
+		return sm_display
+	end
+
+	function set_sm_window(value)
+		sm_display = value
+	end
+
+	function get_npc_window()
+		return sm_npc
+	end
+
+	function set_npc_window(value)
+		sm_npc = value
+	end
+
+	function get_result_window()
+		return sm_result
+	end
+
+	function set_result_window(value)
+		sm_result = value
 	end
 
 end

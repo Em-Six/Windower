@@ -341,7 +341,7 @@ function init_gear_sets()
 		head="Wicce Petasos +3",
 		body="Wicce Coat +3",
 		hands="Volte Gloves",
-		legs="Nyame Flanchard",
+		legs="Volte Brais",
 		feet="Volte Gaiters",
 		neck="Loricate Torque +1", 		-- Dynamis Swap 
 		--neck="Sorcerer's Stole +2", 		-- Dynamis Swap 

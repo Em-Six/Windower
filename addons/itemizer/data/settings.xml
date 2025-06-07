@@ -32,8 +32,14 @@
     <arayala>
         <version>3.1.0.0</version>
     </arayala>
+    <brunht>
+        <version>3.1.0.0</version>
+    </brunht>
+    <cummies>
+        <version>3.1.0.0</version>
+    </cummies>
     <emsix>
-        <version>3.0.1.2</version>
+        <version>3.1.0.0</version>
     </emsix>
     <kateye>
         <version>3.1.0.0</version>
@@ -47,6 +53,9 @@
     <sensarity>
         <version>3.1.0.0</version>
     </sensarity>
+    <shioban>
+        <version>3.1.0.0</version>
+    </shioban>
     <ysara>
         <version>3.1.0.0</version>
     </ysara>

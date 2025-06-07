@@ -564,7 +564,7 @@ return {
     [562] = {id=562,en="Moglification: Experience Boost",ja="モーグリの応援：経験値アップ",category="Active Effects"},
     [563] = {id=563,en="Moglification: Capacity Boost",ja="モーグリの応援：キャパシティポイントアップ",category="Active Effects"},
     [564] = {id=564,en="Moglification: Synergy Skill Gains",ja="モーグリの応援：錬成スキル上昇率アップ",category="Active Effects"},
-    [565] = {id=565,en="Moglification: Synergy Furnace Duration",ja="モーグリの応援：錬成窯稼働時間アップ",category="Active Effects"},
+    [565] = {id=565,en="Moglification: Furnace Duration",ja="モーグリの応援：錬成窯稼働時間アップ",category="Active Effects"},
     [566] = {id=566,en="Moglification: Resist Death",ja="モーグリの応援：デス耐性",category="Active Effects"},
     [567] = {id=567,en="Moglification: A.M.A.N. Trove",ja="モーグリの応援：A.M.A.N. トローブ",category="Active Effects"},
     [576] = {id=576,en="Ballista License",ja="バリスタライセンス",category="Permanent Key Items"},
@@ -3191,15 +3191,33 @@ return {
     [3340] = {id=3340,en="Mog Kupon A-Sap",ja="クーポンA-Sap",category="Temporary Key Items"},
     [3341] = {id=3341,en="Mog Kupon A-Jad",ja="クーポンA-Jad",category="Temporary Key Items"},
     [3342] = {id=3342,en="Mog Kupon A-Rub",ja="クーポンA-Rub",category="Temporary Key Items"},
+    [3343] = {id=3343,en="adenium bench",ja="アデニウムベンチ",category="Permanent Key Items"},
     [3344] = {id=3344,en="sheet of chocobo tunes",ja="オーケストリオン譜：チョコボ",category="Permanent Key Items"},
     [3345] = {id=3345,en="Mog Kupon W-Eth",ja="クーポンW-Eth",category="Temporary Key Items"},
     [3346] = {id=3346,en="Mog Kupon I-Aby",ja="クーポンI-Aby",category="Temporary Key Items"},
     [3347] = {id=3347,en="Mog Kupon A-Dia",ja="クーポンA-Dia",category="Temporary Key Items"},
     [3348] = {id=3348,en="Mog Kupon A-Eme",ja="クーポンA-Eme",category="Temporary Key Items"},
+    [3349] = {id=3349,en="Wing of War",ja="天帝の翼",category="Temporary Key Items"},
+    [3350] = {id=3350,en="sheet of Near East tunes",ja="オーケストリオン譜：近東",category="Permanent Key Items"},
+    [3351] = {id=3351,en="Mog Kupon A-AEV",ja="クーポンA-AEV",category="Temporary Key Items"},
+    [3352] = {id=3352,en="Mog Kupon A-AHM",ja="クーポンA-AHM",category="Temporary Key Items"},
+    [3353] = {id=3353,en="Mog Kupon A-ATT",ja="クーポンA-ATT",category="Temporary Key Items"},
+    [3354] = {id=3354,en="Mog Kupon A-AMR",ja="クーポンA-AMR",category="Temporary Key Items"},
+    [3355] = {id=3355,en="Mog Kupon A-AGK",ja="クーポンA-AGK",category="Temporary Key Items"},
+    [3356] = {id=3356,en="Orb of Radiance phantom gem",ja="ファントムクォーツ【勾玉】",category="Temporary Key Items"},
+    [3357] = {id=3357,en="Ra'Kaznar plate fragment",ja="カザナルプレートの欠片",category="Temporary Key Items"},
+    [3360] = {id=3360,en="sheet of divine tunes",ja="オーケストリオン譜：神威",category="Permanent Key Items"},
+    [3362] = {id=3362,en="Shami's key",ja="シャミの鍵",category="Temporary Key Items"},
+    [3363] = {id=3363,en="sheet of fishing tunes",ja="オーケストリオン譜：漁村",category="Permanent Key Items"},
+    [3367] = {id=3367,en="Mog Kupon W-MOGB",ja="クーポンW-MOGB",category="Temporary Key Items"},
+    [3368] = {id=3368,en="vision of a destroyed city",ja="崩れたマチの夢",category="Temporary Key Items"},
+    [3369] = {id=3369,en="vision of a dreamy forest",ja="まどろむモリの夢",category="Temporary Key Items"},
+    [3370] = {id=3370,en="vision of strange ruins",ja="遺跡漂うソラの夢",category="Temporary Key Items"},
+    [3371] = {id=3371,en="vision of anger",ja="憎悪するオウの夢",category="Temporary Key Items"},
 }, {"id", "en", "ja", "category"}
 
 --[[
-Copyright © 2013-2024, Windower
+Copyright © 2013-2025, Windower
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:

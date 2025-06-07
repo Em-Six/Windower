@@ -1,53 +1,58 @@
 do
     local delay_time = .5
+    local statuses = {}
+    local zones = {}
+    local jobs = {}
+    local job_traits = {}
+    local all_weather = {}
+    local elements = {}
+    local days = {}
+
     -- Called from Connection.lua
     function initialize()
+
         -- Make sure the player is logged in
-        while not validate_load() do coroutine.sleep(1) end
+        while not validate_load() do sleep_time(1) end
 
-        -- Set the player in Player.lua
-        local p = windower.ffxi.get_player()
-        set_player(p)
+        -- Player is now loaded and can progress
 
-        -- Set the player's location in Player.lua
-        set_player_location(windower.ffxi.get_mob_by_id(p.id))
+        -- Do a first time read on the player
+        update_player_info()
 
-        -- Set the world in World.lua
-        set_world(windower.ffxi.get_info())
+        -- Set default values in Player.lua
+        first_time_buffs()
 
         -- gets the spells the player can use via Spells.lua
         get_player_spells()
 
-        first_time_buffs()
+        -- Set a random time to offset the players
+        random_delay(get_player_id())
 
-        random_delay(p)
-
-        coroutine.sleep(delay_time)
-
-    end
-
-    function random_delay(player)
-        math.randomseed(os.time() + player.id)
-        math.random()
-        math.random() 
-        math.random()
-       delay_time = math.random(1, 500) / 1000
+        -- sleep a random duration
+        sleep_time(delay_time)
     end
 
     function validate_load()
 
-        local toon = windower.ffxi.get_player()
-        if not toon then return false end
+        -- Direct call to game memory for initial load
+        local player = get_player()
+        if not player then return false end
 
-        local pos = windower.ffxi.get_mob_by_id(toon.id)
-        if not pos then return false end
+        local player_info = get_mob_by_id(player.id)
+        if not player_info then return false end
 
-        local w = windower.ffxi.get_info()
-        if not w then return false end
-
-        coroutine.sleep(1)
+        local world = get_info()
+        if not world then return false end
 
         return true
+    end
+
+    function random_delay(id)
+        math.randomseed(os.time() + id)
+        math.random()
+        math.random()
+        math.random()
+        delay_time = math.random(1, 5000) / 10000
     end
 
     function sync_data(type)
@@ -73,6 +78,10 @@ do
             send_packet(get_all_weather())
         elseif type == 'day' then
             send_packet(get_all_day())
+        elseif type == 'monster' then
+            send_packet(get_all_monster_abilities())
+        elseif type == 'monster2' then
+            send_packet(get_all_monster_abilities2())
         end
         -- Speed up the sync process so send a follow up request
         request()
@@ -81,7 +90,8 @@ do
     function get_all_jobs()
         local formattedString = get_player_id()..";jobdata_"
         local all_jobs_count = 0
-        for id, job in pairs(res.jobs) do
+        jobs = get_res_all_jobs()
+        for id, job in pairs(jobs) do
             formattedString = formattedString..job.id..'|'..job.en..'|'..job.ens..','
             if job.id and tonumber(job.id) > tonumber(all_jobs_count) then
                 all_jobs_count = job.id
@@ -95,7 +105,8 @@ do
     function get_all_traits()
         local formattedString = get_player_id()..";traitdata_"
         local all_traits_count = 0
-        for id, trait in pairs(res.job_traits) do
+        job_traits = get_res_all_job_traits()
+        for id, trait in pairs(job_traits) do
             formattedString = formattedString..trait.id..'|'..trait.en..','
             if trait.id and tonumber(trait.id) > tonumber(all_traits_count) then
                 all_traits_count = trait.id
@@ -109,7 +120,8 @@ do
     function get_all_status()
         local formattedString = get_player_id()..";statusdata_"
         local all_status_count = 0
-        for id, status in pairs(res.statuses) do
+        statuses = get_res_all_statuses()
+        for id, status in pairs(statuses) do
             formattedString = formattedString..status.id..'|'..status.en..','
             if status.id and tonumber(status.id) > tonumber(all_status_count) then
                 all_status_count = status.id
@@ -123,7 +135,8 @@ do
     function get_all_zones()
         local formattedString = get_player_id()..";zonedata_"
         local all_zone_count = 0
-        for id, zone in pairs(res.zones) do
+        zones = get_res_all_zones()
+        for id, zone in pairs(zones) do
             local can_pet = false
             if zone.can_pet then
                 can_pet = true
@@ -158,8 +171,10 @@ do
     function get_all_weather()
         local formattedString = get_player_id()..";weatherdata_"
         local all_weather_count = 0
-        for id, weather in pairs(res.weather) do
-            formattedString = formattedString..weather.id..'|'..weather.en..'|'..res.elements[weather.element].en..'|'..tostring(weather.intensity)..','
+        all_weather = get_res_all_weather()
+        elements = get_res_all_elements()
+        for id, weather in pairs(all_weather) do
+            formattedString = formattedString..weather.id..'|'..weather.en..'|'..elements[weather.element].en..'|'..weather.intensity..','
             if weather.id and tonumber(weather.id) > tonumber(all_weather_count) then
                 all_weather_count = weather.id
             end
@@ -172,8 +187,10 @@ do
     function get_all_day()
         local formattedString = get_player_id()..";daydata_"
         local all_day_count = 0
-        for id, day in pairs(res.days) do
-            formattedString = formattedString..day.id..'|'..day.en..'|'..res.elements[day.element].en..','
+        local days = get_res_all_days()
+        elements = get_res_all_elements()
+        for id, day in pairs(days) do
+            formattedString = formattedString..day.id..'|'..day.en..'|'..elements[day.element].en..','
             if day.id and tonumber(day.id) > tonumber(all_day_count) then
                 all_day_count = day.id
             end
@@ -185,6 +202,10 @@ do
 
     function get_delay_time()
         return delay_time
+    end
+
+    function get_zone(value)
+       return zones[value]
     end
 
 end

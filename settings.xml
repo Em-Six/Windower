@@ -1,5 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <settings>
+  <launcher>
+    <branch>stable</branch>
+  </launcher>
   <autoload>
     <addon>azureSets</addon>
     <addon>battlemod</addon>

@@ -487,6 +487,7 @@ return {
     [492] = {id=492,en="Asylum",ja="女神の羽衣",enl="Asylum",jal="女神の羽衣"},
     [493] = {id=493,en="Subtle Sorcery",ja="サテルソーサリー",enl="Subtle Sorcery",jal="サテルソーサリー"},
     [494] = {id=494,en="Stymie",ja="スタイミー",enl="Stymie",jal="スタイミー"},
+    [495] = {id=495,en="Macro Test",ja="マクロテスト",enl="Macro Test",jal="マクロテスト"},
     [496] = {id=496,en="Intervene",ja="インターヴィーン",enl="Intervene",jal="インターヴィーン"},
     [497] = {id=497,en="Soul Enslavement",ja="ソールエンスレーヴ",enl="Soul Enslavement",jal="ソールエンスレーヴ"},
     [498] = {id=498,en="Unleash",ja="アンリーシュ",enl="Unleash",jal="アンリーシュ"},
@@ -621,10 +622,11 @@ return {
     [631] = {id=631,en="haunt",ja="祟り",enl="haunted",jal="祟り"},
     [632] = {id=632,en="Black Sanctus",ja="ブラックサンクトゥス",enl="Black Sanctus",jal="ブラックサンクトゥス"},
     [633] = {id=633,en="animated",ja="アニメート",enl="animated",jal="アニメート"},
+    [634] = {id=634,en="Serpent's Guile",ja="蛇の鼓舞",enl="Serpent's Guile",jal="蛇の鼓舞"},
 }, {"id", "en", "ja", "enl", "jal"}
 
 --[[
-Copyright © 2013-2024, Windower
+Copyright © 2013-2025, Windower
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:

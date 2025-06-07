@@ -22,7 +22,7 @@
                 <target>true</target>
             </others>
             <party>
-                  <always>false</always>
+                <always>false</always>
                 <combat>true</combat>
                 <target>true</target>
             </party>
@@ -32,5 +32,43 @@
                 <target>true</target>
             </self>
         </blinking>
+        <others>
+
+        </others>
+        <profiles>
+
+        </profiles>
+        <replacements>
+            <body>
+
+            </body>
+            <face>
+
+            </face>
+            <feet>
+
+            </feet>
+            <hands>
+
+            </hands>
+            <head>
+
+            </head>
+            <legs>
+
+            </legs>
+            <main>
+
+            </main>
+            <race>
+
+            </race>
+            <ranged>
+
+            </ranged>
+            <sub>
+
+            </sub>
+        </replacements>
     </global>
 </settings>

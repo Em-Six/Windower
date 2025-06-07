@@ -9,34 +9,41 @@ do
 	local lock_time = os.clock()
 	local move_time = os.clock()
 	local now = os.clock()
+	local p_loc = {}
 
 	function movement()
+
+		-- Get the player
+		local p = get_player_data()
+		if not p then runstop() return end
+
+		-- Update the player location
+		p_loc = get_player_info()
+		if not p_loc then return end
 
 		if not autorun_target then return end
 
 		now = os.clock()
 
-		if now - move_time > .5 then runstop() return end
+		if now - move_time > 2 then runstop() return end
 
-		-- Get the player
-		local p = get_player()
-		if not p then runstop() return end
+		if get_injecting() then runstop() return end
 
 		-- Silmaril not connected
 		if not get_connected() then runstop() return end
 
 		-- Turned off actions
-		if not get_enabled() and not following then runstop() return end
+		if not get_enabled() and not following then 
+			runstop() 
+			autorun_target = nil 
+			return 
+		end
 
 		-- Don't move because you are in injecting
 		if get_injecting() then runstop() return end
 
 		-- Player not able to move
 		if p.status ~= 0 and p.status ~=1 and p.status ~=5 and p.status ~=85 then runstop() return end
-
-		-- Get the player location
-		local p_loc = get_player_location()
-		if not p_loc then runstop() return end
 
 		-- Get the world data to check for zones
 		local w = get_world()
@@ -67,14 +74,14 @@ do
 		if t.distance > 50 then runstop() return end
 
 		-- You are far enough away so stop running
-		if t.distance >= autorun_distance and autorun_type == 1 then runstop() return end
+		if t.distance > autorun_distance + .1 and autorun_type == 1 then runstop() return end
 
 		-- You are within distance so stop running
-		if t.distance <= autorun_distance and autorun_type > 1 then runstop() return end
+		if t.distance < autorun_distance - .1 and autorun_type > 1 then runstop() return end
 
 		-- Handle the lock on issue
 		if p.target_locked and now - lock_time > .5 then 
-			windower.send_command("input /lockon")
+			send_chat("/lockon")
 			lock_time = now
 			return
 		end
@@ -86,7 +93,7 @@ do
 		end
 
 		-- Perform the movement
-		windower.ffxi.run(angle)
+		player_run(angle)
 	end
 
 	-- Command to stop
@@ -94,7 +101,7 @@ do
 		if move_to_exit then return end
 		autorun_type = 0
 		autorun_target = nil
-		windower.ffxi.run(false)
+		player_run(false)
 	end
 
 	-- Run away #1
@@ -144,11 +151,11 @@ do
 		local w = get_world()
 		if not w then runstop() return end
 
-		if target.zone and target.zone ~= w.zone then return end
-
-		-- Get the player location
-		local p_loc = get_player_location()
+		-- Update the player location
+		p_loc = get_player_info()
 		if not p_loc then return end
+
+		if target.zone and target.zone ~= w.zone then return end
 
 		local angle = 0
 		if direction == "1" then -- 1 is face target
@@ -162,17 +169,17 @@ do
 		else
 			return
 		end
-		windower.ffxi.turn(angle)
+		player_turn(angle)
 	end
 
 	function set_fast_follow (state, target)
 		if state then
 			following = true
-			windower.add_to_chat(1, ('\31\200[\31\05Silmaril\31\200]\31\207'..' Following: \31\06[ON]'))
+			info('\31\200[\31\05Silmaril\31\200]\31\207'..' Following: \31\06[ON]')
 			fast_follow_target = target
 		else
 			following = false
-			windower.add_to_chat(1, ('\31\200[\31\05Silmaril\31\200]\31\207'..' Following: \31\03[OFF]'))
+			info('\31\200[\31\05Silmaril\31\200]\31\207'..' Following: \31\03[OFF]')
 			fast_follow_target = nil
 			runstop()
 		end
@@ -180,26 +187,27 @@ do
 
 	function lockon(target, lock)
 		-- Get the player
-		local p = get_player()
+		local p = get_player_data()
 		if not p then return end
 		if not get_enabled() then return end
 		if p.target_locked and lock == "0" then 
-			windower.send_command("input /lockon")
+			send_chat("/lockon")
 		elseif not p.target_locked and lock == "1" then
 			if p.target_index ~= target.index then
-				local inject = packets.new("incoming", 0x058, {
+				local inject = new_packet("incoming", 0x058, 
+				{
 					['Player'] = p.id,
 					['Target'] = target.id,
 					['Player Index'] = p.index,
 				})
-				packets.inject(inject)
+				inject_packet(inject)
 			else
-				windower.send_command("input /lockon")
+				send_chat("/lockon")
 			end
 		end
 	end
 
-	function zone_check(player_id, zone, player_x, player_y, player_z, type, zone_line)
+	function zone_check(player_id, zone, player_x, player_y, player_z, type, zone_line, door_menu)
 
 		-- Check if following is on - if not return
 		if not following then return end
@@ -209,11 +217,7 @@ do
 		if not fast_follow_target then return end
 
 		-- Wrong member zoned so disregard
-		if tonumber(fast_follow_target.id) ~= tonumber(player_id) then log("Wrong Player ["..player_id.."]") return end
-
-		-- Get the player location
-		local p_loc = get_player_location()
-		if not p_loc then return end
+		if fast_follow_target.id ~= tonumber(player_id) then log("Wrong Player ["..player_id.."]") return end
 
 		-- Get the world data and retun is not correct zone
 		local w = get_world()
@@ -231,16 +235,17 @@ do
 
 		if w.mog_house then
 			log("Mog House zone packet injected with zone line of ["..zone_line.."]")
-			local packet = packets.new('outgoing', 0x05E, 
+			local packet = new_packet('outgoing', 0x05E, 
 				{
 					['Zone Line'] = zone_line, 
+					['MH Door Menu'] = door_menu, 
 					['Type'] = type
 				})
-			packets.inject(packet)
+			inject_packet(packet)
 		else
 			log('Zone Detected - turning and running towards zone')
 			local angle = math.atan2((player_y - p_loc.y), (player_x - p_loc.x))*-1
-			windower.ffxi.run(angle)
+			player_run(angle)
 		end
 	end
 
@@ -251,6 +256,10 @@ do
 
 	function set_following(value)
 		following = value
+	end
+
+	function get_fast_follow_target()
+		return fast_follow_target
 	end
 
 	function get_following()

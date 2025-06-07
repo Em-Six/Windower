@@ -11,5 +11,10 @@
         <ShowMarker>true</ShowMarker>
         <ShowTargetLine>true</ShowTargetLine>
         <Scale>1</Scale>
+        <ColorPC>#FF006FB8</ColorPC>
+        <ColorNPC>#FF269D49</ColorNPC>
+        <ColorMob>#FFED1A20</ColorMob>
+        <ColorMarker>#FFB646AD</ColorMarker>
+        <ZoomDefault>-10</ZoomDefault>
     </global>
 </settings>

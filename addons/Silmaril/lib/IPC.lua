@@ -1,21 +1,25 @@
 function IPC_Action(msg)
     local args = msg:split(' ')
-    local command = args:remove(1)
-    if command == 'zone' then
+    local command = table.remove(args,1)
+    if command ~= 'silmaril' then return end
+    if #args < 1 then return end
+    local qual = table.remove(args,1)
+
+    if qual == 'zone' then
         IPC_zone(args)
-    elseif command == 'update' then
+    elseif qual == 'update' then
         IPC_update(args)
-    elseif command == 'message' then
+    elseif qual == 'message' then
         IPC_message(args)
-    elseif command then
-        IPC_command(command, args)
+    elseif qual then
+        IPC_command(qual, args)
     end
 end
 
 function IPC_zone(args)
     log('received IPC message of zone')
     -- Have the player go to zone line if following via Moving.lua
-    zone_check(tonumber(args[1]),tonumber(args[2]),tonumber(args[3]),tonumber(args[4]),tonumber(args[5]),tonumber(args[6]),tonumber(args[7]))
+    zone_check(tonumber(args[1]),tonumber(args[2]),tonumber(args[3]),tonumber(args[4]),tonumber(args[5]),tonumber(args[6]),tonumber(args[7]),tonumber(args[8]))
 end
 
 function IPC_update(args)
@@ -42,8 +46,8 @@ function IPC_message(args)
         end
     end
     message = message:sub(1, #message - 1)
-    command = 'input /echo '..message..''
-    windower.send_command(command)
+    command = '/echo '..message..''
+    send_chat(command)
     log('Message recieved ['..message.."]")
 end
 

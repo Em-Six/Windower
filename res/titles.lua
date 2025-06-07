@@ -1057,7 +1057,7 @@ return {
     [1064] = {id=1064,en="Kalunga Collapser",ja="カルーンガコラップサー"},
     [1065] = {id=1065,en="Mboze Mauler",ja="ムボゼモーラー"},
     [1066] = {id=1066,en="Ongo Obliterator",ja="オンゴオブリテレーター"},
-    [1067] = {id=1067,en="Arepati Assaulter",ja="アレバティアソルター"},
+    [1067] = {id=1067,en="Arebati Assaulter",ja="アレバティアソルター"},
     [1068] = {id=1068,en="Bumba Befouler",ja="バンバビファウラー"},
     [1069] = {id=1069,en="Dhartok Defiler",ja="ダートックデファイラー"},
     [1070] = {id=1070,en="Gartell Grinder",ja="ガーテルグラインダー"},
@@ -1065,6 +1065,9 @@ return {
     [1072] = {id=1072,en="Aita Abnegater",ja="アイタアブネガーター"},
     [1073] = {id=1073,en="Aminon Apprehender",ja="アミノンアプリヘンダー"},
     [1074] = {id=1074,en="Paradise Regained",ja="復楽園"},
+    [1075] = {id=1075,en="Founder's Pride",ja="初代王の誇り"},
+    [1076] = {id=1076,en="Master of All",ja="マスターオブオール"},
+    [1077] = {id=1077,en="Eternal Master",ja="永遠の師匠"},
     [1116] = {id=1116,en="Raptor Wrangler",ja="爆速ラプトルライダー"},
     [1117] = {id=1117,en="Gardener for the Ages",ja="疾走ガーデンライダー"},
     [1118] = {id=1118,en="Lagoon Explorer",ja="伝説ラグーンライダー"},
@@ -1098,10 +1101,11 @@ return {
     [1146] = {id=1146,en="Another Psyche",ja="アナザー・プシュケー"},
     [1147] = {id=1147,en="Sender of Shadow",ja="闇の王を見送りし者"},
     [1148] = {id=1148,en="Astral Aligner",ja="アストラルの理を守りし者"},
+    [1149] = {id=1149,en="Venerated Adventurer",ja="ヴェネレートアドベンチャラー"},
 }, {"id", "en", "ja"}
 
 --[[
-Copyright © 2013-2024, Windower
+Copyright © 2013-2025, Windower
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:

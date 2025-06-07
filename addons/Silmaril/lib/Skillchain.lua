@@ -29,12 +29,41 @@ do
     local Skillchain_Time_ID_3 = 0
     local Skillchain_Time_ID_4 = 0
 
+    function skillchain_reset()
+        Skillchain_Leader_Name = ''
+        Skillchain_Leader_WS = ''
+        Skillchain_Leader_ID = 0
+
+        Skillchain_Leader_Name_2 = ''
+        Skillchain_Leader_WS_2 = ''
+        Skillchain_Leader_ID_2 = 0
+
+        Skillchain_Leader_Name_3 = ''
+        Skillchain_Leader_WS_3 = ''
+        Skillchain_Leader_ID_3 = 0
+
+        Skillchain_Leader_Name_4 = ''
+        Skillchain_Leader_WS_4 = ''
+        Skillchain_Leader_ID_4 = 0
+
+        now = os.clock()
+
+        Skillchain_Time = os.clock()
+        Skillchain_Time_2 = os.clock()
+        Skillchain_Time_3 = os.clock()
+        Skillchain_Time_4 = os.clock()
+
+        Skillchain_Time_ID = 0
+        Skillchain_Time_ID_2 = 0
+        Skillchain_Time_ID_3 = 0
+        Skillchain_Time_ID_4 = 0
+    end
+
 
     function skillchain(Name, WS, ID, Delay)
-        log("Skillchain #1 - Leader:["..Name.."], Weaponskill:["..WS.."], Delay:["..Delay.."]")
         if Name ~= 'none' and WS ~= 'none' and WS ~= '' and ID ~= 0 then
             if Name ~= Skillchain_Leader_Name or WS ~= Skillchain_Leader_WS then
-                windower.add_to_chat(8,'Skillchain #1 - Monitoring ['..Name..'] for ['..WS..'].')
+                send_to_chat(8,'Skillchain #1 - Monitoring ['..Name..'] for ['..WS..'].')
             end
             Skillchain_Leader_Name = Name
             Skillchain_Leader_WS = WS
@@ -53,10 +82,9 @@ do
     end
 
     function skillchain2(Name, WS, ID, Delay)
-        log("Skillchain #2 - Leader:["..Name.."], Weaponskill:["..WS.."], Delay:["..Delay.."]")
         if Name ~= 'none' and WS ~= 'none' and WS ~= '' and ID ~= 0 then
             if Name ~= Skillchain_Leader_Name_2 or WS ~= Skillchain_Leader_WS_2 then
-                windower.add_to_chat(8,'Skillchain #2 - Monitoring ['..Name..'] for ['..WS..'].')
+                send_to_chat(8,'Skillchain #2 - Monitoring ['..Name..'] for ['..WS..'].')
             end
             Skillchain_Leader_Name_2 = Name
             Skillchain_Leader_WS_2 = WS
@@ -75,10 +103,9 @@ do
     end
 
     function skillchain3(Name, WS, ID, Delay)
-        log("Skillchain #3 - Leader:["..Name.."], Weaponskill:["..WS.."], Delay:["..Delay.."]")
         if Name ~= 'none' and WS ~= 'none' and WS ~= '' and ID ~= 0 then
             if Name ~= Skillchain_Leader_Name_3 or WS ~= Skillchain_Leader_WS_3 then
-                windower.add_to_chat(8,'Skillchain #3 - Monitoring ['..Name..'] for ['..WS..'].')
+                send_to_chat(8,'Skillchain #3 - Monitoring ['..Name..'] for ['..WS..'].')
             end
             Skillchain_Leader_Name_3 = Name
             Skillchain_Leader_WS_3 = WS
@@ -97,10 +124,9 @@ do
     end
 
     function skillchain4(Name, WS, ID, Delay)
-        log("Skillchain #4 - Leader:["..Name.."], Weaponskill:["..WS.."], Delay:["..Delay.."]")
         if Name ~= 'none' and WS ~= 'none' and WS ~= '' and ID ~= 0 then
             if Name ~= Skillchain_Leader_Name_4 or WS ~= Skillchain_Leader_WS_4 then
-                windower.add_to_chat(8,'Skillchain #4 - Monitoring ['..Name..'] for ['..WS..'].')
+                send_to_chat(8,'Skillchain #4 - Monitoring ['..Name..'] for ['..WS..'].')
             end
             Skillchain_Leader_Name_4 = Name
             Skillchain_Leader_WS_4 = WS
@@ -119,10 +145,18 @@ do
     end
 
     -- Called via Packets.lua
-    function run_ws_skillchain(data)
+    function run_ws_skillchain(data, type)
 
-        -- Get the weaponskill data
-        local ws = get_weaponskill(data.param)
+        local ws = nil
+
+        if type == "NPC" then
+            ws = get_monster_ability(data.param)
+        elseif type == "Avatar" then
+            ws = get_ability(data.param)
+        elseif type == "Player" then
+            ws = get_weaponskill(data.param)
+        end
+
         if not ws then return end
 
         local id = data.targets[1].id
@@ -137,7 +171,7 @@ do
                 Skillchain_Time_ID = id
                 -- Send the update
                 log('['..Skillchain_Leader_Name..'] Weaponskill ['..ws.en..'] on ['..id..'] Follower #1')
-                send_packet(get_player_id()..';skillchain_'..ws.en..'_'..Skillchain_Leader_Name..'_'..id)
+                que_packet('skillchain_'..ws.en..'_'..Skillchain_Leader_Name..'_'..id)
                 -- Return since it was decieded this is the skillchain
                 return
             else
@@ -145,7 +179,7 @@ do
                 if now - Skillchain_Time > Skillchain_Delay then 
                     Skillchain_Time = os.clock() 
                     log('['..Skillchain_Leader_Name..'] Weaponskill ['..ws.en..'] on ['..id..'] Follower #1')
-                    send_packet(get_player_id()..';skillchain_'..ws.en..'_'..Skillchain_Leader_Name..'_'..id)
+                    que_packet('skillchain_'..ws.en..'_'..Skillchain_Leader_Name..'_'..id)
                     -- Return since it was decieded this is the skillchain
                     return
                 end
@@ -161,14 +195,14 @@ do
                 Skillchain_Time_ID_2 = id
                 -- Send the update
                 log('['..Skillchain_Leader_Name_2..'] Weaponskill ['..ws.en..'] on ['..id..'] Follower #2')
-                send_packet(get_player_id()..';skillchain2_'..ws.en..'_'..Skillchain_Leader_Name_2..'_'..id)
+                que_packet('skillchain2_'..ws.en..'_'..Skillchain_Leader_Name_2..'_'..id)
                 return
             else
                 -- Since not a new mob check if enough time has elapsed
                 if now - Skillchain_Time_2 > Skillchain_Delay_2 then 
                     Skillchain_Time_2 = os.clock() 
                     log('['..Skillchain_Leader_Name_2..'] Weaponskill ['..ws.en..'] on ['..id..'] Follower #2')
-                    send_packet(get_player_id()..';skillchain2_'..ws.en..'_'..Skillchain_Leader_Name_2..'_'..id)
+                    que_packet('skillchain2_'..ws.en..'_'..Skillchain_Leader_Name_2..'_'..id)
                     return
                 end
             end
@@ -183,14 +217,14 @@ do
                 Skillchain_Time_ID_3 = id
                 -- Send the update
                 log('['..Skillchain_Leader_Name_3..'] Weaponskill ['..ws.en..'] on ['..id..'] Follower #3')
-                send_packet(get_player_id()..';skillchain3_'..ws.en..'_'..Skillchain_Leader_Name_3..'_'..id)
+                que_packet('skillchain3_'..ws.en..'_'..Skillchain_Leader_Name_3..'_'..id)
                 return
             else
                 -- Since not a new mob check if enough time has elapsed
                 if now - Skillchain_Time_3 > Skillchain_Delay_3 then 
                     Skillchain_Time_3 = os.clock() 
                     log('['..Skillchain_Leader_Name_3..'] Weaponskill ['..ws.en..'] on ['..id..'] Follower #3')
-                    send_packet(get_player_id()..';skillchain3_'..ws.en..'_'..Skillchain_Leader_Name_3..'_'..id)
+                    que_packet('skillchain3_'..ws.en..'_'..Skillchain_Leader_Name_3..'_'..id)
                     return
                 end
             end
@@ -205,14 +239,14 @@ do
                 Skillchain_Time_ID_4 = id
                 -- Send the update
                 log('['..Skillchain_Leader_Name_4..'] Weaponskill ['..ws.en..'] on ['..id..'] Follower #4')
-                send_packet(get_player_id()..';skillchain4_'..ws.en..'_'..Skillchain_Leader_Name_4..'_'..id)
+                que_packet('skillchain4_'..ws.en..'_'..Skillchain_Leader_Name_4..'_'..id)
                 return
             else
                 -- Since not a new mob check if enough time has elapsed
                 if now - Skillchain_Time_4 > Skillchain_Delay_4 then 
                     Skillchain_Time_4 = os.clock() 
                     log('['..Skillchain_Leader_Name_4..'] Weaponskill ['..ws.en..'] on ['..id..'] Follower #4')
-                    send_packet(get_player_id()..';skillchain4_'..ws.en..'_'..Skillchain_Leader_Name_4..'_'..id)
+                    que_packet('skillchain4_'..ws.en..'_'..Skillchain_Leader_Name_4..'_'..id)
                     return
                 end
             end
@@ -240,7 +274,7 @@ do
             Skillchain_Time_ID = id
 
             log('['..Skillchain_Leader_Name..'] skillchain with spell ['..spell.en..'] on ['..id..'] for Follower #1')
-            send_packet(get_player_id()..';skillchain_'..spell.en..'_'..Skillchain_Leader_Name..'_'..id)
+            que_packet('skillchain_'..spell.en..'_'..Skillchain_Leader_Name..'_'..id)
 
         elseif data.actor_id == Skillchain_Leader_ID_2 and spell.en == Skillchain_Leader_WS_2 then
 
@@ -253,7 +287,7 @@ do
             Skillchain_Time_ID_2 = id
 
             log('['..Skillchain_Leader_Name_2..'] skillchain with spell ['..spell.en..'] on ['..id..'] for Follower #2')
-            send_packet(get_player_id()..';skillchain2_'..spell.en..'_'..Skillchain_Leader_Name_2..'_'..id)
+            que_packet('skillchain2_'..spell.en..'_'..Skillchain_Leader_Name_2..'_'..id)
 
         elseif data.actor_id == Skillchain_Leader_ID_3 and spell.en == Skillchain_Leader_WS_3 then
 
@@ -266,7 +300,7 @@ do
             Skillchain_Time_ID_3 = id
 
             log('['..Skillchain_Leader_Name_3..'] skillchain with spell ['..spell.en..'] on ['..id..'] for Follower #3')
-            send_packet(get_player_id()..';skillchain3_'..spell.en..'_'..Skillchain_Leader_Name_3..'_'..id)
+            que_packet('skillchain3_'..spell.en..'_'..Skillchain_Leader_Name_3..'_'..id)
 
         elseif data.actor_id == Skillchain_Leader_ID_4 and spell.en == Skillchain_Leader_WS_4 then
             
@@ -279,7 +313,7 @@ do
             Skillchain_Time_ID_4 = id
 
             log('['..Skillchain_Leader_Name_4..'] skillchain with spell ['..spell.en..'] on ['..id..'] for Follower #4')
-            send_packet(get_player_id()..';skillchain4_'..spell.en..'_'..Skillchain_Leader_Name_4..'_'..id)
+            que_packet('skillchain4_'..spell.en..'_'..Skillchain_Leader_Name_4..'_'..id)
 
         end
     end
@@ -299,7 +333,7 @@ do
             Skillchain_Time_ID = id
 
             log('['..name..'] on ['..id..'] Follower #1')
-            send_packet(get_player_id()..';skillchain_'..name..'_Anyone_'..id)
+            que_packet('skillchain_'..name..'_Anyone_'..id)
 
         elseif Skillchain_Leader_WS_2 == name then
 
@@ -312,7 +346,8 @@ do
             Skillchain_Time_ID_2 = id
 
             log('['..name..'] on ['..id..'] Follower #2')
-            send_packet(get_player_id()..';skillchain2_'..name..'_Anyone_'..id)
+            que_packet('skillchain2_'..name..'_Anyone_'..id)
+
         elseif Skillchain_Leader_WS_3 == name then
 
             -- Check if enough time have elapsed on the correct mob
@@ -324,7 +359,7 @@ do
             Skillchain_Time_ID_3 = id
 
             log('['..name..'] on ['..id..'] Follower #3')
-            send_packet(get_player_id()..';skillchain3_'..name..'_Anyone_'..id)
+            que_packet('skillchain3_'..name..'_Anyone_'..id)
 
         elseif Skillchain_Leader_WS_4 == name then
 
@@ -337,7 +372,7 @@ do
             Skillchain_Time_ID_4 = id
 
             log('['..name..'] on ['..id..'] Follower #4')
-            send_packet(get_player_id()..';skillchain4_'..name..'_Anyone_'..id)
+            que_packet('skillchain4_'..name..'_Anyone_'..id)
         end
     end
 
