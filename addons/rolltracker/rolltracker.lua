@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'RollTracker'
-_addon.version = '1.8.0.0'
+_addon.version = '1.8.1.0'
 _addon.author = 'Balloon'
 _addon.commands = {'rolltracker','rt'}
 
@@ -134,7 +134,7 @@ windower.register_event('load', function()
         ['Ninja'] =         {10,13,15,40,18,20,25,5,28,30,50,'-15',' Evasion Bonus',4,8, 5,{'nin',15}},                                               -- Confirmed
         ['Puppet'] =        {5,8,35,11,14,18,2,22,26,30,40,'-8',' Pet: MAB/MAcc',3,7, 3,{'pup',12}},
         ['Rogue\'s'] =      {2,2,3,4,12,5,6,6,1,8,14,'-6','% Critical Hit Rate!',5,9, 1,{'thf',5}},
-        ['Runeist\'s'] =    {10,13,15,40,18,20,25,5,28,30,50,'-15',' Evasion Bonus',4,8, 5,{'run',15}},                                               -- Needs Eval
+        ['Runeist\'s'] =    {10,13,15,40,18,20,25,5,28,30,50,'-15',' Magic Evasion Bonus',4,8, 5,{'run',15}},                                               -- Needs Eval
         ['Samurai'] =       {8,32,10,12,14,4,16,20,22,24,40,'-10',' Store TP Bonus',2,6, 4,{'sam',10}},                                               -- Confirmed 1(Was bad),2,3,4,5,6,7,8,11 (I Wing Test)
         ['Scholar\'s'] =    {2,10,3,4,4,1,5,6,7,7,12,'-3','% Conserve MP',2,6, 1,{'sch',3}},                                                          --Needs Eval Source ATM: JP Wiki
         ['Tactician\'s'] =  {10,10,10,10,30,10,10,0,20,20,40,'-10',' Regain',5,8, 2,{nil,0},{5, 11100, 26930, 26931, 10}},                            -- Confirmed
@@ -244,13 +244,27 @@ function RollEffect(rollid, rollnum)
 
     --I'm handling one roll a bit odd, so I need to deal with it separately.
     --Which is stupid, I know, but look at how I've done most of this.
+    --Note: Rostam, Lanun Knife, and Comm. Knife do not check for Augment Path.
+    --Item Name         ID      Roll+
+    --Rostam            21581   8
+    --Lanun Knife       21580   7
+    --Regal Necklace    26038   7
+    --Comm. Knife       21579   6
+    --Barataria Ring    28548   5
+    --Merirosvo Ring    28547   3
     if rollName == "Companion\'s" then
         local hpVal = rollVal[1]
         local tpVal = rollVal[2]
-        if gearTable[9] == 26038 or rollPlusBonus then
+        if gearTable[0] == 21581 or rollPlusBonus then
+            hpVal =  hpVal + (rollInfo[rollid][17][1]*8)
+            tpVal = tpVal  + (rollInfo[rollid][17][2]*8)
+        elseif gearTable[0] == 21580 or gearTable[9] == 26038 or rollPlusBonus then
             hpVal =  hpVal + (rollInfo[rollid][17][1]*7)
             tpVal = tpVal  + (rollInfo[rollid][17][2]*7)
             rollPlusBonus = true
+        elseif gearTable[0] == 21579 or rollPlusBonus then
+            hpVal =  hpVal + (rollInfo[rollid][17][1]*6)
+            tpVal = tpVal  + (rollInfo[rollid][17][2]*6)
         elseif gearTable[13] == 28548 or gearTable[14]== 28548 or rollPlusBonus then
             hpVal =  hpVal + (rollInfo[rollid][17][1]*5)
             tpVal = tpVal  + (rollInfo[rollid][17][2]*5)
@@ -265,8 +279,14 @@ function RollEffect(rollid, rollnum)
 
     --If there's no Roll Val can't add to it
     if rollVal ~= '?' then
-        if gearTable[9] == 26038 or rollPlusBonus then
+        if gearTable[0] == 21581 or rollPlusBonus then
+            rollVal = rollVal + (rollInfo[rollid][17]*8)
+            rollPlusBonus = true
+        elseif gearTable[0] == 21580 or gearTable[9] == 26038 or rollPlusBonus then
             rollVal = rollVal + (rollInfo[rollid][17]*7)
+            rollPlusBonus = true
+        elseif gearTable[0] == 21579 or rollPlusBonus then
+            rollVal = rollVal + (rollInfo[rollid][17]*6)
             rollPlusBonus = true
         elseif gearTable[13] == 28548 or gearTable[14] == 28548 or rollPlusBonus then
             rollVal = rollVal + (rollInfo[rollid][17]*5)
