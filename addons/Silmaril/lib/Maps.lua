@@ -63,6 +63,14 @@ do
 		[2667] = 604,	-- Mighty Guard "Mighty Guard"
 		[3220] = 33,	-- Infernal Bulwark "Haste", "Stoneskin", "Attack Boost", "Defense Boost", "Magic Attack", "Magic Defense"
 		[3449] = 33,	-- Infernal Bulwark "Haste", "Stoneskin", "Attack Boost", "Defense Boost", "Magic Attack", "Magic Defense"
+		[445] = 93,		-- Scissor Guard with Defense Boost
+		[1592] = 93,	-- Scissor Guard with Defense Boost
+		[3483] = 93,	-- Scissor Guard with Defense Boost
+		[3864] = 93,	-- Scissor Guard with Defense Boost
+		[448] = 37,		-- Metallic Body Stoneskin
+		[1593] = 37,	-- Metallic Body Stoneskin
+		[3475] = 37,	-- Metallic Body Stoneskin
+		[3865] = 37,	-- Metallic Body Stoneskin
 	}
 
 	--This remaps the Abilities to add a buff to it if needed

@@ -1,58 +1,50 @@
 function log (msg)
-    if get_debug_state() then
-        if msg == nil then
-            send_to_chat(80,'---- Value is Nil ----')
-        elseif type(msg) == "table" then
-            for index, value in pairs(msg) do
-                if type(value) == "table" then
-                    for index2, value2 in pairs(value) do
-                       send_to_chat(80,'---- ['..tostring(index)..'] ['..tostring(index2)..'] '..tostring(value2)..' ----')
-                    end
-                else
-                    send_to_chat(80,'---- ['..tostring(index)..'] '..tostring(value)..' ----')
-                end
-            end
-        elseif type(msg) == "number" then
-            send_to_chat(80,'---- '..tostring(msg)..' ----')
-        elseif type(msg) == "string" then
-            send_to_chat(80,'---- '..msg..' ----')
-        elseif type(msg) == "boolean" then
-            send_to_chat(80,'---- '..tostring(msg)..' ----')
-        else
-            send_to_chat(80,'---- Unknown Debug Message ----')
-        end
-    end
+	if get_debug_state() then print(80, msg) end
 end
 
 function info (msg)
-    if get_info_state() then
-        if msg == nil then
-            send_to_chat(7,'Value is Nil')
-        elseif type(msg) == "table" then
-            for index, value in pairs(msg) do
-                if type(value) == "table" then
-                    for index2, value2 in pairs(value) do
-                       send_to_chat(80,'---- ['..tostring(index)..'] ['..tostring(index2)..'] '..tostring(value2)..' ----')
-                    end
-                else
-                    send_to_chat(80,'---- ['..tostring(index)..'] '..tostring(value)..' ----')
-                end
-            end
-        elseif type(msg) == "number" then
-            send_to_chat(7,tostring(msg))
-        elseif type(msg) == "string" then
-            send_to_chat(5,msg)
-        elseif type(msg) == "boolean" then
-            send_to_chat(7,tostring(msg))
-        else
-            send_to_chat(7,'Unknown Info Message')
-        end
-    end
+	if get_info_state() then print(5, msg) end
+end
+
+function print(mode, msg)
+	if msg == nil then
+		send_to_chat(mode,'Value is Nil')
+	elseif type(msg) == "table" then
+		for index, value in pairs(msg) do
+			if type(value) == "table" then
+				for index2, value2 in pairs(value) do
+					if type(value2) == "table" then
+						for index3, value3 in pairs(value2) do
+							if type(value3) == "table" then
+								for index4, value4 in pairs(value3) do
+									send_to_chat(mode,'---- ['..tostring(index)..'] ['..tostring(index2)..'] ['..tostring(index3)..'] ['..tostring(index4)..'] '..tostring(value4)..' ----')
+								end
+							else
+								send_to_chat(mode,'---- ['..tostring(index)..'] ['..tostring(index2)..'] ['..tostring(index3)..'] '..tostring(value3)..' ----')
+							end
+						end
+					else
+						send_to_chat(mode,'---- ['..tostring(index)..'] ['..tostring(index2)..'] '..tostring(value2)..' ----')
+					end
+				end
+			else
+				send_to_chat(mode,'---- ['..tostring(index)..'] '..tostring(value)..' ----')
+			end
+		end
+	elseif type(msg) == "number" then
+		send_to_chat(mode,tostring(msg))
+	elseif type(msg) == "string" then
+		send_to_chat(mode,msg)
+	elseif type(msg) == "boolean" then
+		send_to_chat(mode,tostring(msg))
+	else
+		send_to_chat(mode,'Unknown Message')
+	end
 end
 
 function echo (msg)
     if msg == nil then
-        send_to_chat(7,'---- Value is Nil ----')
+        send_to_chat(80,'---- Value is Nil ----')
     elseif type(msg) == "table" then
         for index, value in ipairs(msg) do
             command = '/echo '..value..''
@@ -72,7 +64,7 @@ function echo (msg)
         send_chat(command)
         send_ipc('silmaril message '..tostring(msg))
     else
-        send_to_chat(7,'---- Unknown Echo Message ----')
+        send_to_chat(80,'---- Unknown Echo Message ----')
     end
 end
 
@@ -123,4 +115,50 @@ function string_to_date(timeToConvert)
     --log(convertedTimestamp)
     --log(os.date("!%c",convertedTimestamp))
     return convertedTimestamp
+end
+
+function GetCardinalForAngle(angle)
+    local direction = ""
+    if angle then
+        if angle >= 337.5 or angle < 22.5 then
+            direction = "E"
+        elseif angle >= 22.5 and angle < 67.5 then
+            direction = "NE"
+        elseif angle >= 67.5 and angle < 112.5 then
+            direction = "N"
+        elseif angle >= 112.5 and angle < 157.5 then
+            direction = "NW"
+        elseif angle >= 157.5 and angle < 202.5 then
+            direction = "W"
+        elseif angle >= 202.5 and angle < 247.5 then
+            direction = "SW"
+        elseif angle >= 247.5 and angle < 292.5 then
+            direction = "S"
+        elseif angle >= 292.5 and angle < 337.5 then
+            direction = "SE"
+        end
+    end
+    return string.format("%2s", direction)
+end
+
+function AngleBetween(x, y)
+    local p = get_player_info()
+    if x and y and p then
+        local dx = x - p.x
+        local dy = y - p.y
+        local theta = math.atan2(dy, dx)
+        theta = theta * 180 / math.pi
+        if(theta < 0) then
+            theta = theta + 360
+        end
+        return theta    
+    end
+    return 0
+end
+
+function firstToUpper(str)
+    local capitalizedString = str:gsub("(%a)(%w*)", function(firstLetter, restOfString)
+        return string.upper(firstLetter) .. restOfString:lower()
+    end)
+    return capitalizedString
 end

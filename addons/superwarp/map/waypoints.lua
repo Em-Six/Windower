@@ -1,10 +1,45 @@
+npc_names = T{
+    warp = S{'Waypoint'},
+}
+local adoulin = S(require('resources').zones:en(string.endswith-{' Adoulin'}):map(table.get-{'id'}))
 return T{
-    short_name = 'wp',
+    short_name = {'wp','way','wa'},
     long_name = 'waypoint',
     npc_plural = 'waypoints',
-    npc_names = T{
-        warp = T{'Waypoint'},
-    },
+    npc_names = npc_names,
+    zone_npc_list = function(type)
+        local mlist = windower.ffxi.get_mob_list()
+        local zone = windower.ffxi.get_info().zone
+        mlist = table.filter(mlist, function(name)
+            return name ~= "" and npc_names[type]:any(string.startswith+{name})
+        end)
+        if table.length(mlist) <= 1 then
+            mlist = table.map(mlist, function(name)
+                return {name=name}
+            end)
+        else
+            temp_list = L{}
+            for index, name in pairs(mlist) do
+                temp_list:append(index)
+            end
+            temp_list:sort()
+            mlist = table.map(mlist, function(name)
+                return {name=name}
+            end)
+            for index, number in temp_list:it() do
+                if not adoulin:contains(zone) then
+                    if number == 1 then
+                        mlist[index].key = "Frontier Station"
+                    else
+                        mlist[index].key = tostring(number-1)
+                    end
+                else
+                    mlist[index].key = tostring(number)
+                end
+            end
+        end
+        return mlist
+    end,
     validate = function(menu_id, zone, current_activity)
         if not ((menu_id >= 5000 and menu_id <= 5008) or menu_id == 10121) then
             return "Incorrect menu detected! Menu ID: "..menu_id
@@ -40,7 +75,7 @@ return T{
         end
         return missing
     end,
-    help_text = "[sw] wp [warp/w] [all/a/@all] zone name [waypoint_number] -- warp to a designated waypoint. \"all\" sends ipc to all local clients.",
+    help_text = "| Waypoints |\n[sw] wp [warp/w] [all/a/@all/party/p] zone name [waypoint_number] -- warp to a designated waypoint. \"all\" sends ipc to all local clients.\n-----------------------------",
     sub_zone_targets =  S{'frontier station', 'platea', 'triumphus', 'couriers', 'pioneers', 'mummers', 'inventors', 'auction house', 'mog house', 'bridge', 'airship', 'docks', 'waterfront', 'peacekeepers', 'scouts', 'statue', 'goddess', 'wharf', 'yahse', 'sverdhried', 'hillock', 'coronal', 'esplanade', 'castle', 'gates', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'enigmatic device'},
     build_warp_packets = function(current_activity, zone, p, settings)
         local actions = T{}
@@ -269,15 +304,15 @@ return T{
             ['Esplanade'] = { shortcut = '8' },
             ['Castle'] = { shortcut = '9' },
             ['Gates'] = { shortcut = '9' },
-            ['1'] = { index = 21, offset = 15, zone = 257, npc = 126, op_z = 2, op_i = 1, sz_oi = 0, x = -101.2740020752, z = -0.15000000596046, y = -10.726000785828, h = 191, unknown1 = 0},
-            ['2'] = { index = 22, offset = 16, zone = 257, npc = 127, op_z = 2, op_i = 2, sz_oi = 0, x = -77.944000244141, z = -0.15000000596046, y = -63.926002502441, h = 0, unknown1 = 0},
-            ['3'] = { index = 23, offset = 17, zone = 257, npc = 128, op_z = 2, op_i = 3, sz_oi = 0, x = -46.838001251221, z = -0.075000002980232, y = -12.767000198364, h = 63, unknown1 = 0},
-            ['4'] = { index = 24, offset = 18, zone = 257, npc = 129, op_z = 2, op_i = 4, sz_oi = 0, x = -57.773002624512, z = -0.15000000596046, y = 85.237007141113, h = 127, unknown1 = 0},
-            ['5'] = { index = 25, offset = 19, zone = 257, npc = 130, op_z = 2, op_i = 5, sz_oi = 0, x = -61.865001678467, z = -0.15000000596046, y = -120.81000518799, h = 127, unknown1 = 0},
-            ['6'] = { index = 26, offset = 20, zone = 257, npc = 131, op_z = 2, op_i = 6, sz_oi = 0, x = -42.065002441406, z = -0.15000000596046, y = -89.97900390625, h = 191, unknown1 = 0},
-            ['7'] = { index = 27, offset = 21, zone = 257, npc = 132, op_z = 2, op_i = 7, sz_oi = 0, x = 11.681000709534, z = -22.150001525879, y = 29.976001739502, h = 127, unknown1 = 0},
-            ['8'] = { index = 28, offset = 22, zone = 257, npc = 133, op_z = 2, op_i = 8, sz_oi = 0, x = 27.124000549316, z = -40.150001525879, y = -60.84400177002, h = 127, unknown1 = 0},
-            ['9'] = { index = 29, offset = 23, zone = 257, npc = 134, op_z = 2, op_i = 9, sz_oi = 0, x = 95.994003295898, z = -40.150001525879, y = -74.541000366211, h = 0, unknown1 = 0},
+            ['1'] = { index = 21, offset = 15, zone = 257, npc = 127, op_z = 2, op_i = 1, sz_oi = 0, x = -101.2740020752, z = -0.15000000596046, y = -10.726000785828, h = 191, unknown1 = 0},
+            ['2'] = { index = 22, offset = 16, zone = 257, npc = 128, op_z = 2, op_i = 2, sz_oi = 0, x = -77.944000244141, z = -0.15000000596046, y = -63.926002502441, h = 0, unknown1 = 0},
+            ['3'] = { index = 23, offset = 17, zone = 257, npc = 129, op_z = 2, op_i = 3, sz_oi = 0, x = -46.838001251221, z = -0.075000002980232, y = -12.767000198364, h = 63, unknown1 = 0},
+            ['4'] = { index = 24, offset = 18, zone = 257, npc = 130, op_z = 2, op_i = 4, sz_oi = 0, x = -57.773002624512, z = -0.15000000596046, y = 85.237007141113, h = 127, unknown1 = 0},
+            ['5'] = { index = 25, offset = 19, zone = 257, npc = 131, op_z = 2, op_i = 5, sz_oi = 0, x = -61.865001678467, z = -0.15000000596046, y = -120.81000518799, h = 127, unknown1 = 0},
+            ['6'] = { index = 26, offset = 20, zone = 257, npc = 132, op_z = 2, op_i = 6, sz_oi = 0, x = -42.065002441406, z = -0.15000000596046, y = -89.97900390625, h = 191, unknown1 = 0},
+            ['7'] = { index = 27, offset = 21, zone = 257, npc = 133, op_z = 2, op_i = 7, sz_oi = 0, x = 11.681000709534, z = -22.150001525879, y = 29.976001739502, h = 127, unknown1 = 0},
+            ['8'] = { index = 28, offset = 22, zone = 257, npc = 134, op_z = 2, op_i = 8, sz_oi = 0, x = 27.124000549316, z = -40.150001525879, y = -60.84400177002, h = 127, unknown1 = 0},
+            ['9'] = { index = 29, offset = 23, zone = 257, npc = 135, op_z = 2, op_i = 9, sz_oi = 0, x = 95.994003295898, z = -40.150001525879, y = -74.541000366211, h = 0, unknown1 = 0},
         },
         ['Yahse Hunting Grounds'] = {
             ['Frontier Station'] = { index = 31, offset = 70, zone = 260, npc = 517, op_z = 4, op_i = 1, sz_oi = 1002, x = 321, z = 0, y = -199.80000305176, h = 127, unknown1 = 0},

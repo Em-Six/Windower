@@ -58,12 +58,9 @@ do
                 end
 
                 -- load the initial settings
-                if auto_load and now - auto_load_time > 5 then 
+                if auto_load and now - auto_load_time > 2 then 
                     -- Auto default load settings
                     load_command("")
-                    -- Update all the configuration
-                    que_packet("update")
-
                     auto_load = false;
                 end
 
@@ -99,6 +96,13 @@ do
                         -- Trade action
                         if get_trade() and now - get_message_time() > 4 and p.status ~= 4 then
                             log("Trade sequence completed via time out")
+                            npc_mirror_complete()
+                            clear_npc_data()
+                        end
+
+                        if old_status == 0 and p.status == 0 and get_mirror_release() and not get_buy_sell() and not get_trade() and now - get_message_time() > 2 then
+                            -- Player is released via status change (non standard)
+                            log("Mirror sequence completed via poke")
                             npc_mirror_complete()
                             clear_npc_data()
                         end

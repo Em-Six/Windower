@@ -40,11 +40,11 @@ do
 
 
     -- This packet is generated when a player starts an interaction with NPC and mirroring is enabled (outgoing to server)
-    function npc_mirror_start(packet_in)
+    function npc_mirror_start(packet_out)
 
         -- Used to look up NPC for blacklist
-        local npc = get_mob_by_id(packet_in['Target'])
-        if not npc then log("Couldn't get target ["..string.format("%i",packet_in['Target']).."]") return end
+        local npc = get_mob_by_id(packet_out['Target'])
+        if not npc then log("Couldn't get target ["..string.format("%i",packet_out['Target']).."]") return end
 
         log('valid_target ['..tostring(npc.valid_target)..']')
         log('is_npc ['..tostring(npc.is_npc)..']')
@@ -82,98 +82,99 @@ do
             que_packet('mirror_interact') -- used to clear a buffer in Silmaril
             if not trade then
                 log('NPC Interaction Starting for '..npc.name..' [Dialog]')
-                packet_log(packet_in, "in")
+                packet_log(packet_out, "in")
             end
         else
             log("Blacklisted NPC")
+            trade = false
         end
     end
 
     -- 0x05B
     -- This function sends the menu selection of the player to silmaril to build the menu transactions
-    function npc_out_dialog(packet_in)
+    function npc_out_dialog(packet_out)
         if not mirror_target then return end
         if blacklisted then log("Blacklisted NPC") return end
         log('Recording Dialog [0x05B]')
 
         que_packet('mirror_dialog_0x05B,'..
-            packet_in['Target']..','..
-            packet_in['Option Index']..','..
-            packet_in['_unknown1']..','..
-            packet_in['Target Index']..','..
-            tostring(packet_in['Automated Message'])..','..
-            packet_in['_unknown2']..','..
-            packet_in['Zone']..','..
-            packet_in['Menu ID'])
+            packet_out['Target']..','..
+            packet_out['Option Index']..','..
+            packet_out['_unknown1']..','..
+            packet_out['Target Index']..','..
+            tostring(packet_out['Automated Message'])..','..
+            packet_out['_unknown2']..','..
+            packet_out['Zone']..','..
+            packet_out['Menu ID'])
 
-        packet_log(packet_in, "out")
+        packet_log(packet_out, "out")
         message_time = os.clock()
     end
 
     -- 0x05C
     -- This function is for a warp request to silmaril
-    function npc_out_warp(packet_in)
+    function npc_out_warp(packet_out)
         if not mirror_target then return end
         if blacklisted then log("Blacklisted NPC") return end
         log('Recording Warp [0x05C]')
 
         que_packet('mirror_warp_0x05C,'..
-            packet_in['X']..','..
-            packet_in['Y']..','..
-            packet_in['Z']..','..
-            packet_in['Target ID']..','..
-            packet_in['_unknown1']..','..
-            packet_in['Zone']..','..
-            packet_in['Menu ID']..','..
-            packet_in['Target Index']..','..
-            packet_in['_unknown2']..','..
-            packet_in['Rotation'])
+            packet_out['X']..','..
+            packet_out['Y']..','..
+            packet_out['Z']..','..
+            packet_out['Target ID']..','..
+            packet_out['_unknown1']..','..
+            packet_out['Zone']..','..
+            packet_out['Menu ID']..','..
+            packet_out['Target Index']..','..
+            packet_out['_unknown2']..','..
+            packet_out['Rotation'])
 
-        packet_log(packet_in, "out")
+        packet_log(packet_out, "out")
         message_time = os.clock()
     end
 
     -- 0x036
     -- This functin is for trading
-    function npc_out_trade(packet_in, formattedString)
+    function npc_out_trade(packet_out, formattedString)
 
-        if not packet_in then return end
+        if not packet_out then return end
         if not mirror_target then return end
         if blacklisted then return end
 
         -- Send the trade info
         log('Mirroring Trade [0x036]')
         que_packet('mirror_trade_0x036|'..
-            packet_in['Target']..'|'..
-            packet_in['Target Index']..'|'..
-            packet_in['_unknown1']..'|'..
-            packet_in['_unknown2']..'|'..
+            packet_out['Target']..'|'..
+            packet_out['Target Index']..'|'..
+            packet_out['_unknown1']..'|'..
+            packet_out['_unknown2']..'|'..
             formattedString)
 
         message_time = os.clock()
-        packet_log(packet_in, 'out')
+        packet_log(packet_out, 'out')
     end
 
     -- 0x083
     -- This functin is for buy/sell items
-    function npc_out_buy(packet_in)
+    function npc_out_buy(packet_out)
 
-        if not packet_in then return end
+        if not packet_out then return end
         if not mirror_target then return end
         if blacklisted then return end
 
         log('Mirroring Buy [0x083]')
         que_packet('mirror_buy_0x083,'..
-            packet_in['Count']..','..
-            packet_in['_unknown2']..','..
-            packet_in['Shop Slot']..','..
-            packet_in['_unknown3']..','..
-            packet_in['_unknown4']..','..
+            packet_out['Count']..','..
+            packet_out['_unknown2']..','..
+            packet_out['Shop Slot']..','..
+            packet_out['_unknown3']..','..
+            packet_out['_unknown4']..','..
             mirror_target.id..','..
             mirror_target.index)
 
         message_time = os.clock()
-        packet_log(packet_in, 'out')
+        packet_log(packet_out, 'out')
     end
 
     -- Once a NPC interaction is completed the server then send a 0x037 packets with the player state change (4 -> 0)
@@ -183,9 +184,9 @@ do
         que_packet('mirror_send_'..
             string.format("%i",mirror_target.id)..','..
             string.format("%i",mirror_target.index)..','..
-            string.format("%.3f",mirror_target.x)..','..
-            string.format("%.3f",mirror_target.y)..','..
-            string.format("%.3f",mirror_target.z)..','..
+            string.format("%.2f",mirror_target.x)..','..
+            string.format("%.2f",mirror_target.y)..','..
+            string.format("%.2f",mirror_target.z)..','..
             string.format("%i",mirror_target.zone)..','..
             mirror_target.name)
 
@@ -246,7 +247,7 @@ do
             table.insert(packet_out, item)
         end
 
-        if packet_out[1] == "0x05B" or packet_out[1] == "0x05C" or packet_out[1] == "0x083" then -- Dialog
+        if packet_out[1] == "0x05B" or packet_out[1] == "0x05C" or packet_out[1] == "0x083" or message == "Poke" then -- Dialog
             
             -- Build the action packet
             action_packet = new_packet('outgoing', 0x01A, 
@@ -259,6 +260,7 @@ do
 
             -- Start the interation
             log('Initial NPC Poke')
+
             injecting = true
             inject_packet(action_packet)
             poke_time = os.clock()
@@ -314,7 +316,7 @@ do
         if not mirror_message then return end
 
         -- End of messages so reset
-        if #mirror_message == 0 then
+        if not mirror_message or #mirror_message == 0 then
             log('End of messages reached')
 
             if buy_sell then
@@ -454,18 +456,19 @@ do
     function npc_in_release(packet_in)
         if not injecting then return end
         if packet_in['Type'] == 0x00 then
-            log('NPC Release [Standard]')
+            log('Received [Standard] release was a type ['..interaction_type..']')
             -- No messages left to send so consider it done
-            if not mirror_message then 
-                log('Received [Standard] release was a type ['..interaction_type..']')
+            if not mirror_message or mirror_message[1] == "Poke" then 
                 que_packet("mirror_status_completed")
                 clear_npc_data()
+            elseif buy_sell then
+                -- Continue the injection
+                npc_inject()
             end
         elseif packet_in['Type'] == 0x01 then
-            log('NPC Release [Event]')
+            log('Received [Event] release was a type ['..interaction_type..']')
             if not mirror_message or #mirror_message == 0 then 
                 -- Sucessful Event release
-                log('Received [Event] release was a type ['..interaction_type..']')
                 que_packet("mirror_status_completed")
                 clear_npc_data()
             else
@@ -642,10 +645,8 @@ do
     function npc_mirror_state(state)
         if state == "True" then
             single_mirror = true
-            log("Mirror State is single use")
         else
             single_mirror = false
-            log("Mirror State is multiple use")
         end
     end
 

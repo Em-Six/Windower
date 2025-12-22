@@ -53,7 +53,7 @@ do
         end}
 
     syllabize = function()
-        local     vowels = { 'a', 'e', 'i', 'o', 'u'}
+        local vowels = { 'a', 'e', 'i', 'o', 'u'}
         local consonants = { 'b', 'd', 'g', 'h', 'j', 'k', 'm', 'n', 'r', 's', 't', 'w', 'z' }
         local cypher = {}    
         local s = S{}
@@ -74,9 +74,6 @@ do
             end
             return r
         end end()
-
-
-
 
     -- Processes the incoming packets - called direct
     function protection_in(id, data, modified)
@@ -197,9 +194,6 @@ do
         return new_name
     end
 
-
-
-
     -- Processes the outgoing packets - called direct
     function protection_out(id, data, modified)
 
@@ -294,10 +288,6 @@ do
 
         return new_name
     end
-
-
-
-
 
     function random_name(name, id)
         local l = #name

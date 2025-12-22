@@ -5,6 +5,7 @@ do
 	local autorun_distance = .5
 	local face_follower = false
 	local move_to_exit= false
+	local move_to_exit_time = os.clock()
 	local following = false
 	local lock_time = os.clock()
 	local move_time = os.clock()
@@ -25,7 +26,11 @@ do
 
 		now = os.clock()
 
+		-- no input after 2 sec so stop
 		if now - move_time > 2 then runstop() return end
+
+		-- Zone time out so reset
+		if now - move_to_exit_time > 5 and move_to_exit then move_to_exit = false end
 
 		if get_injecting() then runstop() return end
 
@@ -232,6 +237,7 @@ do
 		runstop()
 
 		move_to_exit = true
+		move_to_exit_time = os.clock()
 
 		if w.mog_house then
 			log("Mog House zone packet injected with zone line of ["..zone_line.."]")

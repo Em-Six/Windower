@@ -42,7 +42,7 @@ consolebg position 15 50
 consolebg size 1300 310
 
 //Other addons
-lua load HTMB
+//lua load HTMB
 lua load xivparty
 lua load xipivot
 lua load superwarp
@@ -50,20 +50,22 @@ lua load superwarp
 lua load fuckoff
 //lua load opensesame
 lua load safespace
-lua load tradenpc
-lua load quicktrade
-lua load sirpopalot
+//lua load tradenpc
+//lua load quicktrade
+//lua load sirpopalot
 lua load sheolhelper
 //lua load sendalltarget
-lua load react
+//lua load react
 lua load trade
-lua load enemybar2
+//lua load enemybar2
 lua load revisible //I think this is causing some sort of crashing
 lua load whereisdi
 lua load anchor
 lua load fastfollow
-lua load leave
+//lua load leave
 lua load silmaril
+lua load ondemand
+lua load bars
 
 
 //Other binds!
@@ -205,20 +207,11 @@ alias dispelga sat youcommand Kateye /ma \"Dispelga\" <t>
 alias poop send @all pop
 alias sacro send Kateye /ja \"Sacrosanctity\" <me>  
 alias mmm send @all /item \"Maze Compass"\ <me>
-alias rdm send Sensarity exec rdmbuffs.txt
-alias whm send Kateye exec whmbuffs.txt
+
 
 //Multiboxing
-alias invall send Sensarity /pcmd add Arayala; wait 3; send Sensarity /pcmd add Kateye
-alias invalts send Sensarity /pcmd add Arayala; wait 3; send Sensarity /pcmd add Kateye; wait 3; send Sensarity /pcmd add Merako; wait 3; send Sensarity /pcmd add Luicia; wait 3; send Sensarity /pcmd add Ysara
-alias allattack send @all lua load attackwithme;wait 1;send Sensarity atkwm master;send Arayala atkwm slave on
-alias araattack send @all lua load attackwithme;wait 1;send Arayala atkwm master;send Sensarity atkwm slave on
-alias stopattack send @all lua unload attackwithme
-alias basicbuffs send Arayala exec songs.txt; send Kateye exec whmbuffs.txt; send Sensarity roller roll;
-alias madbuffs send Arayala exec mad.txt; send Kateye exec whmbuffs.txt; send Sensarity roller roll;
-alias ditrusts send Sensarity tru disens; send Arayala tru dia; send Kateye tru dikat
-alias whmbuffs send Kateye exec whmbuffs.txt
-bind %delete send Kateye gs c smartcure Sensarity
+alias invall send Sensarity /pcmd add Arayala; wait 3; send Sensarity /pcmd add Kateye; wait 3; send Sensarity /pcmd add Merako; wait 3; send Sensarity /pcmd add Luicia; wait 3; send Sensarity /pcmd add Ysara
+alias invmains send Sensarity /pcmd add Arayala; wait 3; send Sensarity /pcmd add Kateye; wait 3
 bind %- ffo me
 bind %= ffo stopall
 

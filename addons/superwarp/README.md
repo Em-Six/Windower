@@ -1,8 +1,9 @@
 # superwarp
 
-This is an addon for Windower4 for FFXI. It allows text commands to teleport using Homepoints, Waypoints, Survival Guides, Escha/Reis portals, and Unity NPC warps. There may be more coming. 
+This is an addon for Windower4 for FFXI. It allows text commands to teleport using Homepoints, Waypoints, Proto-Waypoints, Survival Guides, Escha Portals and Reisenjima Ingresses, Voidwatch and Unity NPCs, Abyssea Confluxes, Runic Portals, Odyssey Confluxes and Translocators, and Sortie Gadgets, Bitzers, and Devices, Temenos Matter Diffusion Modules and Apollyon Swirling Vortices.
 
 ### Commands:
+The //sw command prefix is only needed if the user is running another addon that is using the command prefix for the warp system you are operating. i.e. //te  for temenos. In that case the user would need to use //sw te or /console sw te in a macro instead of just //te until the other addon is unloaded.
 
 #### Homepoint Commands
 | Command | Action |
@@ -15,7 +16,7 @@ This is an addon for Windower4 for FFXI. It allows text commands to teleport usi
 #### Waypoint Commands
 | Command | Action |
 | --- | --- |
-| //[sw] wp [warp] [all/party] zone_name [waypoint_number]  | Warp to a specified waypoint. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck). This, otherwise, works just like the homepoint addon, with additional shortcuts such as "fs", "auction" (or simpler "ah") or "mog" (or simpler "mh"). If the waypoint_number is omitted, the first waypoint will be chosen (from the mapping). |
+| //[sw] wp [warp] [all/party] zone_name [waypoint_number]  | Warp to a specified waypoint. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck). This, otherwise, works just like the homepoint addon, with additional shortcuts such as "fs" (for Frontier Station), "auction" (or simpler "ah") or "mog" (or simpler "mh"). If the waypoint_number is omitted, the first waypoint will be chosen (from the mapping). |
 | //[sw] pwp [warp] [all/party] zone_name  | Warp to a specified proto-waypoint. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck). |
 | //[sw] wp [all/party] missing [max]  | List out which destinations are still locked. The optional max parameter is a maximum number of lines to display. Default: all. |
 | //[sw] pwp [all/party] missing [max]  | List out which destinations are still locked. The optional max parameter is a maximum number of lines to display. Default: all. |
@@ -61,6 +62,43 @@ This is an addon for Windower4 for FFXI. It allows text commands to teleport usi
 | //[sw] po [all/party] assault  | Be taken to your current assault mission staging point. "sw" is optional, and does nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
 | //[sw] po [all/party] return  | Leave the assault staging area and return to Whitegate. "sw" is optional, and does nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
 | //[sw] po [all/party] missing [max]  | List out which destinations are still locked. The optional max parameter is a maximum number of lines to display. Default: all. |
+
+#### Voidwatch Commands
+| Command | Action |
+| --- | --- |
+| //[sw] vw [warp] [all/party] zone_name  | Warp to a specified zone through the Voidwatcher NPC. Note that you cannot warp to the past from the present (or vice versa). "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
+| //[sw] vw [all/party] missing [max]  | List out which destinations are still locked. The optional max parameter is a maximum number of lines to display. Default: all. |
+
+#### Sortie
+| Command | Action |
+| --- | --- |
+| //[sw] so [warp] [all/party] 0/1/2/3/4  OR  s/#a/#b/#c/#d | Warp to a specified device by number. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
+| //[sw] so [all/party] port | Warp via the nearby gadget or bitzer. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck). |
+| //[sw] so [all/party] normal | Set Aminon difficulty to normal and enter his chamber. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck). |
+| //[sw] so [all/party] hard | Set Aminon difficulty to hard (deepest dark) and enter his chamber. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck). |
+
+#### Odyssey
+| Command | Action |
+| --- | --- |
+|//[sw] od [warp] [all/party] 1/2/3 | Warp to a specified translocator by number. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|//[sw] od [all/party] port | Warp to the other side of the Veridical Conflux "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|//[sw] od [all/party] exit | Exit the Odyssey zone. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+
+#### Temenos (New!) 
+| Command | Action |
+| --- | --- |
+|//[sw] te [warp] [all/party] n1/w2/e3 | Warp to any specified tower/floor by letter&number. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|//[sw] te [all/party] port | Warp to the next floor or if on last floor will warp the user to the entrance, from the entrance specify a letter&number to start a new tower or use the next command. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|//[sw] te [all/party] next | Warps you to the lowest floor you have not completed. Sophisticated decision making. Enjoy. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+
+#### Apollyon (New!)
+| Command | Action |
+| --- | --- |
+|//[sw] ap [warp] [all/party] nw1/sw2/ne3/se4 | Warp to any specified tower/floor by letters&number. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|//[sw] ap [all/party] port | Warp to the next floor or if on last floor will warp the user to the entrance, from the entrance specify a letter&number to start a new tower or use the next command. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|//[sw] ap [all/party] next | Warps you to the lowest floor you have not collected data for. Sophisticated decision making. Enjoy. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|//[sw] ap [all/party] enter| Enter the Apollyon zone. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|//[sw] ap [all/party] exit | Exit the Apollyon zone. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
 
 #### Misc. Commands
 | Command | Action |
@@ -139,6 +177,8 @@ Thanks to Ivaar for also helping with the elvorseal state and receive packets, d
 
 Thanks to Lili for researching a better fuzzy matching logic.
 
+Thanks to Staticvoid for researching and implementing the Sortie, Odyssey, Temenos and Apollyon warp systems.
+
 ### Updates
 #### v0.96
 - **Feature**: Homepoints now uses same-zone teleporting feature.
@@ -195,3 +235,35 @@ Thanks to Lili for researching a better fuzzy matching logic.
 
 #### v0.97.3
 - **Resolved**: Homepoint indices for Ru'lude and Qufim have been updated (changed after update).
+
+### v0.97.4
+- **Resolved**: Fixed issue warping with voidwatch
+- **Improvement**: Documented voidwatch commands (oops!)
+
+#### v0.98
+- **Resolved**: Several bug fixes.
+
+#### v0.99
+- **Feature**: Sortie warp system added.
+
+#### v1.0
+- **Feature**: Odyssey warp system added.
+- **Resolved**: Sortie: Resolved lock-up when warping to or from Aminon. Be sure to set your destination before warping to Aminon. Superwarp will cancel the warp and warn the user if it is not set.
+- **Resolved**: Sortie: Fix for sometimes being immediately warped out from a boss room.
+- **Improvement**: Sortie: More consistent handling of origination gadget.
+
+#### v1.0.1
+- **Feature**: Sortie: Added repop, Aminon normal, Aminon hard commands.
+- **Resolved**: Sortie: Fixed a bug that could cause the casket to spawn next to Bitzer #D instead of entrance of sector H.
+- **Improvement**: Sortie: Added chatlog display for warps done with the port, normal and hard commands.
+- **Improvement**: Sortie: Updated Help text.
+- **Feature**: Odyssey: Added exit command.
+- **Improvement**: Odyssey: Added chatlog display for warps done with the port command.
+- **Improvement**: Added map labels to increase readability when using the //sw help command in-game.
+
+#### v1.0.2
+- **Resolved**: Sortie: fixed menu structure for update
+
+#### v1.0.3
+- **Resolved**: Limbus: Some NPC targets are not updated correctly in packets, resolve issue teleporting.
+- **Resolved**: Sortie: fixed menu structure (again)

@@ -1,15 +1,27 @@
 local entry_zones = S{126,25,102,108,117}
 local escha_zones = S{288,289,291}
+local npc_names = T{
+    warp = S{'Eschan Portal', 'Ethereal Ingress'},
+    enter = S{'Undulating Confluence', 'Dimensional Portal'},
+    domain = S{'Affi', 'Dremi', 'Shiftrix'},
+    exit= S{'Undulating Confluence', 'Dimensional Portal'},
+}
 return T{
-    short_name = 'ew',
+    short_name = {'ew','es','ea'},
     long_name = 'eschan portal',
     npc_plural = 'eschan npcs',
-    npc_names = T{
-        warp = T{'Eschan Portal', 'Ethereal Ingress'},
-        enter = T{'Undulating Confluence', 'Dimensional Portal'},
-        domain = T{'Affi', 'Dremi', 'Shiftrix'},
-        exit= T{'Undulating Confluence', 'Dimensional Portal'},
-    },
+    npc_names = npc_names,
+    zone_npc_list = function(type)
+        local mlist = windower.ffxi.get_mob_list()
+        mlist = table.filter(mlist, function(name)
+            return name ~= "" and npc_names[type]:any(string.startswith+{name})
+        end)
+        mlist = table.map(mlist, function(name)
+            local num = name:match('%d+$')
+            return {name=name, key=(num and tostring(num))}
+        end)
+        return mlist
+    end,
     validate = function(menu_id, zone, current_activity)
         local destination = current_activity.activity_settings
         if not ( -- NPCs:
@@ -65,7 +77,7 @@ return T{
         end
         return missing
     end,
-    help_text = "[sw] ew [warp/w] [all/a/@all] portal number -- warp to a designated portal in your current escha zone.\n[sw] ew [all/a/@all] enter -- enter the eschan zone corresponding to the entrance zone.\n[sw] ew [all/a/@all] domain -- get Elvorseal if needed and warp to the domain invasion arena.\n[sw] ew [all/a/@all] domain return -- return Elvorseal.\n[sw] ew [all/a/@all] exit -- leave escha.",
+    help_text = "| Escha |\n[sw] ew [warp/w] [all/a/@all/party/p] portal number -- warp to a designated portal in your current escha zone.\n[sw] ew [all/a/@all] enter -- enter the eschan zone corresponding to the entrance zone.\n[sw] ew [all/a/@all] domain -- get Elvorseal if needed and warp to the domain invasion arena.\n[sw] ew [all/a/@all] domain return -- return Elvorseal.\n[sw] ew [all/a/@all] exit -- leave escha.\n-----------------------------",
     sub_zone_targets =  S{'1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14','15' },
     auto_select_zone = function(zone)
         if zone == 288 then return 'Escha Zi\'tah' end
@@ -510,16 +522,16 @@ return T{
             --elvorseal x = 0, z = -43.600002288818, y = -238.00001525879, h = 48897, unknown1 = 12
         },
         ['Reisenjima'] = T{
-            ['1'] = {  index = 23, zone = 291, npc = 824, offset = 23, x = -495.44003295898, z = -19, y = -476.48001098633, h = 0, unknown1 = 1507330},
-            ['2'] = {  index = 24, zone = 291, npc = 825, offset = 24, x = -404.00003051758, z = -55.000003814697, y = 86.000007629395, h = 63, unknown1 = 1572866},
-            ['3'] = {  index = 25, zone = 291, npc = 826, offset = 25, x = -530.40002441406, z = -50.000003814697, y = 399.75003051758, h = 95, unknown1 = 1638402},
-            ['4'] = {  index = 26, zone = 291, npc = 827, offset = 26, x = -554.40002441406, z = -48.750003814697, y = 602, h = 191, unknown1 = 1703938},
-            ['5'] = {  index = 27, zone = 291, npc = 828, offset = 27, x = 107.00000762939, z = -75.400001525879, y = 599, h = 63, unknown1 = 1769474},
-            ['6'] = {  index = 28, zone = 291, npc = 829, offset = 28, x = 243.50001525879, z = -87.400001525879, y = 106.00000762939, h = 127, unknown1 = 1835010},
-            ['7'] = {  index = 29, zone = 291, npc = 830, offset = 29, x = 641.60003662109, z = -374.00003051758, y = -912.20007324219, h = 159, unknown1 = 1900546},
-            ['8'] = {  index = 30, zone = 291, npc = 831, x = -368.72003173828, z = -113.30000305176, y = 212.45001220703, h = 63, unknown1 = 1966082},
-            ['9'] = {  index = 31, zone = 291, npc = 832, offset = 31, x = -581, z = -417.40002441406, y = -1065, h = 0, unknown1 = 2031618},
-            ['10'] = { index = 32, zone = 291, npc = 833, x = -390.22003173828, z = -439.71002197266, y = -835.13006591797, h = 0, unknown1 = 2097156},
+            ['1'] = {  index = 23, zone = 291, npc = 826, offset = 23, x = -495.44003295898, z = -19, y = -476.48001098633, h = 0, unknown1 = 1507330},
+            ['2'] = {  index = 24, zone = 291, npc = 827, offset = 24, x = -404.00003051758, z = -55.000003814697, y = 86.000007629395, h = 63, unknown1 = 1572866},
+            ['3'] = {  index = 25, zone = 291, npc = 828, offset = 25, x = -530.40002441406, z = -50.000003814697, y = 399.75003051758, h = 95, unknown1 = 1638402},
+            ['4'] = {  index = 26, zone = 291, npc = 829, offset = 26, x = -554.40002441406, z = -48.750003814697, y = 602, h = 191, unknown1 = 1703938},
+            ['5'] = {  index = 27, zone = 291, npc = 830, offset = 27, x = 107.00000762939, z = -75.400001525879, y = 599, h = 63, unknown1 = 1769474},
+            ['6'] = {  index = 28, zone = 291, npc = 831, offset = 28, x = 243.50001525879, z = -87.400001525879, y = 106.00000762939, h = 127, unknown1 = 1835010},
+            ['7'] = {  index = 29, zone = 291, npc = 832, offset = 29, x = 641.60003662109, z = -374.00003051758, y = -912.20007324219, h = 159, unknown1 = 1900546},
+            ['8'] = {  index = 30, zone = 291, npc = 833, x = -368.72003173828, z = -113.30000305176, y = 212.45001220703, h = 63, unknown1 = 1966082},
+            ['9'] = {  index = 31, zone = 291, npc = 834, offset = 31, x = -581, z = -417.40002441406, y = -1065, h = 0, unknown1 = 2031618},
+            ['10'] = { index = 32, zone = 291, npc = 835, x = -390.22003173828, z = -439.71002197266, y = -835.13006591797, h = 0, unknown1 = 2097156},
             --elvorseal x = 640, z = -372.00003051758, y = -921.00006103516, h = 24321, unknown1 = 12
         },
     },

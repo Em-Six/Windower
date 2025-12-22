@@ -28,7 +28,7 @@ do
 	local sm_debug = texts.new("",{ 
 		text={size=10,font='Consolas',red=255,green=255,blue=255,alpha=255}, 
 		pos={x=0,y=0}, 
-		bg={visible=true,red=0,green=0,blue=0,alpha=125},})
+		bg={visible=false,red=0,green=0,blue=0,alpha=125},})
 
 	function zero_command()
 		sm_display:pos_x(0)
@@ -79,14 +79,14 @@ do
 		lines:insert(' Silmaril...'..string.format('[%s]',gear_string):lpad(' ',maxWidth - 15 + string.len(gears[gear])))
 
 		if get_mirror_on() and get_following() then
-			sm_display:bg_color(255,0,0)
+			sm_display:bg_color(255,0,255)
 			lines:insert(' [Following] [Mirroring]')
 		elseif get_following() then
 			lines:insert('       [Following]')
 			sm_display:bg_color(0,0,255)
 		elseif get_mirror_on() then
 			lines:insert('       [Mirroring]')
-			sm_display:bg_color(153,0,204)
+			sm_display:bg_color(255,0,0)
 		else
 			lines:insert('')
 			sm_display:bg_color(0,0,0)
@@ -99,7 +99,6 @@ do
 				lines:insert('  '..member.name..string.format('[%3.1f]',distance):lpad(' ',maxWidth - string.len(member.name) - 2)..'  ')
 			end
 		end
-
 		lines:insert('')
 		local maxWidth = math.max(1, table.reduce(lines, function(a, b) return math.max(a, #b) end, '1'))
 		for i,line in ipairs(lines) do lines[i] = lines[i]:rpad(' ', maxWidth - string.len(gears[gear])) end
@@ -115,6 +114,7 @@ do
 			target_index = target.index
 		end
 		lines = T{}
+		sm_debug:text()
 		lines:insert('Enabled'..string.format('[%s]',tostring(get_enabled())):lpad(' ',13))
 		lines:insert('Following'..string.format('[%s]',tostring(get_following())):lpad(' ',11))
 		lines:insert('Injecting'..string.format('[%s]',tostring(get_injecting())):lpad(' ',11))
@@ -196,11 +196,12 @@ do
 			end
 			sm_result:bg_alpha(opacity*alpha)
 			sm_result:alpha(opacity*alpha*2)
+		else
+			sm_result:hide()
 		end
 	end
 
 	function sm_result_hide()
-		sm_result:hide()
 		status_time = nil
 	end
 
@@ -215,11 +216,9 @@ do
 	function debug_command()
         if settings.debug then
             settings.debug = false
-            sm_debug:hide()
 			send_to_chat(80,'------- Debugging [OFF] -------')
 		else
 			settings.debug = true
-            sm_debug:show()
 			send_to_chat(80,'------- Debugging [ON]  -------')
 		end
 	end
@@ -246,19 +245,15 @@ do
 		if value ~= nil then
 			if value then
 				settings.display = true
-				sm_display:show()
 			else
 				settings.display = false
-				sm_display:hide()
 			end
 		else
 			if settings.display then
 				settings.display = false
-				sm_display:hide()
 				send_to_chat(80,'------- Display [OFF] -------')
 			else
 				settings.display = true
-				sm_display:show()
 				send_to_chat(80,'------- Display [ON]  -------')
 			end
 		end

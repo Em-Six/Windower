@@ -26,14 +26,14 @@ do
     function request()
         skillchain_reset()
         update_player_info()
-        local request = get_player_id()..";request;".._addon.version..';'..get_player_name()
+        local request = get_player_id()..";request_".._addon.version..'_'..get_player_name()
         log(request)
         send_packet(request) -- Send directly
     end
 
     -- Builts a packet to send to silmaril
     function que_packet (msg)
-        if msg then
+        if msg and get_connected() then
             action_packets[action_count] = msg
             action_count = action_count +1
             log(msg)
@@ -42,7 +42,7 @@ do
 
     -- Builts a packet to send to silmaril without a log
     function que_packet_silent (msg)
-        if msg then
+        if msg and get_connected() then
             action_packets[action_count] = msg
             action_count = action_count +1
         end
@@ -65,9 +65,6 @@ do
                 local message = data:split('_')
                 local cmd = message[2]
 
-                -- Do not display the results of mirroring
-                if cmd ~= "results" then log(data) end
-
                 -- Check if valid message
                 if message[1] ~= get_player_id() then log('Wrong Message ['..cmd..']') return end
 
@@ -83,27 +80,36 @@ do
 
                 -- Notify if the versions do not match and unload the addon
                 elseif cmd == "version" then
-                    info('Version miss match!')
+                    info('Version miss match - unloading the in game Lua!')
+                    info('The in game lua is ['.._addon.version..'] and the Silmaril version is ['..message[3]..'].')
                     send_command('lua u silmaril')
 
                 -- Reset command from silmaril (Rest Button)
                 elseif cmd == "reset" then
                     reset_request(message[3])
+                    log(message)
 
                 -- If any character logs - reset the party table.
                 elseif cmd == "clear" then
                     clear_party_location()
+                    log('Clearing Party Tables')
 
                 -- Turn the addon on
                 elseif cmd == "on" then
                     on_cmd(message[3],message[4],message[5])
+                    log(message)
 
                 -- Turn the addon off
                 elseif cmd == "off" then
                     off_cmd()
+                    log(message)
 
                 elseif cmd == "addon" then
                     addon_commands(message) -- via Addons.lua
+
+                elseif cmd == "reposition" then
+                    reposition_command(message[3],message[4],message[5],message[6],message[7])
+                    log(message)
 
                 -- Display the mirroring results
                 elseif cmd == "results" then
@@ -111,11 +117,15 @@ do
 
                 -- Standard commands from Silmaril
                 elseif cmd == "input" then
+                    log(data)
                     input_message(message[3],message[4],message[5],message[6],message[7])
+                    log(message)
 
                 -- Raw commands that do not require processing
                 elseif cmd == "script" then
-                    send_command(shift_jis(message[3]))
+                    log(data)
+                    send_command(to_shift_jis(message[3]))
+                    log(message)
 
                 -- Sent the skillchains to watch for
                 elseif cmd == "skillchain" then
@@ -273,6 +283,26 @@ do
     function reset_action_packets()
         action_count = 1
         action_packets = {}
+    end
+
+    function reposition_command(Zone,X,Y,Z,Rotation)
+        log('Repositioning in zone ['..Zone..'] to ['..X..'],['..Y..'], ['..Z..'] with angle ['..Rotation..']')
+        local p = get_player_data()
+        local world = get_world()
+        if not p or not world then return end
+        if world.zone ~= tonumber(Zone) then log('Wrong Zone') end
+        local packet = new_packet('incoming', 0x065, 
+        {
+            ['ID'] = p.id,
+            ['Index'] = p.index,
+            ['Animation'] = 0,
+            ['Rotation'] = tonumber(Rotation),
+            ['X'] = tonumber(X),
+            ['Y'] = tonumber(Y),
+            ['Z'] = tonumber(Z),
+        })
+        packet_log_full(packet,'incoming')
+        inject_packet(packet)
     end
 
 end

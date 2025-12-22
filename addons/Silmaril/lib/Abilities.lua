@@ -66,7 +66,7 @@ do
         local status_map = get_monster_maps()
 
         for id, ability in pairs(monster_abilities) do
-            if ability.id < 3001 then 
+            if ability.id < 2001 then 
                 local name = string.gsub(ability.en, "_", "-")
 
                 -- All monster abilities do not list the buffs
@@ -92,7 +92,33 @@ do
         local status_map = get_monster_maps()
 
         for id, ability in pairs(monster_abilities) do
-            if ability.id > 3000 then 
+            if ability.id > 2000 and ability.id < 4001 then 
+                local name = string.gsub(ability.en, "_", "-")
+
+                -- All monster abilities do not list the buffs
+                local status = '0'
+                if status_map[ability.id] then status = tostring(status_map[ability.id]) end
+
+                formattedString = formattedString..ability.id..'|'..name..'|'..status..'\\'
+
+                if ability.id and ability.id > all_ability_count then
+                    all_ability_count = ability.id
+                end
+            end
+        end
+        formattedString = formattedString:sub(1, #formattedString - 1)
+        --log(formattedString)
+        return formattedString..'_'..all_ability_count
+    end
+
+    function get_all_monster_abilities3() -- -- used once via sync request Sync.lua
+        local formattedString = get_player_id()..";monsterdata3_"
+        local all_ability_count = 0
+
+        local status_map = get_monster_maps()
+
+        for id, ability in pairs(monster_abilities) do
+            if ability.id > 4000 then 
                 local name = string.gsub(ability.en, "_", "-")
 
                 -- All monster abilities do not list the buffs

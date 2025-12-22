@@ -20,13 +20,17 @@ do
 
         -- Update the position info
         player_info = get_mob_by_id(player_data.id)
+
         if not player_info then return end
+
+        -- Process the updated buffs
+        validate_buffs()
 
         -- This is updated at high speed
         local now = os.clock()
 
         -- Determine if player is moving
-        local movement = math.sqrt((player_info.x-old_pos.x)^2 + (player_info.y-old_pos.y)^2 + (player_info.z-old_pos.z)^2 ) > 0.025
+        local movement = math.sqrt((player_info.x-old_pos.x)^2 + (player_info.y-old_pos.y)^2 + (player_info.z-old_pos.z)^2 ) > 0.02
 
         -- Change of state
         if movement and not motion then
@@ -91,6 +95,7 @@ do
 
         -- Update the last message
         old_character = update_character
+
     end
 
     -- A built string to send to silmaril with the character information called via Update.lua
@@ -132,17 +137,10 @@ do
         return player_string
     end
 
-    function first_time_buffs()
-        if not player then return end
-
-        for i=1, #player_data.buffs do
-            player_buff_ids[i] = {id = player_data.buffs[i], time = 'Unknown'}
-        end
-    end
-
     function player_packet_buffs(original)    
-        player_buff_ids = {}
         local packet = parse_packet('incoming', original)
+        if not packet then return end
+        player_buff_ids = {}
         for i=1,32 do
             local buff = 'Buffs '..i
             local buff_index = 'Time '..i
@@ -153,6 +151,7 @@ do
                 local buff_offset = 1009810800 + ( 4294967296 * epoch_ticks + packet[buff_index] ) / 60 - server_delta
                 local end_time = os.date('%Y-%m-%dT%H:%M:%S',buff_offset)
                 --log('Buff end time ['..end_time..']')
+
                 -- Need to not key off buff ID's because can have multiple of same
                 player_buff_ids[i] = { id = packet[buff], time = end_time }
             end
@@ -172,7 +171,6 @@ do
 	end
 
     function get_player_buffs()
-        validate_player_buffs()
         return 'playerbuffs_'..player_buffs
     end
 
@@ -209,11 +207,6 @@ do
         return tostring(player_data.id)
     end
 
-    function get_player_buff_ids()
-        info('Get Buff IDs Called')
-        return player_buff_ids
-    end
-
     function set_server_offset(timestamp , offset)
         -- Calculates the roll over times for buffs
         local server_time = timestamp - offset
@@ -224,44 +217,42 @@ do
         --log('Server Delta ['..server_delta..']')
     end
 
-    function validate_player_buffs()
-        -- Generate the string
+    -- Check for held action packet buffs in Packets.lua
+    function validate_buffs()
+
         player_buffs = ''
-        if not player_data then return '' end
 
-        -- Check for held packet buffs in Packets.lua
-        -- The intent is to hold buffs from JA's and Spells for 2 seconds until the packet comes from server with the update
-        local packet_buffs = get_packet_buffs()
+        -- Build a table of buffs
+        local buff_table = {}
 
-        for index, target in pairs(packet_buffs) do
-
-            -- the buff is for the player
-            if target.id == player_data.id then
-
-                -- Check to make sure no duplicates
-                local need_buff = true
-
-                for i=1, #player_buff_ids do
-                    if player_buff_ids[i] and player_buff_ids[i].id == target.buff then
-                        need_buff = false
-                        i = #player_buff_ids 
-                    end
-                end
-
-                if need_buff then
-                    player_buffs = player_buffs..target.buff..',Unknown|'
-                end
+        -- Using packet
+        if #player_buff_ids > 0 then
+            -- Load the player based packet buffs
+            for index, value in pairs(player_buff_ids) do
+                player_buffs = player_buffs..value.id..','..value.time..'|'
+                buff_table[value.id] = true
+                -- log('Adding buff ['..value.id..'] from packet')
             end
-
+        -- Fall back to get_player()
+        else
+            -- store the unknown buff first and append known later
+            for index, value in pairs(player_data.buffs) do
+                player_buffs = player_buffs..value..',Unknown|'
+                buff_table[value] = true
+                -- log('Adding buff ['..value..'] from memory')
+            end
         end
 
-        for i=1, #player_buff_ids do
-            if player_buff_ids[i] then
-                player_buffs = player_buffs..player_buff_ids[i].id..','..player_buff_ids[i].time..'|'
+        -- The intent is to hold buffs from JA's and Spells for 3 seconds until the packet comes from server with the update
+        local packet_buffs = get_packet_buffs()
+        for index, value in pairs(packet_buffs) do
+            if value.id == player_data.id and not buff_table[value.buff] then
+                -- Buff is for the player and is not currently in the windower table
+                player_buffs = player_buffs..value.buff..',Unknown|'
+                log('Adding unique buff ['..value.buff..']')
             end
         end
 
         player_buffs = player_buffs:sub(1, #player_buffs - 1)
     end
-
 end

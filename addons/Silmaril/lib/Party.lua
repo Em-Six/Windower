@@ -17,6 +17,10 @@ do
         local p = get_player_data()
         if not p then return party_data end
 
+        -- Get the player data
+        local p_info = get_player_info()
+        if not p_info then return party_data end
+
         --Clear old Tables
         party_ids = {}
         alliance_ids = {}
@@ -33,6 +37,7 @@ do
                 party_table[position_location] = true
 
                 if member.mob then
+                    -- Blank update
                     local mob = {0,0,0,0,0,0,0,0,0,'false','false','|0|0|0|0|0|0|0|0|0|0|0'}
                     local local_player = party_location[member.mob.id]
 
@@ -47,13 +52,18 @@ do
                     alliance_ids[member.mob.id] = position
 
                     if local_player then -- update with local IPC information
-                        member.mob.x = local_player.x
-                        member.mob.y = local_player.y
-                        member.mob.z = local_player.z
-                        member.mob.heading = local_player.heading
                         if local_player.id == p.id then
                             member.mob.target_index = p.target_index
-                            member.mob.status = p.status
+                            member.mob.status = p_info.status
+                            member.mob.heading = p_info.heading
+                            member.mob.x = p_info.x
+                            member.mob.y = p_info.y
+                            member.mob.z = p_info.z
+                        else
+                            member.mob.x = local_player.x
+                            member.mob.y = local_player.y
+                            member.mob.z = local_player.z
+                            member.mob.heading = local_player.heading
                         end
                     end
 

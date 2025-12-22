@@ -1,6 +1,5 @@
 do
     local is_japanese = is_japanese()
-    local hover_shot_ID = get_res_all_buffs():with('en','Hover Shot').id
     local watch_spell = nil
 
     function input_message(type, index, param, option, option2)
@@ -12,9 +11,7 @@ do
         local pt_loc = get_party_location()
         local target = pt_loc[tonumber(index)]
 
-        if target then 
-            log('Using Party Table')
-        else
+        if not target then 
             target = get_mob_by_index(index)
             if not target then
                 target = get_mob_by_id(index)
@@ -127,10 +124,11 @@ do
             Action_Message('0x037',target,param)
 
         elseif type == "Message" then
-            if param == "0" then send_chat('/tell '..target.name..' '..option..'') -- Tell
-            elseif param == "1" then send_chat('/party '..option..'') -- Party
-            elseif param == "2" then send_chat('/echo '..option..'') -- Echo player only
-            elseif param == "3" then send_chat('/echo '..option..'') send_ipc('silmaril message '..option) end -- Echo party
+            if param == "1" then send_chat('/echo '..option..'') -- Echo player only
+            elseif param == "2" then send_chat('/echo '..option..'') send_ipc('silmaril message '..option) -- Echo party
+            elseif param == "3" then send_chat('/tell '..target.name..' '..option..'') -- Tell
+            elseif param == "4" then send_chat('/party '..option..'') -- Party
+            end
 
         elseif type == "Mirror" then
             local type = tonumber(param)
@@ -155,7 +153,7 @@ do
 
             -- Mirror Message
             elseif type == 2 then
-
+                log('Mirror Message Recieved From Silmaril')
                 npc_build_message(target, option)
 
             -- Spare
@@ -171,8 +169,7 @@ do
             end
 
         elseif type == "Reflect" then
-
-             -- Clear old action
+            -- Clear old action
             clear_npc_data()
 
             -- Turn off mirroring actions to avoid loops
@@ -182,23 +179,37 @@ do
             if option2 and #option2 > 1 then 
                 local message = option2:split(',')
                 if message[1] and message[2] and message[3] then
-                    target = {}
-                    target.name = "Generated Target"
-                    target.index = tonumber(index)
-                    target.id = tonumber(param)
-                    target.x = message[1]
-                    target.y = message[2]
-                    target.z = message[3]
 
-                    set_mirror_target(target)  -- Set the target to be used later
-                    set_warp_message(option) -- Set the message to be used later
-                    set_force_warp(true) -- Starts the process
+                    -- Update the player location
+		            p_loc = get_player_info()
+		            if not p_loc then return end
 
-                    -- Wait for the first modified to be sent in Packets.lua
-                    set_warp_spoof(true) 
+                    local distance = 999
+
+                    -- Calculate distance
+                    if target then distance = ((p_loc.x-target.x)^2 + (p_loc.y-target.y)^2):sqrt() end
+
+                    -- Beyond distance so alter your position
+                    if distance > 6 then
+                        log("Forcing Position")
+                        target = {}
+                        target.name = "Generated Target"
+                        target.index = tonumber(index)
+                        target.id = tonumber(param)
+                        target.x = message[1]
+                        target.y = message[2]
+                        target.z = message[3]
+                        set_warp_spoof(true)
+                    end
 
                     -- Allow the process to begin via the 0x015
                     set_outgoing_warp(true)
+
+                    -- Starts the process
+                    set_force_warp(true)
+
+                    set_mirror_target(target)  -- Set the target to be used later
+                    set_warp_message(option) -- Set the message to be used later
 
                     return -- Let the silmaril.lua take over
                 else
@@ -230,7 +241,7 @@ do
             local ability = get_ability(tonumber(param))
             if not ability then return log("Ability not found") end
             local ability_name = ability.en
-            if is_japanese then ability_name = shift_jis(ability.ja) end
+            if is_japanese then ability_name = to_shift_jis(ability.ja) end
             local command = ability.prefix..' "'..ability_name..'" '..target.id
             send_chat(command)
             log(command)
@@ -238,7 +249,8 @@ do
             local weaponskill = get_weaponskill(tonumber(param))
             if not weaponskill then return log("Weaponskill not found") end
             local weaponskill_name = weaponskill.en
-            if is_japanese then weaponskill_name = shift_jis(weaponskill.ja) end
+            if weaponskill.skill == 26 or weaponskill.skill == 25 then set_command_shot(true) end
+            if is_japanese then weaponskill_name = to_shift_jis(weaponskill.ja) end
             local command = weaponskill.prefix..' "'..weaponskill_name..'" '..target.id
             send_chat(command)
             log(command)
@@ -246,7 +258,7 @@ do
             local ability = get_ability(tonumber(param))
             if not ability then return log("Ability not found") end
             local ability_name = ability.en
-            if is_japanese then ability_name = shift_jis(ability.ja) end
+            if is_japanese then ability_name = to_shift_jis(ability.ja) end
             local command = ability.prefix..' "'..ability_name..'" '..target.id
             send_chat(command)
             log(command)
@@ -254,7 +266,7 @@ do
             local spell = get_spell(tonumber(param))
             if not spell then return log("Spell not found") end
             local spell_name = spell.en
-            if is_japanese then spell_name = shift_jis(spell.ja) end
+            if is_japanese then spell_name = to_shift_jis(spell.ja) end
             local command = spell.prefix..' "'..spell_name..'" '..target.id
             send_chat(command)
             log(command)
@@ -262,11 +274,12 @@ do
             local item = get_item(tonumber(param))
             if not item then return log("Item not found") end
             local item_name = item.en
-            if is_japanese then item_name = shift_jis(item.ja) end
+            if is_japanese then item_name = to_shift_jis(item.ja) end
             local command = '/item "'..item_name..'" '..target.id
             send_chat(command)
             log(command)
         elseif category == '0x10' then
+            set_command_shot(true)
             command = '/ra '..target.id
             send_chat(command)
             log(command)

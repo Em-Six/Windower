@@ -2,21 +2,21 @@ do
     local party_buffs = {}
     local all_buffs = get_res_all_buffs()
 
+    -- This is only for other members in the party (Not the player)
     function run_buffs(data)
 
         -- Clear the table
         party_buffs = {}
 
         local player_id = tonumber(get_player_id())
-        local packet_buffs = get_packet_buffs()
 
         for k = 0, 5 do
-            local formattedString = nil
+            local formattedString = ''
             local buff_string = ''
             local Uid = data:unpack('I', k * 48 + 5)
 
             -- Limit packets being sent and dont send self (grabs it from status update)
-            if Uid and Uid ~= player_id then
+            if Uid and Uid ~= player_id and Uid ~= 0 then
                 formattedString = "partybuffs_"..Uid.."_"
 
                 for i = 1, 32 do
@@ -26,18 +26,10 @@ do
                     end
                 end
 
-                -- Check for held packet buffs
-                for index, target in pairs(packet_buffs) do
-                    if target.id == Uid then
-                        log('Adding Buff ['..target.buff..'] to ['..Uid..'].')
-                        buff_string = buff_string..target.buff..","
-                    end
-                end
-
                 if #buff_string > 1 then buff_string = buff_string:sub(1, #buff_string - 1) end
 
-                formattedString = formattedString..buff_string
-                party_buffs[Uid] = formattedString
+                party_buffs[Uid] = formattedString..buff_string
+                --log(formattedString)
             end
         end
     end

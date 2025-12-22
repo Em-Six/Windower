@@ -63,5 +63,7 @@
         <BuffsY>550</BuffsY>
         <CustomX>380</CustomX>
         <CustomY>350</CustomY>
+        <DisplaySelfSingleTargetBuffs>true</DisplaySelfSingleTargetBuffs>
+        <DisplaySelfTargetAoEBuffs>true</DisplaySelfTargetAoEBuffs>
     </global>
 </settings>

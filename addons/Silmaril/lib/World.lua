@@ -11,7 +11,7 @@ do
         if not world then return formattedString end
 
         get_mob_data() -- refresh the Enemy and NPC lists
-        formattedString = formattedString..tostring(world.menu_open)..','..world.zone..','..world.day..','..world.weather
+        formattedString = formattedString..tostring(world.menu_open)..','..world.zone..','..world.day..','..world.weather..','..tostring(world.mog_house)
         --log(formattedString)
         return formattedString
     end

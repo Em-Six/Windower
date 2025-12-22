@@ -19,9 +19,6 @@ do
         -- Do a first time read on the player
         update_player_info()
 
-        -- Set default values in Player.lua
-        first_time_buffs()
-
         -- gets the spells the player can use via Spells.lua
         get_player_spells()
 
@@ -82,6 +79,8 @@ do
             send_packet(get_all_monster_abilities())
         elseif type == 'monster2' then
             send_packet(get_all_monster_abilities2())
+        elseif type == 'monster3' then
+            send_packet(get_all_monster_abilities3())
         end
         -- Speed up the sync process so send a follow up request
         request()

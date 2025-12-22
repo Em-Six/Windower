@@ -66,12 +66,27 @@ do
         end)
 
         windower.register_event('logout', function()
-            send_packet(get_player_id()..";clear")
+            send_packet(get_player_id()..";reset")
+            set_connected(false)
+            clear_party_location()
         end)
 
         windower.register_event('unload', function()
-            send_packet(get_player_id()..";clear")
+            send_packet(get_player_id()..";reset")
+            set_connected(false)
+            clear_party_location()
         end)
+
+        windower.register_event('chat message', function(message,sender,mode,gm)
+            if get_protection() and get_name_cache()[sender] then sender = get_name_cache()[sender] end
+            if mode == 3 then sender = sender..'>>' end
+            que_packet('chat_'..mode..'_'..sender..'_'..from_shift_jis(message))
+	    end)
+
+    end
+
+    function windower_auto_trans(msg) 
+        return windower.convert_auto_trans(msg)
     end
 
     -- Resources
@@ -164,11 +179,26 @@ do
 
     function get_mob_by_id(value)
         if not value then return end
-	    return windower.ffxi.get_mob_by_id(value)
+        local mob = windower.ffxi.get_mob_by_id(value)
+        if not mob then return end
+        -- Round to two digits
+        mob.x = round(mob.x, 2)
+        mob.y = round(mob.y, 2)
+        mob.z = round(mob.z, 2)
+        mob.heading = round(mob.heading, 2)
+	    return mob
     end
 
     function get_mob_by_index(value)
-	    return windower.ffxi.get_mob_by_index(value)
+        if not value then return end
+        local mob = windower.ffxi.get_mob_by_index(value)
+        if not mob then return end
+        -- Round to two digits
+        mob.x = round(mob.x, 2)
+        mob.y = round(mob.y, 2)
+        mob.z = round(mob.z, 2)
+        mob.heading = round(mob.heading, 2)
+	    return mob
     end
 
     function get_mob_array()
@@ -225,7 +255,11 @@ do
         return is_japanese
     end
 
-    function shift_jis(value)
+    function from_shift_jis(value)
+        return windower.from_shift_jis(value)
+    end
+
+    function to_shift_jis(value)
         return windower.to_shift_jis(value)
     end
 
@@ -302,6 +336,10 @@ do
 
     function inject_packet(value)
 	    packets.inject(value)
+    end
+
+    function inject_packet_outgoing(id, value)
+        windower.packets.inject_outgoing(id, value)
     end
 
     function new_packet(dir, id, values, ...)

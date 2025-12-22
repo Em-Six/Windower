@@ -1,10 +1,21 @@
+local npc_names = T{
+    warp = S{'Proto-Waypoint'},
+}
 return T{
     short_name = 'pwp',
     long_name = 'proto-waypoint',
     npc_plural = 'proto-waypoints',
-    npc_names = T{
-        warp = T{'Proto-Waypoint'},
-    },
+    npc_names = npc_names,
+    zone_npc_list = function(type)
+        local mlist = windower.ffxi.get_mob_list()
+        mlist = table.filter(mlist, function(name)
+            return name ~= "" and npc_names[type]:any(string.startswith+{name})
+        end)
+        mlist = table.map(mlist, function(name)
+            return {name}
+        end)
+        return mlist
+    end,
     validate = function(menu_id, zone, current_activity)
         if not (menu_id == 10209 or -- Ru'Lude Gardens
                menu_id == 10012 or -- Selbina
@@ -30,7 +41,7 @@ return T{
         end
         return missing
     end,
-    help_text = "[sw] pwp [warp/w] [all/a/@all] zone name -- warp to a designated geomagnetic fount. \"all\" sends ipc to all local clients.",
+    help_text = "| Proto-Waypoints |\n[sw] pwp [warp/w] [all/a/@all/party/p] zone name -- warp to a designated geomagnetic fount. \"all\" sends ipc to all local clients.\n-----------------------------",
     build_warp_packets = function(current_activity, zone, p, settings)
         local actions = T{}
         local packet = nil

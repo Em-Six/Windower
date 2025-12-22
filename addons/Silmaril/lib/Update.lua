@@ -1,5 +1,7 @@
 function send_silmaril()
 
+    reset_packet_buffs() -- Remove any old buffs held in Packets.lua
+
     --Begin updates via a heartbeat check
     local packet_data = get_player_id()..';heartbeat'
 
@@ -49,7 +51,4 @@ function send_silmaril()
     send_packet(packet_data)
 
     reset_action_packets()
-
-    reset_packet_buffs()
-
 end

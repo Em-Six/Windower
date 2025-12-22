@@ -6,7 +6,8 @@ do
         ['0x034'] = {},
         ['0x03E'] = {},
         ['0x052'] = {},
-        ['0x05C'] = {},}
+        ['0x05C'] = {},
+        ['0x065'] = {},}
     local last_sequence_out = {
         ['0x036'] = {},
         ['0x05B'] = {},
@@ -19,14 +20,16 @@ do
     function message_in(id, data)
         if id == 0x009 then -- Standard Message
             return packet_in_0x009(data)
+        elseif id == 0x00A then -- Zone In
+            return packet_in_0x00A(data)
         elseif id == 0x00B then -- Zone Response
             return packet_in_0x00B(data)
         elseif id == 0x00D then -- PC Update
             return packet_in_0x00D(data)
         elseif id == 0x00E then -- NPC Update
             return packet_in_0x00E(data)
-        elseif id == 0x05C then -- Dialog information
-            return packet_in_0x05C(data)
+        elseif id == 0x017 then -- Chat
+            return packet_in_0x017(data)
         elseif id == 0x028 then -- Action
             return packet_in_0x028(data)
         elseif id == 0x029 then -- Action Message
@@ -43,10 +46,14 @@ do
             return packet_in_0x038(data)
         elseif id == 0x03E then  -- Open Buy/Sell
             return packet_in_0x03E(data)
+        elseif id == 0x03F then  -- Shop Response
+            return packet_in_0x03F(data)
         elseif id == 0x052 then -- NPC Release
             return packet_in_0x052(data)
         elseif id == 0x053 then -- System Messages
             return packet_in_0x053(data)
+        elseif id == 0x05C then -- Dialog information
+            return packet_in_0x05C(data)
         elseif id == 0x063 then -- Player buff duration
             return packet_in_0x063(data)
         elseif id == 0x065 then -- Repositioning
@@ -79,6 +86,10 @@ do
             return packet_out_0x036(data)
         elseif id == 0x083 then -- Buy Item
             return packet_out_0x083(data)
+        elseif id == 0x0B5 then -- Speech
+            return packet_out_0x0B5(data)
+        elseif id == 0x0B6 then -- Speech
+            return packet_out_0x0B6(data)
         end
     end
 
@@ -97,11 +108,26 @@ do
         end
     end
 
+    -- Zone In
+    function packet_in_0x00A(data)
+        local packet = parse_packet('incoming', data)
+        if not packet then return end
+        local zone = get_res_all_zones()[packet['Zone']]
+        if not zone then return end
+        --Zoned into sortie
+        if zone.en == "Outer Ra'Kaznar [U1]" or zone.en == "Outer Ra'Kaznar [U2]" or zone.en == "Outer Ra'Kaznar [U3]" then
+            log('Sortie zone detected')
+            if packet['X'] == -940 and packet['Y'] == -20 and packet['Z'] == -191.5 then
+                log('Zoning into Sortie - Enable')
+                coroutine.schedule(sortie_delay_start, 3)
+            end
+        end
+    end
+
     -- Zone Response
     function packet_in_0x00B(data)
         -- Turn off move_to_exit
         zone_completed()
-
         -- Reload dress up if it hasn't been
         if get_dressup() and get_protection() then
             set_dressup(false)
@@ -115,8 +141,18 @@ do
 
     -- NPC Update
     function packet_in_0x00E(data)
-        --Sortie.lua Addon
-        bitzer_Check(data)
+        local w = get_world()
+        if not w then return end
+        local zone = get_res_all_zones()[w.zone]
+        if not zone then return end
+        --Sortie.lua Addon for bitzer locations
+        if zone.en == "Outer Ra'Kaznar [U1]" or zone.en == "Outer Ra'Kaznar [U2]" or zone.en == "Outer Ra'Kaznar [U3]" then
+            bitzer_Check(data)
+        end
+    end
+
+    -- Chat
+    function packet_in_0x017(data)
     end
 
     -- [1] = 'Melee attack',
@@ -520,8 +556,7 @@ do
     -- Action Message
     function packet_in_0x029(data)
         local packet = parse_packet('incoming', data)
-        if not packet then return true end
-
+        if not packet then return end
         local buff_wear = S{64,204,206,321,322,341,342,343,344,350,351,378,531,647}    
         if packet['Message'] == 48 then -- Reraise Fail
             que_packet('packet_castfail_'..packet['Param 1']..'_'..packet['Target'])
@@ -534,23 +569,44 @@ do
 
     -- NPC Interaction Type 1
     function packet_in_0x032(data)
+    set_interaction_type("Type 1")
+        if process_NPC(data, '0x032') then return true end
+    end
+
+    -- String NPC Interaction
+    function packet_in_0x033(data)
+    set_interaction_type("Type String")
+        if process_NPC(data, '0x033') then return true end
+    end
+
+    -- NPC Interaction Type 2
+    function packet_in_0x034(data)
+    set_interaction_type("Type 2")
+        if process_NPC(data, '0x034') then return true end
+    end
+
+    function process_NPC(data, type)
         -- This is in response to the client sending a Action packet to start interaction.
         local packet = parse_packet('incoming', data)
+        if not packet then return end
 
         -- Store a temp menu ID to cancel the active dialog for warps/doors
         set_temp_menu_id(packet['Menu ID'])
         
         log('Menu ID ['..packet['Menu ID']..']')
 
+        log(packet)
+        log(type)
+
         -- Block the menu on a trade
-        if get_trade() and not get_mirroring() then npc_inject() return true end
+        if get_trade() and not get_mirroring() then npc_inject() log('got here') return true end
 
         -- Non standard way to start a mirror (clears so set menu after)
         if get_mirror_on() and not get_mirroring() then
 
-            if not check_incoming_sequence('0x032',data) then return true end
+            if not check_incoming_sequence(type,data) then return true end
 
-            log("interact called 0x032")
+            log("interact called "..type)
             packet['Target'] = packet['NPC']
             local p = get_player_data()
             for index, value in ipairs(p.buffs) do
@@ -561,110 +617,29 @@ do
 
         if get_injecting() and not get_mid_inject() then
 
-            if not check_incoming_sequence('0x032',data) then return true end
+            if not check_incoming_sequence(type,data) then return true end
 
             -- Assign the Menu ID
             set_menu_id(packet['Menu ID'])
             set_interaction_type("Type 1")
 
-            -- Menu will be blocked so you can go ahead and start sending the messages
-            log('npc_inject() called from [0x032] with Menu ID of ['..get_menu_id()..']')
-            npc_inject()
+            if get_mirror_message()[1] ~= "Poke" then
+                -- Menu will be blocked so you can go ahead and start sending the messages
+                log('npc_inject() called from '..type..' with Menu ID of ['..get_menu_id()..']')
+                npc_inject()
 
-            --Blocks the menu
-            log("Blocking on the 0x032 Packet [Type 1]")
-            return true
-        end
-    end
-
-    -- String NPC Interaction
-    function packet_in_0x033(data)
-        -- This is in response to the client sending a Action packet to start interaction.
-        local packet = parse_packet('incoming', data)
-
-        -- Store a temp menu ID to cancel the active dialog for warps/doors
-        set_temp_menu_id(packet['Menu ID'])
-
-        log('Menu ID ['..packet['Menu ID']..']')
-
-        -- Block the menu on a trade
-        if get_trade() and not get_mirroring() then npc_inject() return true end
-
-        -- Non standard way to start a mirror (clears so set menu after)
-        if get_mirror_on() and not get_mirroring() then
-
-            if not check_incoming_sequence('0x033',data) then return true end
-
-            log("interact called 0x033")
-            packet['Target'] = packet['NPC']
-            local p = get_player_data()
-            for index, value in ipairs(p.buffs) do
-                if value == 254 then log('Battle Field Exit') clear_npc_data() return end
+                --Blocks the menu
+                log('Blocking on the '..type..' Packet')
+                return true
+            else
+                log('Poke Detected')
+                clear_npc_data()
             end
-            npc_mirror_start(packet)
         end
 
-        if get_injecting() and not get_mid_inject() then
+        -- Augmentation addon
+        if get_augmentation_enabled() and type == '0x034' then if augmentation_npc_response(packet) then return true end end
 
-            if not check_incoming_sequence('0x033',data) then return true end
-
-            -- Assign the Menu ID
-            set_menu_id(packet['Menu ID'])
-            set_interaction_type("Type String")
-
-            -- Menu will be blocked so you can go ahead and start sending the messages
-            log('npc_inject() called from [0x033] with Menu ID of ['..get_menu_id()..']')
-            npc_inject()
-
-            --Blocks the menu
-            log("Blocking on the 0x033 Packet [String]")
-            return true
-        end
-    end
-
-    -- NPC Interaction Type 2
-    function packet_in_0x034(data)
-        -- This is in response to the client sending a Action packet to start interaction.
-        local packet = parse_packet('incoming', data)
-
-        -- Store a temp menu ID to cancel the active dialog for warps/doors
-        set_temp_menu_id(packet['Menu ID'])
-
-        log('Menu ID ['..packet['Menu ID']..']')
-
-        -- Block the menu on a trade
-        if get_trade() and not get_mirroring() then npc_inject() return true end
-
-        -- Non standard way to start a mirror (clears so set menu after)
-        if get_mirror_on() and not get_mirroring() then
-
-            if not check_incoming_sequence('0x034',data) then return true end
-
-            log("interact called 0x034")
-            packet['Target'] = packet['NPC']
-            local p = get_player_data()
-            for index, value in ipairs(p.buffs) do
-                if value == 254 then log('Battle Field Exit') clear_npc_data() return end
-            end
-            npc_mirror_start(packet)
-        end
-
-        if get_injecting() and not get_mid_inject() then
-
-            if not check_incoming_sequence('0x034',data) then return true end
-
-            -- Assign the Menu ID
-            set_menu_id(packet['Menu ID'])
-            set_interaction_type("Type 2")
-
-            -- Menu will be blocked so you can go ahead and start sending the messages
-            log('npc_inject() called from [0x034] with Menu ID of ['..get_menu_id()..']')
-            npc_inject()
-
-            --Blocks the menu
-            log("Blocking on the 0x034 Packet [Type 2]")
-            return true
-        end
     end
 
     -- Update Character
@@ -737,7 +712,17 @@ do
         if get_injecting() then
             if not check_incoming_sequence('0x03E',data) then return true end
             log("Blocking on the 0x03E Packet [Buy/Sell Menu]")
+            set_buy_sell(true)
             return true
+        end
+    end
+
+    -- Shop buy response
+    function packet_in_0x03F(data)
+        -- Continue the injecting
+        if get_injecting() then
+            log("Shop Response 0x03F Packet [Buy/Sell Menu]")
+            npc_inject()
         end
     end
 
@@ -774,6 +759,8 @@ do
 
     -- Dialog information response
     function packet_in_0x05C(data)
+        log('Incoming 0x05C')
+        if get_augmentation_enabled() then start_oseem(data) end -- Augmentation addon
         if not get_injecting() then return end
         if not check_incoming_sequence('0x05C',data) then return true end
         log('npc_inject() called from [0x05C]')
@@ -789,22 +776,30 @@ do
 
     -- Repositioning
     function packet_in_0x065(data)
-        local packet = parse_packet('incoming', data)
-        if not packet then return end
+        -- Turn off force warps if on
         set_force_warp(false)
-        sortie_position() --Sortie.lua Addon
+        local packet = check_incoming_sequence('0x065', data)
+        if not packet then return end
         local w = get_world()
         if not w then return end
         local zone = get_res_all_zones()[w.zone]
         if not zone then return end
-        if zone.en ~= "Walk of Echoes [P1]" and zone.en ~= "Walk of Echoes [P2]" then return end
+
         log('Repositioning Packet: ['..packet['X']..'] ['..packet['Y']..'] ['..packet['Z']..']')
-        if packet['X'] == 20 and packet['Y'] == 12 and packet['Z'] == -.5 then
-            if get_enabled() then
+
+        -- Used to turn off when warped back to lobby
+        if zone.en == "Walk of Echoes [P1]" or zone.en == "Walk of Echoes [P2]" then
+            if packet['X'] == 20 and packet['Y'] == 12 and packet['Z'] == -.5 then
                 set_enabled(false)
                 que_packet("stop")
             end
         end
+
+        -- Used to Identify areas
+        if zone.en == "Outer Ra'Kaznar [U1]" or zone.en == "Outer Ra'Kaznar [U2]" or zone.en == "Outer Ra'Kaznar [U3]" then
+            reposition_packet(packet)
+        end
+
     end
 
     -- Pet status update
@@ -845,6 +840,10 @@ do
         if not packet then return end
         if packet['Category'] ~= 1 then return end
         log("Reraise Menu")
+        coroutine.schedule(delay_raise, 2)
+    end
+
+    function delay_raise()
         que_packet('packet_reraise_')
     end
 
@@ -894,16 +893,18 @@ do
 
         -- Start the spoof sequence
         if get_force_warp() then
+
             -- Modifiy the packet
             local target = get_mirror_target()
-
-            packet['X'] = tonumber(target.x)
-            packet['Y'] = tonumber(target.y)
-            packet['Z'] = tonumber(target.z)
+            if target and target.name == "Generated Target" then
+                packet['X'] = tonumber(target.x)
+                packet['Y'] = tonumber(target.y)
+                packet['Z'] = tonumber(target.z)
+            end
 
             -- This allows the first 0x015 to position before trying to inject
             if get_warp_spoof() then
-                set_warp_spoof(false) 
+                set_warp_spoof(false)
             else
                 if get_outgoing_warp() then
                     set_outgoing_warp(false)
@@ -984,12 +985,13 @@ do
     -- Menu Item (Trade)
     function packet_out_0x036(data)
         if not get_mirror_on() then return end
-        local packet = check_outcoming_sequence('0x036',data)
+        local packet = check_outgoing_sequence('0x036',data)
         if not packet then return end
 
         -- Start the mirroring actions if not black listed
         set_trade(true)
         npc_mirror_start(packet)
+        log('Trade Packet Out Detected')
 
         -- Do nothing if its blacklisted
         if not get_mirroring() then return end
@@ -1015,10 +1017,9 @@ do
 
     -- User dialog
     function packet_out_0x05B(data)
-
         -- Used with automatic dialogs like warps/doors
         if get_block_release() then
-            local packet = check_outcoming_sequence('0x05B',data)
+            local packet = check_outgoing_sequence('0x05B',data)
             if not packet then return end
             set_block_release(false)
             log('Calling npc_inject from the blocked outoing 0x05B')
@@ -1029,7 +1030,7 @@ do
         end
 
         if get_mirror_on() then
-            local packet = check_outcoming_sequence('0x05B',data)
+            local packet = check_outgoing_sequence('0x05B',data)
             if not packet then return end
             npc_out_dialog(packet)
         end
@@ -1038,7 +1039,7 @@ do
     -- Warp request
     function packet_out_0x05C(data)
         if not get_mirror_on() then return end
-        local packet = check_outcoming_sequence('0x05C',data)
+        local packet = check_outgoing_sequence('0x05C',data)
         if not packet then return end
         npc_out_warp(packet)
     end
@@ -1080,10 +1081,22 @@ do
     -- Buy Item
     function packet_out_0x083(data)
         if not get_mirror_on() then return end
-        local packet = check_outcoming_sequence('0x083',data)
+        local packet = check_outgoing_sequence('0x083',data)
         if not packet then return end
         npc_out_buy(packet)
         log("npc_out_buy() called from [0x083]")
+    end
+
+    -- Outgoing Message
+    function packet_out_0x0B5(data)
+        local packet = parse_packet('outgoing', data)
+        que_packet('chat_'..packet['Mode']..'_'..get_player_name()..'_'..from_shift_jis(windower_auto_trans(packet['Message'])))
+    end
+
+    -- Outgoing Tell
+    function packet_out_0x0B6(data)
+        local packet = parse_packet('outgoing', data)
+        que_packet('chat_3_>>'..packet['Target Name']..'_'..from_shift_jis(windower_auto_trans(packet['Message'])))
     end
 
     -----------------------------------------------------------------------
@@ -1094,6 +1107,7 @@ do
     function check_incoming_sequence(id, data)
         -- Check to verify unique sequence ID
         local packet = parse_packet('incoming', data)
+        if not packet then return end
         if packet_validate(last_sequence_in[id], packet, id) then 
             log("Duplicate ["..id.."] Sequence ["..packet['_sequence']..']')
             packet_log(packet, 'Incoming')
@@ -1103,7 +1117,7 @@ do
         return packet
     end
 
-    function check_outcoming_sequence(id, data)
+    function check_outgoing_sequence(id, data)
         -- Check to verify unique sequence ID
         local packet = parse_packet('outgoing', data)
         if packet_validate(last_sequence_out[id], packet, id) then 

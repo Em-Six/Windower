@@ -1,11 +1,23 @@
+local npc_names = T{
+    warp = S{'Home Point'},
+    set = S{'Home Point'},
+}
 return T{ -- option: 2
-    short_name = 'hp',
+    short_name = {'hp','ho','home'},
     long_name = 'homepoint',
     npc_plural = 'homepoints',
-    npc_names = T{
-        warp = T{'Home Point'},
-        set = T{'Home Point'},
-    },
+    npc_names = npc_names,
+    zone_npc_list = function(type)
+        local mlist = windower.ffxi.get_mob_list()
+        mlist = table.filter(mlist, function(name)
+            return name ~= "" and npc_names[type]:any(string.startswith+{name})
+        end)
+        mlist = table.map(mlist, function(name)
+            local num = name:match('%d+$')
+            return {name=name, key=(num and tostring(num))}
+        end)
+        return mlist
+    end,
     validate = function(menu_id, zone, current_activity)
         if not(menu_id >= 8700 and menu_id <= 8704) then
             return "Incorrect menu detected! Menu ID: "..menu_id
@@ -35,7 +47,7 @@ return T{ -- option: 2
         end
         return missing
     end,
-    help_text = "[sw] hp [warp/w] [all/a/@all] zone name [homepoint_number] -- warp to a designated homepoint. \"all\" sends ipc to all local clients.\n[sw] hp [all/a/@all] set -- set the closest homepoint as your return homepoint",
+    help_text = "| Homepoints |\n[sw] hp [warp/w] [all/a/@all/party/p] zone name [homepoint_number] -- warp to a designated homepoint. \"all\" sends ipc to all local clients.\n[sw] hp [all/a/@all] set -- set the closest homepoint as your return homepoint\n-----------------------------",
     sub_zone_targets = S{'entrance', 'mog house', 'auction house', '1', '2', '3', '4', '5', '6', '7', '8', '9', },
     build_warp_packets = function(current_activity, zone, p, settings)
         local actions = T{}
@@ -291,8 +303,8 @@ return T{ -- option: 2
             ['2'] = { index = 15,  expac = 0, zone = 236, npc = 73, x = 41.000003814697, z = 8.5, y = -238.00001525879, h = 127, unknown1 = 983043},
             ['3'] = { index = 101, expac = 0, zone = 236, npc = 74, x = -126.00000762939, z = -6.0000004768372, y = 11.000000953674, h = 95, unknown1 = 6619139},},
         ['Metalworks'] = {
-            ['1'] = { index = 16,  expac = 0, zone = 237, npc = 213, x = 45.000003814697, z = -14.000000953674, y = -18, h = 63, unknown1 = 1048579},
-            ['2'] = { index = 102, expac = 0, zone = 237, npc = 214, x = -77, z = 2, y = 3.0000002384186, h = 127, unknown1 = 6684675},},
+            ['1'] = { index = 16,  expac = 0, zone = 237, npc = 214, x = 45.000003814697, z = -14.000000953674, y = -18, h = 63, unknown1 = 1048579},
+            ['2'] = { index = 102, expac = 0, zone = 237, npc = 215, x = -77, z = 2, y = 3.0000002384186, h = 127, unknown1 = 6684675},},
         ['Windurst Waters'] = {
             ['Entrance'] = { shortcut = '1', },
             ['Mog House'] = { shortcut = '2', },
@@ -324,9 +336,9 @@ return T{ -- option: 2
         ['Ru\'Lude Gardens'] = {
             ['Mog House'] = { shortcut = '2', },
             ['Auction House'] = { shortcut = '3', },
-            ['1'] = { index = 29, expac = 0, zone = 243, npc = 256, x = -6.0000004768372, z = 3.0000002384186, y = -1, h = 191, unknown1 = 1900547},
-            ['2'] = { index = 30, expac = 0, zone = 243, npc = 257, x = 53.000003814697, z = 9, y = -56.000003814697, h = 63, unknown1 = 1966083},
-            ['3'] = { index = 31, expac = 0, zone = 243, npc = 258, x = -67, z = 6.0000004768372, y = -26.000001907349, h = 191, unknown1 = 2031619},},
+            ['1'] = { index = 29, expac = 0, zone = 243, npc = 301, x = -6.0000004768372, z = 3.0000002384186, y = -1, h = 191, unknown1 = 1900547},
+            ['2'] = { index = 30, expac = 0, zone = 243, npc = 302, x = 53.000003814697, z = 9, y = -56.000003814697, h = 63, unknown1 = 1966083},
+            ['3'] = { index = 31, expac = 0, zone = 243, npc = 303, x = -67, z = 6.0000004768372, y = -26.000001907349, h = 191, unknown1 = 2031619},},
         ['Upper Jeuno'] = {
             ['Entrance'] = { shortcut = '1', },
             ['Mog House'] = { shortcut = '2', },
@@ -365,8 +377,8 @@ return T{ -- option: 2
         ['Eastern Adoulin'] = {
             ['Auction House'] = { shortcut = '2', },
             ['Mog House'] = { shortcut = '2', },
-            ['1'] = { index = 45,  expac = 11, zone = 257, npc = 87, x = -52.857002258301, z = -0.15000000596046, y = 58.877002716064, h = 223, unknown1 = 2949123},
-            ['2'] = { index = 110, expac = 11, zone = 257, npc = 88, x = -50.500003814697, z = -0.15000000596046, y = -95.500007629395, h = 95, unknown1 = 7208963},},
+            ['1'] = { index = 45,  expac = 11, zone = 257, npc = 88, x = -52.857002258301, z = -0.15000000596046, y = 58.877002716064, h = 223, unknown1 = 2949123},
+            ['2'] = { index = 110, expac = 11, zone = 257, npc = 89, x = -50.500003814697, z = -0.15000000596046, y = -95.500007629395, h = 95, unknown1 = 7208963},},
         ['Ceizak Battlegrounds'] = { index = 46, expac = 11, zone = 261, npc = 587},
         ['Foret de Hennetiel'] = { index = 47, expac = 11, zone = 262, npc = 611},
         ['Morimar Basalt Fields'] = { index = 48, expac = 11, zone = 265, npc = 838},
@@ -377,8 +389,8 @@ return T{ -- option: 2
         ['Palborough Mines'] = { index = 53, expac = 0, zone = 143, npc = 433},
         ['Giddeus'] = { index = 54, expac = 0, zone = 145, npc = 480},
         ['Fei\'Yin'] = {
-            ['1'] = { index = 55, expac = 0, zone = 204, npc = 477, x = 242.00001525879, z = -24.500001907349, y = 62.000003814697, h = 0, unknown1 = 3604483},
-            ['2'] = { index = 94, expac = 0, zone = 204, npc = 478, x = 102.34400177002, z = -0.11300000548363, y = 269.36199951172, h = 191, unknown1 = 6160387},},
+            ['1'] = { index = 55, expac = 0, zone = 204, npc = 476, x = 242.00001525879, z = -24.500001907349, y = 62.000003814697, h = 0, unknown1 = 3604483},
+            ['2'] = { index = 94, expac = 0, zone = 204, npc = 477, x = 102.34400177002, z = -0.11300000548363, y = 269.36199951172, h = 191, unknown1 = 6160387},},
         ['Quicksand Caves'] = {
             ['1'] = { index = 56, expac = 1, zone = 208, npc = 593, x = -984.00006103516, z = 17, y = -290, h = 191, unknown1 = 3670019},
             ['2'] = { index = 96, expac = 1, zone = 208, npc = 594, x = 573, z = 8.9500007629395, y = -500.00003051758, h = 191, unknown1 = 6291459},},
@@ -434,9 +446,9 @@ return T{ -- option: 2
         ['The Boyahda Tree'] = { index = 92, expac = 1, zone = 153, npc = 511},
         ['Ifrit\'s Cauldron'] = { index = 95, expac = 1, zone = 205, npc = 379},
         ['Xarcabard \[S\]'] = { index = 111, expac = 4, zone = 137, npc = 891},
-        ['Leafallia'] = { index = 112, expac = 11, zone = 281, npc = 59},
+        ['Leafallia'] = { index = 112, expac = 11, zone = 281, npc = 66},
         ['Castle Zvahl Keep \[S\]'] = { index = 113, expac = 4, zone = 155, npc = 707},
-        ['Qufim Island'] = { index = 114, expac = 0, zone = 126, npc = 514},
+        ['Qufim Island'] = { index = 114, expac = 0, zone = 126, npc = 521},
         ['Toraimarai Canal'] = { index = 115, expac = 0, zone = 169, npc = 416},
         ['Ra\'Kaznar Inner Court'] = { index = 116, expac = 11, zone = 276, npc = 550},
         ['Misareaux Coast'] = { index = 117, expac = 2, zone = 25, npc = 394},

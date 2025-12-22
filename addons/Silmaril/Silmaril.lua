@@ -1,6 +1,6 @@
 _addon.name = 'Silmaril'
 _addon.author = 'Mirdain'
-_addon.version = '3.6 Main'
+_addon.version = '4.0 Main'
 _addon.description = 'A multi-boxer tool'
 _addon.commands = {'silmaril','sm'}
 
@@ -13,7 +13,6 @@ require 'coroutine'
 require 'pack'
 
 require 'lib./Windower' -- Handles all the windower resources
-require 'lib./Ashita' -- Handles all the ashita resources
 
 -- Core components
 require 'lib./Abilities' --Gets information about the player abilities
@@ -46,11 +45,6 @@ require 'lib./Protection' -- Credit goes to witnessprotection for the idea - 'Li
 -- Addons
 require 'lib./Addons./Sortie' -- Addon to help track objectives
 require 'lib./Addons./Insight' -- Replacement for TP part to make windower4 more efficient
-
+require 'lib./Addons./Augmentation' -- Automates the augmentation process for Alluvian Skirmish gear and JSE Capes
 
 windower_hook()
-ashita_hook()
-
-
-log('teset')
-

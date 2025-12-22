@@ -1,12 +1,23 @@
+local npc_names = T{
+    warp = S{'Runic Portal'},
+    ['return'] = S{'Runic Portal'},
+    assault = S{'Runic Portal'},
+}
 return T{
     short_name = 'po',
     long_name = 'runic portal',
     npc_plural = 'runic portals',
-    npc_names = T{
-        warp = T{'Runic Portal'},
-        ['return'] = T{'Runic Portal'},
-        assault = T{'Runic Portal'},
-    },
+    npc_names = npc_names,
+    zone_npc_list = function(type)
+        local mlist = windower.ffxi.get_mob_list()
+        mlist = table.filter(mlist, function(name)
+            return name ~= "" and npc_names[type]:any(string.startswith+{name})
+        end)
+        mlist = table.map(mlist, function(name)
+            return {name=name}
+        end)
+        return mlist
+    end,
     validate = function(menu_id, zone, current_activity)
         if (current_activity.sub_cmd == nil or current_activity.sub_cmd == 'assault') and zone ~= 50 then
             return "Not in Whitegate!"
@@ -54,7 +65,7 @@ return T{
         end
         return missing
     end,
-    help_text = "[sw] po [warp/w] [all/a/@all] staging point -- warp to a designated staging point.\n[sw] po [all/a/@all] return -- Return to Whitegate from the staging point.\n[sw] po [all/a/@all] assault -- Head to your current assault tag location.\n[sw] ew [all/a/@all] domain return -- return Elvorseal.\n[sw] ew [all/a/@all] exit -- leave escha.",
+    help_text = "| Portals |\n[sw] po [warp/w] [all/a/@all/party/p] staging point -- warp to a designated staging point.\n[sw] po [all/a/@all] return -- Return to Whitegate from the staging point.\n[sw] po [all/a/@all] assault -- Head to your current assault tag location.\n-----------------------------",
     sub_zone_targets =  nil,
     auto_select_zone = function(zone)
     end,
