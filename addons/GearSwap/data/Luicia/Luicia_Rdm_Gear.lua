@@ -90,7 +90,7 @@ function init_gear_sets()
 	}
 		
 	sets.precast.FC.Impact = set_combine(sets.precast.FC, {head=empty,body="Twilight Cloak"})
-	sets.precast.FC.Dispelga = set_combine(sets.precast.FC, {main="Daybreak",sub="Genmei Shield"})
+	sets.precast.FC.Dispelga = set_combine(sets.precast.FC, {main="Daybreak",sub="Sacro Bulwark"})
        
 	-- Weaponskill sets
 	-- Default set for any weaponskill that isn't any more specifically defined
@@ -191,7 +191,7 @@ function init_gear_sets()
 
 	sets.midcast['Enhancing Magic'] = {main="Colada",sub="Ammurapi Shield",range=empty,ammo="Staunch Tathlum",
 		head=gear.telchine_enhancing_head,neck="Dls. Torque +2",ear1="Odnowa Earring +1",ear2="Lethargy Earring +1",
-		body="Viti. Tabard +3",hands="Atrophy Gloves",ring1=gear.stikini1,ring2=gear.stikini2,
+		body="Viti. Tabard +3",hands="Atrophy Gloves +3",ring1=gear.stikini1,ring2=gear.stikini2,
 		back="Ghostfyre Cape",waist="Embla Sash",legs=gear.telchine_enhancing_legs,feet="Leth. Houseaux +2"}
 
 	--Atrophy Gloves are better than Lethargy for me despite the set bonus for duration on others.		
@@ -332,17 +332,17 @@ function init_gear_sets()
 	-- Idle sets
 	sets.idle = {
 		main="Daybreak",
-		sub="Genmei Shield",
+		sub="Sacro Bulwark",
 	    ammo="Homiliary",
 		head="Vitiation Chapeau +3",
-		body="Lethargy Sayon +2",
+		body="Nyame Mail",
 		hands="Bunzi's Gloves",
 		legs="Bunzi's Pants",
 		feet="Bunzi's Sabots",
 		neck="Duelist's Torque +2", -- DYnamis RP Swap
 		--neck="Warder's Charm +1",
 		waist="Carrier's Sash",
-		left_ear="Odnowa Earring +1",
+		left_ear="Alabaster Earring",
 		right_ear="Etiolation Earring",
 		left_ring=gear.stikini1,
 		right_ring=gear.stikini2,

@@ -19,19 +19,20 @@
     <addon>Silence</addon>
     <addon>SubTarget</addon>
     <addon>timestamp</addon>
-    <addon>TParty</addon>
     <addon>MountMuzzle</addon>
     <addon>autojoin</addon>
     <addon>lottery</addon>
     <addon>instaLS</addon>
     <addon>NoCampaignMusic</addon>
-    <addon>targetinfo</addon>
     <addon>enternity</addon>
     <addon>FastCS</addon>
     <addon>PetTP</addon>
     <addon>NyzulHelper</addon>
     <addon>shortcuts</addon>
     <addon>cancel</addon>
+    <addon>switch_focus</addon>
+    <addon>Treasury</addon>
+    <addon>remember</addon>
     <plugin>DelayMeNot</plugin>
     <plugin>FFXIDB</plugin>
     <plugin>LightLuggage</plugin>

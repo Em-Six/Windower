@@ -7,7 +7,7 @@ function user_job_setup()
     state.IdleMode:options('Normal', 'PDT', 'Refresh')
 	state.HybridMode:options('Normal','DT')
 	state.ExtraMeleeMode = M{['description']='Extra Melee Mode', 'None', 'DWMax'}
-	state.Weapons:options('SavageBlade','LeadenMelee','LeadenRanged','LastStandMelee','LastStandRanged','Aeolian','HotShot','Dynamis')
+	state.Weapons:options('SavageBlade','LeadenMelee','LeadenRanged','LastStandMelee','LastStandRanged','Aeolian','HotShot','Dynamis','Trial')
 	state.CompensatorMode:options('Always','300','1000','Never')
 
 	autows = "Savage Blade"
@@ -52,6 +52,7 @@ function init_gear_sets()
 	sets.weapons.Aeolian = {main=gear.rostam_b,sub="Tauret",range="Anarchy +2"}
 	sets.weapons.HotShot = {main=gear.rostam_b,sub="Tauret",range="Fomalhaut"}
 	sets.weapons.Dynamis = {main=gear.rostam_b,sub=gear.rostam_a,range="Anarchy +2"}
+	sets.weapons.Trial = {main="Firetongue",sub="Firetongue",range="Anarchy +2"}
 
     -- Precast Sets
 
@@ -325,7 +326,7 @@ function init_gear_sets()
 		waist="Carrier's Sash",
 		left_ear="Etiolation Earring",
 		right_ear="Odnowa Earring +1",
-		left_ring="Defending Ring",
+		left_ring="Murky Ring",
 		right_ring="Shadow Ring",
 		back="Shadow Mantle",
 	}
@@ -364,8 +365,8 @@ function init_gear_sets()
 		waist="Windbuffet Belt +1",
 		left_ear="Brutal Earring",
 		right_ear="Telos Earring",
-		left_ring="Epona's Ring",
-		right_ring="Lehko's Ring",
+		left_ring="Murky Ring",
+		right_ring="Epona's Ring",
 		back=gear.tp_da_jse_back,
 	}
     

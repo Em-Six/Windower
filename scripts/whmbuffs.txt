@@ -1,7 +1,0 @@
-input /ma "Protectra V" <me>;
-wait 5; 
-input /ma "Shellra V" <me>; 
-wait 5;
-input /ma "Boost-STR" <me>;
-wait 5;
-input /ma "Auspice" <me>;

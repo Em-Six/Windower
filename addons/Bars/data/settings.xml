@@ -310,6 +310,7 @@
         </colors>
         <first_run>false</first_run>
         <icons>
+            <aggro_list_highlight>●</aggro_list_highlight>
             <cancelled>×</cancelled>
             <casting>≈</casting>
             <completed>√</completed>
@@ -635,6 +636,7 @@
                 <pulse_when_tp_ready>true</pulse_when_tp_ready>
             </animations>
             <clear_action_delay>5.5</clear_action_delay>
+            <clear_action_delay_for_rolls>10</clear_action_delay_for_rolls>
             <colorize_spells>true</colorize_spells>
             <condense_target_and_subtarget_bars>false</condense_target_and_subtarget_bars>
             <condense_target_name_and_sp_name>
@@ -658,6 +660,7 @@
             <remove_tachi_blade_from_ws_name>true</remove_tachi_blade_from_ws_name>
             <short_skillchain_names>true</short_skillchain_names>
             <show_action_status_indicators>true</show_action_status_indicators>
+            <show_automaton_mp>true</show_automaton_mp>
             <show_commas_on_numbers>true</show_commas_on_numbers>
             <show_dyna_jobs>true</show_dyna_jobs>
             <show_fancy_rolls>true</show_fancy_rolls>
@@ -731,6 +734,7 @@
                     <x>576</x>
                     <y>180</y>
                 </pos>
+                <show>true</show>
                 <show_monster_level>false</show_monster_level>
                 <show_monster_target>true</show_monster_target>
                 <spaces_between_text_parts>1</spaces_between_text_parts>
@@ -756,8 +760,8 @@
                 <font>Consolas</font>
                 <italic>false</italic>
                 <pos>
-                    <x>-155</x>
-                    <y>1296</y>
+                    <x>-750</x>
+                    <y>1145</y>
                 </pos>
                 <right_align>true</right_align>
                 <show>true</show>
@@ -776,7 +780,7 @@
                     <r>255</r>
                 </text_color>
                 <text_size>9</text_size>
-                <vertical_spacing_between_players>20</vertical_spacing_between_players>
+                <vertical_spacing_between_players>46</vertical_spacing_between_players>
             </party_1_actions>
             <party_2_actions>
                 <bold>true</bold>
@@ -897,6 +901,7 @@
                     <x>1000</x>
                     <y>925</y>
                 </pos>
+                <show>true</show>
                 <show_monster_level>false</show_monster_level>
                 <show_monster_target>true</show_monster_target>
                 <spaces_between_text_parts>1</spaces_between_text_parts>

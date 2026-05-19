@@ -7717,6 +7717,7 @@ return {
     [10033] = {id=10033,en="Kupon A-AF+3",ja="クーポンA-AF+3",enl="Mog Kupon A-AF+3",jal="クーポンA-AF+3",category="General",flags=28736,stack=99,targets=0,type=1},
     [10034] = {id=10034,en="Kupon A-Rel+3",ja="クーポンA-Rel+3",enl="Mog Kupon A-Rel+3",jal="クーポンA-Rel+3",category="General",flags=28736,stack=99,targets=0,type=1},
     [10035] = {id=10035,en="Kupon A-Emp+2",ja="クーポンA-Emp+2",enl="Mog Kupon A-Emp+2",jal="クーポンA-Emp+2",category="General",flags=28736,stack=99,targets=0,type=1},
+    [10036] = {id=10036,en="Bronzite",ja="ブロンザイト",enl="chunk of bronzite",jal="ブロンザイト",category="General",flags=20564,stack=99,targets=0,type=1},
     [10049] = {id=10049,en="♪Raptor",ja="♪ラプトル",enl="♪Raptor",jal="♪ラプトル",category="General",flags=61504,stack=1,targets=0,type=1},
     [10050] = {id=10050,en="♪Tiger",ja="♪剣虎",enl="♪Tiger",jal="♪剣虎",category="General",flags=61504,stack=1,targets=0,type=1},
     [10051] = {id=10051,en="♪Crab",ja="♪クラブ",enl="♪Crab",jal="♪クラブ",category="General",flags=61504,stack=1,targets=0,type=1},
@@ -20116,7 +20117,7 @@ return {
     [24124] = {id=24124,en="Perfection Plate.",ja="パーフェクプレート",enl="perfection platemail",jal="パーフェクプレート",category="Armor",flags=63552,item_level=119,jobs=9218,level=99,races=510,slots=32,stack=1,superior_level=4,targets=0,type=5},
     [24125] = {id=24125,en="Revelation Plate.",ja="レベレプレート",enl="revelation platemail",jal="レベレプレート",category="Armor",flags=63552,item_level=119,jobs=9218,level=99,races=510,slots=32,stack=1,superior_level=5,targets=0,type=5},
     [24126] = {id=24126,en="Hope Gauntlets",ja="ホープガントレ",enl="hope gauntlets",jal="ホープガントレ",category="Armor",flags=63552,item_level=119,jobs=9218,level=99,races=510,slots=64,stack=1,superior_level=4,targets=0,type=5},
-    [24127] = {id=24127,en="Perfection Gaunt.",ja="パーフェクガントレ",enl="perfectionn gauntlets",jal="パーフェクガントレ",category="Armor",flags=63552,item_level=119,jobs=9218,level=99,races=510,slots=64,stack=1,superior_level=4,targets=0,type=5},
+    [24127] = {id=24127,en="Perfection Gaunt.",ja="パーフェクガントレ",enl="perfection gauntlets",jal="パーフェクガントレ",category="Armor",flags=63552,item_level=119,jobs=9218,level=99,races=510,slots=64,stack=1,superior_level=4,targets=0,type=5},
     [24128] = {id=24128,en="Revelation Gaunt.",ja="レベレガントレ",enl="revelation gauntlets",jal="レベレガントレ",category="Armor",flags=63552,item_level=119,jobs=9218,level=99,races=510,slots=64,stack=1,superior_level=5,targets=0,type=5},
     [24129] = {id=24129,en="Hope Brais",ja="ホープブレー",enl="hope brais",jal="ホープブレー",category="Armor",flags=63552,item_level=119,jobs=9218,level=99,races=510,slots=128,stack=1,superior_level=4,targets=0,type=5},
     [24130] = {id=24130,en="Perfection Brais",ja="パーフェクブレー",enl="perfection brais",jal="パーフェクブレー",category="Armor",flags=63552,item_level=119,jobs=9218,level=99,races=510,slots=128,stack=1,superior_level=4,targets=0,type=5},
@@ -20261,6 +20262,7 @@ return {
     [24269] = {id=24269,en="Wrath Leggings",ja="怨嗟の脛当",enl="wrath leggings",jal="怨嗟の脛当",category="Armor",flags=2080,jobs=0,level=99,races=0,slots=256,stack=1,superior_level=5,targets=0,type=5},
     [24270] = {id=24270,en="Null Masque",ja="無の面",enl="null masque",jal="無の面",category="Armor",flags=63568,item_level=119,jobs=8388606,level=99,races=510,slots=16,stack=1,targets=0,type=5},
     [24271] = {id=24271,en="Prishe's Boots +1",ja="プリッシュブーツ+1",enl="Prishe's boots +1",jal="プリッシュブーツ+1",cast_delay=5,cast_time=1,category="Armor",flags=64576,jobs=8388606,level=1,max_charges=1,races=510,recast_delay=216000,slots=256,stack=1,targets=1,type=5},
+    [24272] = {id=24272,en="Suzaku Cap",ja="朱雀帽子",enl="Suzaku cap",jal="朱雀帽子",category="Armor",flags=63552,jobs=8388606,level=1,races=510,slots=16,stack=1,targets=0,type=5},
     [25414] = {id=25414,en="Elite Royal Collar",ja="上級近衛騎士カラー",enl="elite royal collar",jal="上級近衛騎士カラー",category="Armor",flags=63552,jobs=8388606,level=99,races=510,slots=512,stack=1,targets=0,type=5},
     [25415] = {id=25415,en="Rep. Plat. Medal",ja="共和プラチナ章",enl="republican platinum medal",jal="共和プラチナ章",category="Armor",flags=63552,jobs=8388606,level=99,races=510,slots=512,stack=1,targets=0,type=5},
     [25416] = {id=25416,en="Sibyl Scarf",ja="シビルスカーフ",enl="Sibyl scarf",jal="シビルスカーフ",category="Armor",flags=63552,jobs=8388606,level=99,races=510,slots=512,stack=1,targets=0,type=5},
@@ -23348,14 +23350,16 @@ return {
 }, {"id", "en", "ja", "enl", "jal", "category", "flags", "stack", "targets", "type", "cast_time", "jobs", "level", "races", "slots", "cast_delay", "max_charges", "recast_delay", "shield_size", "damage", "delay", "skill", "ammo_type", "range_type", "item_level", "superior_level"}
 
 --[[
-Copyright © 2013-2025, Windower
+Copyright 2013-2026 Windower
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of Windower nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL Windower BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]

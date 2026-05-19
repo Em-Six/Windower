@@ -12,10 +12,10 @@ function user_job_setup()
 
 	autows = "Savage Blade"
 	
-    gear.RAbullet = "Chrono Bullet"
-    gear.WSbullet = "Chrono Bullet"
-    gear.MAbullet = "Living Bullet" --For MAB WS, do not put single-use bullets here.
-    gear.QDbullet = "Living Bullet"
+    gear.RAbullet = "Bronze Bullet"
+    gear.WSbullet = "Bronze Bullet"
+    gear.MAbullet = "Bronze Bullet" --For MAB WS, do not put single-use bullets here.
+    gear.QDbullet = "Bronze Bullet"
     options.ammo_warning_limit = 50
 	options.shihei_warning_limit = 30
 	ammostock = 297
@@ -139,7 +139,7 @@ function init_gear_sets()
     sets.precast.WS = {
 		ammo=gear.WSbullet,
 		head="Nyame Helm",
-		body="Nyame Mail",
+		body="Laksa. Frac +3",
 		hands="Nyame Gauntlets",
 		legs="Nyame Flanchard",
 		feet="Lanun Bottes +3",
@@ -158,10 +158,10 @@ function init_gear_sets()
 	sets.precast.WS['Savage Blade'] = {
 		ammo=gear.WSbullet,
 		head="Nyame Helm",
-		body="Nyame Mail",
+		body="Laksa. Frac +3",
 		hands="Nyame Gauntlets",
 		legs="Nyame Flanchard",
-		feet="Nyame Sollerets",
+		feet="Lanun Bottes +3",
 		neck="Rep. Plat. Medal",
 		waist="Sailfi Belt +1",
 		left_ear="Moonshade Earring",
@@ -324,8 +324,8 @@ function init_gear_sets()
 		neck="Warder's Charm +1",
 		waist="Carrier's Sash",
 		left_ear="Etiolation Earring",
-		right_ear="Odnowa Earring +1",
-		left_ring="Defending Ring",
+		right_ear="Alabaster Earring",
+		left_ring="Murky Ring",
 		right_ring="Shadow Ring",
 		back=gear.tp_da_jse_back,
 	}
@@ -357,36 +357,21 @@ function init_gear_sets()
 		ammo=gear.RAbullet,
 		head="Malignance Chapeau",
 		body="Malignance Tabard",
-		hands="Malignance Gloves",
+		hands="Adhemar Wrist. +1",
 		legs="Malignance Tights",
 		feet="Malignance Boots",
 		neck="Iskur Gorget",
 		waist="Windbuffet Belt +1",
 		left_ear="Brutal Earring",
 		right_ear="Telos Earring",
-		left_ring="Epona's Ring",
-		right_ring="Lehko's Ring",
+		left_ring="Murky Ring",
+  	    right_ring="Epona's Ring",
 		back=gear.tp_da_jse_back,
 	}
     
 	sets.engaged.SubtleBlow = set_combine(sets.engaged, {head="Adhemar Bonnet +1"})
 	sets.engaged.Bumba = set_combine(sets.engaged, {head="Nyame Helm",body="Nyame Mail",hands="Nyame Gauntlets",legs="Nyame Flanchard",feet="Nyame Sollerets",})
-	
-    sets.engaged.Fodder = {
-		head=gear.adhemar_head_a,
-		body=gear.adhemar_body_a,
-		hands=gear.adhemar_hands_a,
-		legs="Samnuha Tights",
-		feet=gear.herculean_ta_feet,
-		neck="Iskur Gorget",
-		waist="Windbuffet Belt +1",
-		left_ear="Brutal Earring",
-		right_ear="Telos Earring",
-		left_ring="Epona's Ring",
-		right_ring="Petrov Ring",
-		back=gear.tp_da_jse_back,
-	}
-		
+			
     sets.engaged.DT = {
 		ammo=gear.RAbullet,
 		head="Malignance Chapeau",
@@ -398,45 +383,14 @@ function init_gear_sets()
 		waist="Windbuffet Belt +1",
 		left_ear="Brutal Earring",
 		right_ear="Telos Earring",
-		left_ring="Epona's Ring",
-		right_ring="Petrov Ring",
+		left_ring="Murky Ring",
+		right_ring="Epona's Ring",
 		back=gear.tp_da_jse_back,
 	}
     
-    sets.engaged.DW = set_combine(sets.engaged, {left_ear="Suppanomimi",})
+    sets.engaged.DW = set_combine(sets.engaged, {})
     sets.engaged.DW.SubtleBlow = set_combine(sets.engaged.SubtleBlow, {left_ear="Suppanomimi",})
-    
-    sets.engaged.DW.Fodder = {		
-		head=gear.adhemar_head_a,
-		body=gear.adhemar_body_a,
-		hands=gear.adhemar_hands_a,
-		legs="Samnuha Tights",
-		feet=gear.herculean_ta_feet,
-		neck="Iskur Gorget",
-		waist="Windbuffet Belt +1",
-		left_ear="Suppanomimi",
-		right_ear="Telos Earring",
-		left_ring="Epona's Ring",
-		right_ring="Petrov Ring",
-		back=gear.tp_da_jse_back,
-	}
-		
-    sets.engaged.DW.DT = {
-		ammo=gear.RAbullet,
-		head="Malignance Chapeau",
-		body="Malignance Tabard",
-		hands="Malignance Gloves",
-		legs="Malignance Tights",
-		feet="Malignance Boots",
-		neck="Iskur Gorget",
-		waist="Windbuffet Belt +1",
-		left_ear="Suppanomimi",
-		right_ear="Telos Earring",
-		left_ring="Epona's Ring",
-		right_ring="Petrov Ring",
-		back=gear.tp_da_jse_back,
-	}
-    		
+        		
 	sets.Phalanx_Received = {
 		head=gear.taeon_phalanx_head,
 		body=gear.taeon_phalanx_body,

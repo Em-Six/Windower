@@ -7687,6 +7687,7 @@ return {
     [10033] = {id=10033,en="A prize redemption coupon from the Mog Bonanza event. Issued by the Mog House Management Union (MHMU).\nTradeable for item level 119 artifact armor +3.",ja="モグハウス管理組合発行の引換券。\n様々な品と交換できる。\n引換アイテム：アーティファクトILv119+3"},
     [10034] = {id=10034,en="A prize redemption coupon from the Mog Bonanza event. Issued by the Mog House Management Union (MHMU).\nTradeable for item level 119 relic armor +3.",ja="モグハウス管理組合発行の引換券。\n様々な品と交換できる。\n引換アイテム：レリック装束ILv119+3"},
     [10035] = {id=10035,en="A prize redemption coupon from the Mog Bonanza event. Issued by the Mog House Management Union (MHMU).\nTradeable for item level 119 empyrean armor +2.",ja="モグハウス管理組合発行の引換券。\n様々な品と交換できる。\n引換アイテム：エンピリアン装束ILv119+2"},
+    [10036] = {id=10036,en="A lucky stone popular amongst moogles.",ja="モーグリ族に伝わる幸運の石。\n"},
     [10049] = {id=10049,en="An astral notebook inscribed with sheet music on how to make a call appealing to a raptor. Can be shown to Mapitoto in Upper Jeuno for recording so that you may ride a raptor mount.",ja="ラプトルを呼び出す音が\n刻まれたアストラルノート。\nジュノ上層のマピトトに渡すことで『呼子霊笛』から\n使用可能になる。"},
     [10050] = {id=10050,en="An astral notebook inscribed with sheet music on how to make a call appealing to a tiger. Can be shown to Mapitoto in Upper Jeuno for recording so that you may ride a tiger mount.",ja="剣虎を呼び出す音が\n刻まれたアストラルノート。\nジュノ上層のマピトトに渡すことで『呼子霊笛』から\n使用可能になる。"},
     [10051] = {id=10051,en="An astral notebook inscribed with sheet music on how to make a call appealing to a crab. Can be shown to Mapitoto in Upper Jeuno for recording so that you may ride a crab mount.",ja="クラブを呼び出す音が\n刻まれたアストラルノート。\nジュノ上層のマピトトに渡すことで『呼子霊笛』から\n使用可能になる。"},
@@ -20179,6 +20180,7 @@ return {
     [24269] = {id=24269,en="A pair of leggings that are completely\ndevoid of mercy. This item cannot\ncurrently be equipped.",ja="慈悲の輝きを失った脛当。\n何人も装備できない。"},
     [24270] = {id=24270,en="A pair of cuffs that are completely\ndevoid of courage. This item cannot\ncurrently be equipped.",ja="防138 HP+100 MP+70 STR+28 DEX+28\nVIT+50 AGI+28 INT+28 MND+50 CHR+28\n命中+50 魔命+50 回避+100 魔回避+100 魔防+8\nヘイスト+10% リジェネ+3 リフレシュ+1\nリゲイン+2 被ダメージ-10%"},
     [24271] = {id=24271,en="A pair of cuffs that are completely\ndevoid of courage. This item cannot\ncurrently be equipped.",ja="防2 ヘイスト+3% ストアTP+5\nエンチャント:TP+3000"},
+    [24272] = {id=24272,en="DEF:1",ja="防1"},
     [25414] = {id=25414,en="DEF:30 VIT+10\nDamage taken -5%\nCitizen of San d'Oria: \"Regen\"+3",ja="防30 VIT+10 被ダメージ-5%\nサンドリア国民:リジェネ+3"},
     [25415] = {id=25415,en="STR+10 Attack+30\nRanged Attack+30\nCitizen of Bastok: \"Regain\"+2\n",ja="STR+10 攻+30 飛攻+30\nバストゥーク国民:リゲイン+2"},
     [25416] = {id=25416,en="INT+10\n\"Magic Atk. Bonus\"+10\nCitizen of Windurst: \"Refresh\"+1",ja="INT+10 魔攻+10\nウィンダス国民:リフレシュ+1"},
@@ -23266,14 +23268,16 @@ return {
 }, {"id", "en", "ja"}
 
 --[[
-Copyright © 2013-2025, Windower
+Copyright 2013-2026 Windower
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of Windower nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL Windower BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]

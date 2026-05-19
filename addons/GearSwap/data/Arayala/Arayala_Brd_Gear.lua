@@ -4,7 +4,9 @@ function user_job_setup()
     state.CastingMode:options('Normal','Resistant','Ody')
     state.IdleMode:options('Normal','Ody')
 	state.Weapons:options('DualCentovente','DualNaegling','Carnwenhan','Naegling','Evisceration','Aeolian','Xoanon','Ody')
-	
+	state.Pianissimode = M(false, 'Use Miracle Cheer when Pianissimo is active.')
+	state.AutoDummyMode = M(false, 'Auto Dummy Mode')
+
 	autows = "Mordant Rime"
 	autowstp = 1000
 	
@@ -97,14 +99,14 @@ function init_gear_sets()
 
 	sets.precast.FC.SongDebuff = set_combine(sets.precast.FC.BardSong,{range="Marsyas"})
 	sets.precast.FC.SongDebuff.Resistant = set_combine(sets.precast.FC.BardSong,{range="Gjallarhorn"})
-	sets.precast.FC.Lullaby = {range="Blurred Harp +1"}
-	sets.precast.FC.Lullaby.Resistant = {range="Blurred Harp +1"}
-	sets.precast.FC['Horde Lullaby'] = {range="Blurred Harp +1"}
-	sets.precast.FC['Horde Lullaby'].Resistant = {range="Blurred Harp +1"}
-	sets.precast.FC['Horde Lullaby'].AoE = {range="Blurred Harp +1"}
-	sets.precast.FC['Horde Lullaby II'] = {range="Blurred Harp +1"}
-	sets.precast.FC['Horde Lullaby II'].Resistant = {range="Blurred Harp +1"}
-	sets.precast.FC['Horde Lullaby II'].AoE = {range="Blurred Harp +1"}
+	sets.precast.FC.Lullaby = {range="Daurdabla"}
+	sets.precast.FC.Lullaby.Resistant = {range="Daurdabla"}
+	sets.precast.FC['Horde Lullaby'] = {range="Daurdabla"}
+	sets.precast.FC['Horde Lullaby'].Resistant = {range="Daurdabla"}
+	sets.precast.FC['Horde Lullaby'].AoE = {range="Daurdabla"}
+	sets.precast.FC['Horde Lullaby II'] = {range="Daurdabla"}
+	sets.precast.FC['Horde Lullaby II'].Resistant = {range="Daurdabla"}
+	sets.precast.FC['Horde Lullaby II'].AoE = {range="Daurdabla"}
 		
 	sets.precast.FC.Mazurka = set_combine(sets.precast.FC.BardSong,{range="Marsyas"})
 	sets.precast.FC['Honor March'] = set_combine(sets.precast.FC.BardSong,{range="Marsyas"})
@@ -220,16 +222,16 @@ function init_gear_sets()
 		back=gear.fc_macc_jse_back,waist="Witful Belt",legs="Aya. Cosciales +2",feet="Gende. Galosh. +1"}
 
 	-- Gear to enhance certain classes of songs
-	sets.midcast.Ballad = {legs="Fili Rhingrave +2"}
+	sets.midcast.Ballad = {range="Miracle Cheer", legs="Fili Rhingrave +2"}
 	--sets.midcast.Ballad = {}
-	sets.midcast.Lullaby = {range="Blurred Harp +1"}
-	sets.midcast.Lullaby.Resistant = {range="Blurred Harp +1"}
-	sets.midcast['Horde Lullaby'] = {range="Blurred Harp +1"}
-	sets.midcast['Horde Lullaby'].Resistant = {range="Blurred Harp +1"}
-	sets.midcast['Horde Lullaby'].AoE = {range="Blurred Harp +1"}
-	sets.midcast['Horde Lullaby II'] = {range="Blurred Harp +1"}
-	sets.midcast['Horde Lullaby II'].Resistant = {range="Blurred Harp +1"}
-	sets.midcast['Horde Lullaby II'].AoE = {range="Blurred Harp +1"}
+	sets.midcast.Lullaby = {range="Daurdabla"}
+	sets.midcast.Lullaby.Resistant = {range="Daurdabla"}
+	sets.midcast['Horde Lullaby'] = {range="Daurdabla"}
+	sets.midcast['Horde Lullaby'].Resistant = {range="Daurdabla"}
+	sets.midcast['Horde Lullaby'].AoE = {range="Daurdabla"}
+	sets.midcast['Horde Lullaby II'] = {range="Daurdabla"}
+	sets.midcast['Horde Lullaby II'].Resistant = {range="Daurdabla"}
+	sets.midcast['Horde Lullaby II'].AoE = {range="Daurdabla"}
 	sets.midcast.Madrigal = {head="Fili Calot +2"}
 	sets.midcast.Paeon = {}
 	sets.midcast.March = {hands="Fili Manchettes +2"}
@@ -315,7 +317,7 @@ function init_gear_sets()
 	sets.midcast.SongDebuff.Ody = set_combine(sets.midcast.SongDebuff, {head="Nyame Helm", body="Nyame Mail", hands="Nyame Gauntlets", legs="Nyame Flanchard", feet="Nyame Sollerets"})
 	
 	-- Song-specific recast reduction
-	sets.midcast.SongRecast = {main=gear.grioavolr_fc_staff,sub="Clerisy Strap +1",range="Blurred Harp +1",ammo=empty,
+	sets.midcast.SongRecast = {main=gear.grioavolr_fc_staff,sub="Clerisy Strap +1",range="Daurdabla",ammo=empty,
 		head="Nahtirah Hat",neck="Voltsurge Torque",ear1="Enchntr. Earring +1",ear2="Loquac. Earring",
 		body="Inyanga Jubbah +2",hands="Gendewitha Gages +1",ring1="Kishar Ring",ring2="Prolix Ring",
 		back=gear.fc_macc_jse_back,waist="Witful Belt",legs="Fili Rhingrave +2",feet="Aya. Gambieras +2"}

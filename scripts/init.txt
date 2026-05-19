@@ -33,9 +33,13 @@ bind ^@!f11 showfps
 bind sysrq screenshot png hide
 bind ^sysrq screenshot png
 bind ^v paste
-bind f1 fillmode 1
-bind f2 fillmode 0
 bind pause .
+bind f1 swf to Sensarity
+bind f2 swf to Arayala
+bind f3 swf to Kateye
+bind f4 swf to Merako
+bind f5 swf to Ysara
+bind f6 swf to Luicia
 
 //Sets ConsoleBG Background Position
 consolebg position 15 50
@@ -61,7 +65,7 @@ lua load trade
 lua load revisible //I think this is causing some sort of crashing
 lua load whereisdi
 lua load anchor
-lua load fastfollow
+lua load turbofollow
 //lua load leave
 lua load silmaril
 lua load ondemand
@@ -194,11 +198,11 @@ alias getslips get storage slip* all
 alias putslips put storage slip* case all
 
 //Misc Aliases
-alias lilith send @all htmb maiden phantom gem;wait 3;findall maiden phantom gem
-alias odin send @all htmb stygian pact phantom gem;wait 3;findall stygian pact phantom gem
-alias feared send @all htmb feared one phantom gem;wait 3;findall feared one phantom gem
-alias alex send @all htmb Divine phantom gem;wait 3;findall Divine phantom gem
-alias avatar send @all htmb Avatar phantom gem;wait 3;findall Avatar phantom gem
+alias lilith send @all htmb maiden phantom gem;wait 5;findall maiden phantom gem
+alias odin send @all htmb stygian pact phantom gem;wait 5;findall stygian pact phantom gem
+alias feared send @all htmb feared one phantom gem;wait 5;findall feared one phantom gem
+alias alex send @all htmb Divine phantom gem;wait 5;findall Divine phantom gem
+alias avatar send @all htmb Avatar phantom gem;wait 5;findall Avatar phantom gem
 alias finale sat youcommand Arayala /ma \"Magic Finale\" <t>
 alias horde sat youcommand Arayala /ma \"Horde Lullaby II\" <t>
 alias foe send sat youcommand Arayala /ma \"Foe Lullaby II\" <t>
@@ -207,15 +211,18 @@ alias dispelga sat youcommand Kateye /ma \"Dispelga\" <t>
 alias poop send @all pop
 alias sacro send Kateye /ja \"Sacrosanctity\" <me>  
 alias mmm send @all /item \"Maze Compass"\ <me>
+alias kill send @others terminate;wait 1;terminate
+alias vcon send @all /item \"V. Con. Shard\" <me>
 
 
 //Multiboxing
-alias invall send Sensarity /pcmd add Arayala; wait 3; send Sensarity /pcmd add Kateye; wait 3; send Sensarity /pcmd add Merako; wait 3; send Sensarity /pcmd add Luicia; wait 3; send Sensarity /pcmd add Ysara
+alias invall send Sensarity /pcmd add Arayala; wait 3; send Sensarity /pcmd add Kateye; wait 3; send Sensarity /pcmd add Merako; wait 3; send Sensarity /pcmd add Ysara; wait 3; send Sensarity /pcmd add Luicia
 alias invmains send Sensarity /pcmd add Arayala; wait 3; send Sensarity /pcmd add Kateye; wait 3
-bind %- ffo me
-bind %= ffo stopall
+bind %- tfo me
+bind %= tfo stopall
+bind home sm mirror
 
 
 //Blockhelp
-wait 60;ffo pauseon any;input /blockhelp;input /cm p
+wait 60;tfo pauseon any;input /blockhelp;input /cm p
 
