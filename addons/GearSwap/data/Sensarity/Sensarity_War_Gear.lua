@@ -179,7 +179,7 @@ function init_gear_sets()
 		waist="Sailfi Belt +1",
 		left_ear="Moonshade Earring",
 		right_ear="Thrud Earring",
-		left_ring="Epaminondas's Ring",
+		left_ring="Ephramad's Ring",
 		right_ring="Sroda Ring",
 		back=gear.wsd_str_jse_back,
 	}
@@ -213,7 +213,7 @@ function init_gear_sets()
 	
     sets.precast.WS['Resolution'] = set_combine(sets.precast.WS, {neck="Fotia Gorget",waist="Fotia Belt"})
 	
-    sets.precast.WS["Ukko's Fury"] = set_combine(sets.precast.WS, {ammo="Yetshila +1", head="Boii mask +3", body="Hjarrandi Breast.", feet="Boii Calligae +3", right_ring="Lehko's Ring"}) 
+    sets.precast.WS["Ukko's Fury"] = set_combine(sets.precast.WS, {ammo="Yetshila +1", head="Boii mask +3", body="Hjarrandi Breast.", feet="Boii Calligae +3"}) 
 
     sets.precast.WS["King's Justice"] = set_combine(sets.precast.WS, {left_ring="Niqmaddu Ring", right_ring="Regal Ring"})
 	
@@ -325,8 +325,8 @@ function init_gear_sets()
 		waist="Windbuffet Belt +1", 
 		left_ear="Boii Earring +1", 
 		right_ear="Schere Earring", 
-		left_ring="Niqmaddu Ring", 
-		right_ring="Lehko's Ring", 
+		left_ring=gear.moonlight1,
+		right_ring=gear.moonlight2,
 		back=gear.da_jse_back, 
 	}
 	
@@ -343,7 +343,7 @@ function init_gear_sets()
 		left_ear="Boii Earring +1", 
 		right_ear="Schere Earring", 
 		left_ring=gear.moonlight1,
-		right_ring="Lehko's Ring", 
+		right_ring=gear.moonlight2,
 		back=gear.da_jse_back,
 	}
 	

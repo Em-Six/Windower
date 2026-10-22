@@ -77,7 +77,7 @@ do
 
     -- Processes the incoming packets - called direct
     function protection_in(id, data, modified)
-        
+
         -- Protection is off so return unchanged packet
         if not protection then return end
 
@@ -125,11 +125,11 @@ do
         local name_field = in_filtered_packets[id].name_field
         local original_name = packet[name_field]
 
-        -- Nothing to change
-        if original_name == '' then return data end
-
         -- The original name couldn't be found so return normal
         if not original_name then return data end
+
+        -- Nothing to change
+        if original_name == '' then return data end
 
         if id == 0x0E2 then
             if tostring(packet['ID']) ~= get_player_id() then return true end
@@ -139,7 +139,7 @@ do
         if id == 0x00D then
             if packet['Update Name'] and packet['Update Name'] ~= "" then
                 packet['Update Name'] = names_in(packet['Update Name'],id, packet)
-                --log('PC Update ['..tostring(packet['Character Name'])..'] needed changed to ['..names_in(original_name, id, packet)..']')
+                log('PC Update ['..tostring(packet['Character Name'])..'] needed changed to ['..names_in(original_name, id, packet)..']')
             end
         end
 
@@ -150,8 +150,26 @@ do
             packet['Linkshell'] = ls_names(packet['Linkshell'])
         end
 
+        local new_name = names_in(original_name, id, packet)
+
+        if id == 0x0DD then
+
+            -- Handy way to split the string to a table of bytes
+            local name_table = {new_name:byte(1,#new_name)}
+
+            -- fill the table if not used to 16 bytes
+            for i = #name_table + 1, 16 do name_table[i] = 0 end
+
+            -- take the new name and convert to bytes
+            local new_packet = data:sub(0x00, 0x28)
+            for i = 1, 16 do new_packet = new_packet..'C':pack(name_table[i]) end
+
+            return new_packet
+        end
+
         -- Default swaps
-        packet[name_field] = names_in(original_name, id, packet)
+        packet[name_field] = new_name
+
         return build_packet(packet)
     end
 
@@ -167,7 +185,9 @@ do
         if type(name) == "boolean" then return name end
 
         --Pre-defined
-        if name_cache[name] then return name_cache[name] end
+        if name_cache[name] then 
+            --log(name_cache[name])
+        return name_cache[name] end
 
         -- Dont randomize the names if not enabled
         if not anon then return name end
@@ -236,7 +256,6 @@ do
         end
 
         if id == 0x0B6 then return process_out(id, modified) end
-
     end
 
     function process_out(id, data)

@@ -509,15 +509,15 @@ function init_gear_sets()
 	sets.weapons.Savage = {main="Naegling",sub="Hitaki"}
 	sets.weapons.Evisceration = {main="Tauret",sub="Gleti's Knife"}
 	sets.weapons.Trial = {main="Sasuke Katana",sub="Kunimitsu"}
-	sets.weapons.ProcDagger = {main="Chicken Knife II",sub=empty}
-	sets.weapons.ProcSword = {main="Ark Sword",sub=empty}
-	sets.weapons.ProcGreatSword = {main="Lament",sub=empty}
-	sets.weapons.ProcScythe = {main="Ark Scythe",sub=empty}
-	sets.weapons.ProcPolearm = {main="Pitchfork +1",sub=empty}
-	sets.weapons.ProcGreatKatana = {main="Hardwood Katana",sub=empty}
-	sets.weapons.ProcKatana = {main="Kunimitsu",sub=empty}
-	sets.weapons.ProcClub = {main="Dream Bell +1",sub=empty}
-	sets.weapons.ProcStaff = {main="Terra's Staff",sub=empty}
+	sets.weapons.ProcDagger = {main="Aern Dagger",sub=empty}
+	sets.weapons.ProcSword = {main="Firetongue",sub=empty}
+	sets.weapons.ProcGreatSword = {main="Irradiance Blade",sub=empty}
+	sets.weapons.ProcScythe = {main="Bronze Zaghnal",sub=empty}
+	sets.weapons.ProcPolearm = {main="Quint Spear",sub=empty}
+	sets.weapons.ProcKatana = {main="Debahocho",sub=empty}
+	sets.weapons.ProcGreatKatana = {main="Mutsunokami",sub=empty}
+	sets.weapons.ProcClub = {main="Nomad Moogle Rod",sub=empty}
+	sets.weapons.ProcStaff = {main="Sophistry",sub=empty}
 	sets.weapons.MagicWeapons = {main="Ochu",sub="Ochu"}
 end
 

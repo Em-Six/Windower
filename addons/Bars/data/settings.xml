@@ -8,6 +8,23 @@
             <red>0</red>
         </bg>
         <colors>
+            <angle>
+                <front>
+                    <b>150</b>
+                    <g>255</g>
+                    <r>150</r>
+                </front>
+                <rear>
+                    <b>150</b>
+                    <g>150</g>
+                    <r>255</r>
+                </rear>
+                <sides>
+                    <b>255</b>
+                    <g>125</g>
+                    <r>125</r>
+                </sides>
+            </angle>
             <bar_bg>
                 <dead>
                     <b>30</b>
@@ -20,6 +37,48 @@
                     <r>0</r>
                 </normal>
             </bar_bg>
+            <chat>
+                <all>
+                    <b>240</b>
+                    <g>240</g>
+                    <r>240</r>
+                </all>
+                <ls1>
+                    <b>130</b>
+                    <g>255</g>
+                    <r>180</r>
+                </ls1>
+                <ls2>
+                    <b>30</b>
+                    <g>255</g>
+                    <r>30</r>
+                </ls2>
+                <party>
+                    <b>255</b>
+                    <g>255</g>
+                    <r>90</r>
+                </party>
+                <say>
+                    <b>240</b>
+                    <g>240</g>
+                    <r>240</r>
+                </say>
+                <shoutyell>
+                    <b>100</b>
+                    <g>120</g>
+                    <r>200</r>
+                </shoutyell>
+                <tell>
+                    <b>238</b>
+                    <g>117</g>
+                    <r>238</r>
+                </tell>
+                <unity>
+                    <b>125</b>
+                    <g>255</g>
+                    <r>255</r>
+                </unity>
+            </chat>
             <debuffs>
                 <almost_ready>
                     <b>77</b>
@@ -234,6 +293,11 @@
                 </bar>
             </self>
             <target>
+                <dynamis_nm>
+                    <b>25</b>
+                    <g>200</g>
+                    <r>200</r>
+                </dynamis_nm>
                 <monster_claimed_alliance>
                     <b>114</b>
                     <g>92</g>
@@ -307,13 +371,42 @@
                     <r>25</r>
                 </ready_to_use>
             </tp>
+            <xp>
+                <capped>
+                    <b>255</b>
+                    <g>140</g>
+                    <r>40</r>
+                </capped>
+                <ep_meter>
+                    <b>148</b>
+                    <g>60</g>
+                    <r>117</r>
+                </ep_meter>
+                <jp_meter>
+                    <b>255</b>
+                    <g>140</g>
+                    <r>45</r>
+                </jp_meter>
+                <xp_meter>
+                    <b>40</b>
+                    <g>165</g>
+                    <r>0</r>
+                </xp_meter>
+            </xp>
         </colors>
         <first_run>false</first_run>
         <icons>
             <aggro_list_highlight>●</aggro_list_highlight>
+            <aggro_list_sub_target>►</aggro_list_sub_target>
+            <aggro_list_target>●</aggro_list_target>
+            <angle_down_arrow>↓</angle_down_arrow>
+            <angle_left_arrow>←</angle_left_arrow>
+            <angle_right_arrow>→</angle_right_arrow>
+            <angle_up_arrow>↑</angle_up_arrow>
             <cancelled>×</cancelled>
             <casting>≈</casting>
             <completed>√</completed>
+            <dynamis_nm>¤</dynamis_nm>
             <monster_target>►</monster_target>
             <monster_target_aoe>○</monster_target_aoe>
             <number_of_targets_hit>●</number_of_targets_hit>
@@ -453,6 +546,19 @@
                     <target>0</target>
                 </vertical_offsets>
             </mnk>
+            <mon>
+                <hp>false</hp>
+                <mp>false</mp>
+                <pet>false</pet>
+                <tp>false</tp>
+                <vertical_offsets>
+                    <focus_target>0</focus_target>
+                    <player_stats>0</player_stats>
+                    <self_action>0</self_action>
+                    <sub_target>0</sub_target>
+                    <target>0</target>
+                </vertical_offsets>
+            </mon>
             <nin>
                 <hp>true</hp>
                 <mp>true</mp>
@@ -617,6 +723,7 @@
                 <drain_hp_bar>true</drain_hp_bar>
                 <drain_mp_bar>true</drain_mp_bar>
                 <drain_pet_bar>true</drain_pet_bar>
+                <drain_player_stats_bars>true</drain_player_stats_bars>
                 <drain_speed>5</drain_speed>
                 <drain_target_bars>true</drain_target_bars>
                 <drain_tp_bar>true</drain_tp_bar>
@@ -637,6 +744,7 @@
             </animations>
             <clear_action_delay>5.5</clear_action_delay>
             <clear_action_delay_for_rolls>10</clear_action_delay_for_rolls>
+            <clear_action_delay_for_self_rolls>10</clear_action_delay_for_self_rolls>
             <colorize_spells>true</colorize_spells>
             <condense_target_and_subtarget_bars>false</condense_target_and_subtarget_bars>
             <condense_target_name_and_sp_name>
@@ -690,6 +798,7 @@
                 <player_stats_pet>0.05</player_stats_pet>
                 <sub_target>0.05</sub_target>
                 <target>0.05</target>
+                <xp>1</xp>
             </update_intervals>
         </options>
         <sections>
@@ -700,7 +809,7 @@
                 <italic>false</italic>
                 <max_monsters_listed>6</max_monsters_listed>
                 <min_monsters_to_show>0</min_monsters_to_show>
-                <open_mobs>Foire,Hachiya,Atrophy,Azi Dahaka&apos;s Dragon,Vishap,Bihu,Runeist,Fallen&apos;s,Futhark,Caballarius,Quetzalcoatl,Naga Raja&apos;s Lamia,Geomancy,Arcadian,Pitre,Maxixi,Piety,Brioso,Theophany,Archmage&apos;s,Anchorite&apos;s,Mireu,Sakonji,Laksamana&apos;s,Agoge,Horos,Luhlaza,Convoker&apos;s,Hesychast&apos;s,Vitiation,Pummeler&apos;s,Plunderer&apos;s,Lanun,Naga Raja,Orion,Azi Dahaka,Mochizuki,Bagua,Pedagogy,Wakido,Spaekona&apos;s,Assimilator&apos;s,Quetzalcoatl&apos;s Sibilus,Pillager&apos;s,Pteroslaver,Ankusa,Reverence,Glyphic,Totemic,Academic&apos;s,Ignominy</open_mobs>
+                <open_mobs>Foire,Hachiya,Atrophy,Azi Dahaka&apos;s Dragon,Academic&apos;s,Bihu,Runeist,Fallen&apos;s,Futhark,Caballarius,Hesychast&apos;s,Naga Raja&apos;s Lamia,Geomancy,Arcadian,Pitre,Maxixi,Piety,Brioso,Theophany,Archmage&apos;s,Anchorite&apos;s,Mireu,Sakonji,Laksamana&apos;s,Agoge,Horos,Luhlaza,Convoker&apos;s,Quetzalcoatl,Vitiation,Pummeler&apos;s,Plunderer&apos;s,Lanun,Naga Raja,Orion,Azi Dahaka,Mochizuki,Bagua,Pedagogy,Wakido,Spaekona&apos;s,Assimilator&apos;s,Quetzalcoatl&apos;s Sibilus,Pillager&apos;s,Pteroslaver,Ankusa,Reverence,Glyphic,Totemic,Vishap,Ignominy</open_mobs>
                 <pos>
                     <x>281</x>
                     <y>576</y>
@@ -716,9 +825,49 @@
                 </stroke_color>
                 <stroke_width>1</stroke_width>
             </aggro_list>
+            <chat>
+                <bar_width>60</bar_width>
+                <bg_alpha>200</bg_alpha>
+                <display_you_for_outgoing>true</display_you_for_outgoing>
+                <font>Consolas</font>
+                <indent_width>15</indent_width>
+                <max_lines>10</max_lines>
+                <max_message_limit>500</max_message_limit>
+                <minimized>true</minimized>
+                <pad>8</pad>
+                <pos>
+                    <x>143</x>
+                    <y>1102</y>
+                </pos>
+                <save_to_file>true</save_to_file>
+                <show>false</show>
+                <show_during_zoning>true</show_during_zoning>
+                <show_message_counter>true</show_message_counter>
+                <show_timestamps>true</show_timestamps>
+                <size>10</size>
+                <stroke_alpha>255</stroke_alpha>
+                <stroke_color>
+                    <b>0</b>
+                    <g>0</g>
+                    <r>0</r>
+                </stroke_color>
+                <stroke_width>1</stroke_width>
+                <tabs>
+                    <dmg>false</dmg>
+                    <linkshell1>true</linkshell1>
+                    <linkshell2>true</linkshell2>
+                    <party>true</party>
+                    <say>true</say>
+                    <shout>true</shout>
+                    <tell>true</tell>
+                    <unity>true</unity>
+                    <yell>true</yell>
+                </tabs>
+            </chat>
             <focus_target>
                 <bar_size>10</bar_size>
                 <bar_width>50</bar_width>
+                <bg_alpha>240</bg_alpha>
                 <bold>true</bold>
                 <debuff_icon_offset>-37</debuff_icon_offset>
                 <debuff_icon_size>18</debuff_icon_size>
@@ -730,13 +879,18 @@
                 <debuff_timers>true</debuff_timers>
                 <font>Consolas</font>
                 <italic>false</italic>
+                <meter_alpha>240</meter_alpha>
                 <pos>
                     <x>576</x>
                     <y>180</y>
                 </pos>
                 <show>true</show>
+                <show_battle_target_by_default>true</show_battle_target_by_default>
+                <show_monster_job>true</show_monster_job>
                 <show_monster_level>false</show_monster_level>
                 <show_monster_target>true</show_monster_target>
+                <show_player_angle_from_target_facing>false</show_player_angle_from_target_facing>
+                <show_target_angle_from_player_facing>false</show_target_angle_from_player_facing>
                 <spaces_between_text_parts>1</spaces_between_text_parts>
                 <stroke_alpha>255</stroke_alpha>
                 <stroke_color>
@@ -839,9 +993,11 @@
             <player_stats>
                 <bar_size>10</bar_size>
                 <bar_width>50</bar_width>
+                <bg_alpha>240</bg_alpha>
                 <bold>true</bold>
                 <font>Consolas</font>
                 <italic>false</italic>
+                <meter_alpha>240</meter_alpha>
                 <pos>
                     <x>1100</x>
                     <y>1065</y>
@@ -861,15 +1017,19 @@
             <self_action>
                 <bar_size>10</bar_size>
                 <bar_width>40</bar_width>
+                <bg_alpha>240</bg_alpha>
                 <bold>true</bold>
                 <font>Consolas</font>
                 <italic>false</italic>
+                <meter_alpha>240</meter_alpha>
                 <pos>
                     <x>1300</x>
                     <y>925</y>
                 </pos>
                 <show>true</show>
                 <show_bar>true</show_bar>
+                <show_cast_time_bar>true</show_cast_time_bar>
+                <show_wyvern_breath>false</show_wyvern_breath>
                 <stroke_alpha>255</stroke_alpha>
                 <stroke_color>
                     <b>0</b>
@@ -886,6 +1046,7 @@
             <sub_target>
                 <bar_size>10</bar_size>
                 <bar_width>50</bar_width>
+                <bg_alpha>240</bg_alpha>
                 <bold>true</bold>
                 <debuff_icon_offset>-37</debuff_icon_offset>
                 <debuff_icon_size>18</debuff_icon_size>
@@ -897,13 +1058,17 @@
                 <debuff_timers>true</debuff_timers>
                 <font>Consolas</font>
                 <italic>false</italic>
+                <meter_alpha>240</meter_alpha>
                 <pos>
                     <x>1000</x>
                     <y>925</y>
                 </pos>
                 <show>true</show>
+                <show_monster_job>true</show_monster_job>
                 <show_monster_level>false</show_monster_level>
                 <show_monster_target>true</show_monster_target>
+                <show_player_angle_from_target_facing>false</show_player_angle_from_target_facing>
+                <show_target_angle_from_player_facing>false</show_target_angle_from_player_facing>
                 <spaces_between_text_parts>1</spaces_between_text_parts>
                 <stroke_alpha>255</stroke_alpha>
                 <stroke_color>
@@ -924,6 +1089,7 @@
             <target>
                 <bar_size>10</bar_size>
                 <bar_width>100</bar_width>
+                <bg_alpha>240</bg_alpha>
                 <bold>true</bold>
                 <debuff_icon_offset>-44</debuff_icon_offset>
                 <debuff_icon_size>20</debuff_icon_size>
@@ -935,12 +1101,16 @@
                 <debuff_timers>true</debuff_timers>
                 <font>Consolas</font>
                 <italic>false</italic>
+                <meter_alpha>240</meter_alpha>
                 <pos>
                     <x>900</x>
                     <y>1000</y>
                 </pos>
+                <show_monster_job>true</show_monster_job>
                 <show_monster_level>true</show_monster_level>
                 <show_monster_target>true</show_monster_target>
+                <show_player_angle_from_target_facing>false</show_player_angle_from_target_facing>
+                <show_target_angle_from_player_facing>false</show_target_angle_from_player_facing>
                 <spaces_between_text_parts>1</spaces_between_text_parts>
                 <stroke_alpha>255</stroke_alpha>
                 <stroke_color>
@@ -967,10 +1137,54 @@
                 <ui_bg>true</ui_bg>
                 <ui_bg_alpha>100</ui_bg_alpha>
             </target>
+            <xp>
+                <bar_size>15</bar_size>
+                <bar_width>85</bar_width>
+                <bg_alpha>240</bg_alpha>
+                <bold>true</bold>
+                <condensed_job_points>true</condensed_job_points>
+                <condensed_merits>true</condensed_merits>
+                <exclude_from_fade>true</exclude_from_fade>
+                <font>Consolas</font>
+                <italic>false</italic>
+                <legacy_per_hour_calculation>false</legacy_per_hour_calculation>
+                <meter_alpha>240</meter_alpha>
+                <per_hour_rolling_window_in_minutes>15</per_hour_rolling_window_in_minutes>
+                <pos>
+                    <x>162</x>
+                    <y>620</y>
+                </pos>
+                <show>false</show>
+                <show_base_conq_pt_per_hour>false</show_base_conq_pt_per_hour>
+                <show_job_levels>true</show_job_levels>
+                <show_job_points_stored_after_master>false</show_job_points_stored_after_master>
+                <show_kills_per_hour>true</show_kills_per_hour>
+                <show_merits>true</show_merits>
+                <show_percent>true</show_percent>
+                <show_points_per_kill>true</show_points_per_kill>
+                <show_seconds_per_kill>true</show_seconds_per_kill>
+                <show_time_tnl>true</show_time_tnl>
+                <show_tnl>true</show_tnl>
+                <stroke_alpha>255</stroke_alpha>
+                <stroke_color>
+                    <b>0</b>
+                    <g>0</g>
+                    <r>0</r>
+                </stroke_color>
+                <stroke_width>0.5</stroke_width>
+                <text_offset>4</text_offset>
+                <text_shadow_offset>2</text_shadow_offset>
+                <text_size>11</text_size>
+            </xp>
         </sections>
         <text>
             <alpha>255</alpha>
             <blue>255</blue>
+            <drop_shadow>
+                <b>0</b>
+                <g>0</g>
+                <r>0</r>
+            </drop_shadow>
             <font>Consolas</font>
             <green>255</green>
             <red>255</red>

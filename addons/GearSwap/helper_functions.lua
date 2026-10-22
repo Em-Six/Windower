@@ -499,7 +499,7 @@ function assemble_use_item_packet(target_id,target_index,item_id)
     outstr = outstr..string.char( (target_id%256), math.floor(target_id/256)%256, math.floor( (target_id/65536)%256) , math.floor( (target_id/16777216)%256) )
     outstr = outstr..string.char(0,0,0,0)
     outstr = outstr..string.char( (target_index%256), math.floor(target_index/256)%256)
-    inventory_index,bag_id = find_usable_item(item_id)
+    local inventory_index,bag_id = find_usable_item(item_id)
     if inventory_index then
         outstr = outstr..string.char(inventory_index%256)..string.char(0,bag_id,0,0,0)
     else
@@ -551,7 +551,7 @@ function assemble_menu_item_packet(target_id,target_index,...)
     -- Inventory Index for the one unit
 
     for i,v in pairs(counts) do
-        inventory_index = find_inventory_item(i)
+        local inventory_index = find_inventory_item(i)
         if inventory_index then
             outstr = outstr..string.char(inventory_index%256)
         else
@@ -678,7 +678,7 @@ function filter_pretarget(action)
         if not table.contains(available,action.id) then
             bool,err = false,"Unable to execute command. You do not have access to that job ability."
         end
-    elseif category == 25 and (not player.main_job_id == 23 or not windower.ffxi.get_mjob_data().species or
+    elseif category == 25 and (player.main_job_id ~= 23 or not windower.ffxi.get_mjob_data().species or
         not res.monstrosity[windower.ffxi.get_mjob_data().species] or not res.monstrosity[windower.ffxi.get_mjob_data().species].tp_moves[action.id] or
         not (res.monstrosity[windower.ffxi.get_mjob_data().species].tp_moves[action.id] <= player.main_job_level)) then
         -- Monstrosity filtering
@@ -814,7 +814,7 @@ function cmd_reg:new_entry(sp)
     end
     rawset(self,ts,{pretarget_cast_delay=0, precast_cast_delay=0, cancel_spell=false, new_target=false, current_event='nascent', spell=sp, timestamp=ts,target_arrow={x=0,y=0,z=0}})
     if debugging.command_registry then
-        msg.addon_msg('Creating a new command_registry entry: '..windower.to_shift_jis(tostring(ts)..' '..tostring(self[ts])))
+        msg.addon_msg(123,'Creating a new command_registry entry: '..windower.to_shift_jis(tostring(ts)..' '..tostring(self[ts])))
     end
     return ts
 end
@@ -966,7 +966,7 @@ function get_spell(act)
     end
 
     if act.category == 12 or act.category == 2 then
-        spell = copy_entry(resources_ranged_attack)
+        spell = copy_entry(res.ranged_attacks[0])
     else
         if not res.action_messages[msg_ID] or msg_ID == 31 then
             if act.category == 4 or act.category == 8 then
@@ -1008,7 +1008,7 @@ function get_spell(act)
             spell = copy_entry(res.job_abilities[75]) -- 'Elemental Seal'
         elseif msg_ID == 305 then
             spell = copy_entry(res.job_abilities[76]) -- 'Trick Attack'
-        elseif msg_ID == 311 or msg_ID == 311 then
+        elseif msg_ID == 311 or msg_ID == 312 then
             spell = copy_entry(res.job_abilities[79]) -- 'Cover'
         elseif msg_ID == 240 or msg_ID == 241 then
             spell = copy_entry(res.job_abilities[43]) -- 'Hide'
@@ -1092,6 +1092,30 @@ function spell_complete(rline)
         rline.mppaftercast = (player.mp - rline.mp_cost)/player.max_mp
     end
 
+    return rline
+end
+
+-----------------------------------------------------------------------------------
+--Name: find_monster_skill(abil)
+--Desc: Takes a monster ability name and finds the corresponding monster_skills
+--      resource line for the player's current species
+--Args:
+---- abil - ability name
+-----------------------------------------------------------------------------------
+--Returns:
+---- rline - resource line
+-----------------------------------------------------------------------------------
+function find_monster_skill(abil)
+    local rline = false
+    if player.species and player.species.tp_moves then
+        -- Iterates over currently available monster TP moves instead of using validabils
+        for i, v in pairs(player.species.tp_moves) do
+            if res.monster_skills[i][language]:lower() == abil then
+                rline = copy_entry(res.monster_skills[i])
+                break
+            end
+        end
+    end
     return rline
 end
 

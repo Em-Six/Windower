@@ -1,7 +1,10 @@
 <?xml version="1.1" ?>
 <settings>
     <global>
+        <UpdateFrequency>0.5</UpdateFrequency>
         <combinepets>true</combinepets>
+        <compactsc>false</compactsc>
+        <creditpetdamagetoowner>false</creditpetdamagetoowner>
         <display>
             <bg>
                 <alpha>200</alpha>
@@ -44,11 +47,11 @@
             </text>
         </display>
         <numplayers>8</numplayers>
+        <oneperline>false</oneperline>
         <resetfilters>true</resetfilters>
         <sbcolor>204</sbcolor>
         <showallidps>true</showallidps>
         <showfellow>true</showfellow>
-        <UpdateFrequency>0.5</UpdateFrequency>
         <visible>true</visible>
     </global>
 </settings>

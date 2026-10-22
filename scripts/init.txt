@@ -51,9 +51,9 @@ lua load xivparty
 lua load xipivot
 lua load superwarp
 //lua load shout_ml
-lua load fuckoff
+//lua load fuckoff
 //lua load opensesame
-lua load safespace
+lua load safespace3
 //lua load tradenpc
 //lua load quicktrade
 //lua load sirpopalot
@@ -62,10 +62,10 @@ lua load sheolhelper
 //lua load react
 lua load trade
 //lua load enemybar2
-lua load revisible //I think this is causing some sort of crashing
-lua load whereisdi
+//lua load revisible //I think this is causing some sort of crashing
+//lua load whereisdi
 lua load anchor
-lua load turbofollow
+//lua load turbofollow
 //lua load leave
 lua load silmaril
 lua load ondemand
@@ -210,6 +210,7 @@ alias silence sat youcommand Kateye /ma \"Silence\" <t>
 alias dispelga sat youcommand Kateye /ma \"Dispelga\" <t>
 alias poop send @all pop
 alias sacro send Kateye /ja \"Sacrosanctity\" <me>  
+alias bolt send Ysara /ja \"Bolter\'s Roll\" <me>  
 alias mmm send @all /item \"Maze Compass"\ <me>
 alias kill send @others terminate;wait 1;terminate
 alias vcon send @all /item \"V. Con. Shard\" <me>
@@ -218,11 +219,11 @@ alias vcon send @all /item \"V. Con. Shard\" <me>
 //Multiboxing
 alias invall send Sensarity /pcmd add Arayala; wait 3; send Sensarity /pcmd add Kateye; wait 3; send Sensarity /pcmd add Merako; wait 3; send Sensarity /pcmd add Ysara; wait 3; send Sensarity /pcmd add Luicia
 alias invmains send Sensarity /pcmd add Arayala; wait 3; send Sensarity /pcmd add Kateye; wait 3
-bind %- tfo me
-bind %= tfo stopall
+bind %- sm all follow
+bind %= sm all follow off
 bind home sm mirror
 
 
 //Blockhelp
-wait 60;tfo pauseon any;input /blockhelp;input /cm p
+wait 60;input /blockhelp;input /cm p
 

@@ -1,18 +1,19 @@
 _addon.name = 'TurboFollow'
 _addon.author = 'Daneblood'
-_addon.version = '26.05.18z4'
-_addon.commands = {'turbofollow', 'tfo', 'ffo'}
+_addon.version = '26.05.22g'
+_addon.commands = {'turbofollow', 'tfo'}
 
 require('coroutine')
 local config = require('config')
 
 -- Settings saved per character:
 --   data/<character>.xml
--- Only min and show_speed are persisted.
+-- min, show_speed, alpha, and strict_mode are persisted.
 local defaults = {
     min = 1,
     show_speed = false,
-    alpha = 128,
+    alpha = 160,
+    strict_mode = false,
 }
 
 local settings = nil
@@ -28,11 +29,14 @@ local function get_character_settings_file()
     return ('data/%s.xml'):format(player.name:lower())
 end
 
-local function get_default_settings()
-    return {
-        min = defaults.min,
-        show_speed = defaults.show_speed,
-    }
+local function copy_defaults()
+    local copied = {}
+
+    for key, value in pairs(defaults) do
+        copied[key] = value
+    end
+
+    return copied
 end
 
 local function load_settings()
@@ -41,7 +45,7 @@ local function load_settings()
     -- No character name yet: use in-code defaults only.
     if not file then
         if not settings then
-            settings = get_default_settings()
+            settings = copy_defaults()
         end
 
         return
@@ -52,17 +56,16 @@ local function load_settings()
     end
 
     settings_file = file
+    settings = config.load(settings_file, defaults) or copy_defaults()
 
-    if windower.dir_exists(windower.addon_path .. 'data') then
-        settings = config.load(settings_file, defaults) or get_default_settings()
-    else
-        settings = get_default_settings()
-    end
-
-    settings.min = settings.min or defaults.min
+    settings.min = tonumber(settings.min) or defaults.min
 
     if settings.show_speed == nil then
         settings.show_speed = defaults.show_speed
+    end
+
+    if settings.strict_mode == nil then
+        settings.strict_mode = defaults.strict_mode
     end
 
     settings.alpha = tonumber(settings.alpha) or defaults.alpha
@@ -71,7 +74,7 @@ end
 
 local function save_settings()
     if not settings then
-        load_settings()
+        return
     end
 
     settings_file = get_character_settings_file()
@@ -87,12 +90,8 @@ local function save_settings()
         windower.create_dir(data_path)
     end
 
-    -- Only persist min and show_speed. Do not save speed box UI settings.
-    settings.speed_display = nil
-    settings.min = settings.min or defaults.min
-    settings.show_speed = settings.show_speed and true or false
-    settings.alpha = tonumber(settings.alpha) or defaults.alpha
-    settings.alpha = math.min(math.max(0, settings.alpha), 255)
+    -- Persist character settings. Do not save speed box UI settings.
+--    settings.speed_display = nil
 
     config.save(settings)
 end
@@ -102,6 +101,7 @@ load_settings()
 -- Follow state.
 local broadcasting = false
 local following = false
+local follower_count = 0
 
 local target_x = nil
 local target_y = nil
@@ -126,6 +126,7 @@ local speed_box = nil
 local speed_box_visible = false
 local last_speed_text = nil
 local speed_x = nil
+local last_party_count = nil
 
 local speed_display = {
     bg = {
@@ -136,7 +137,6 @@ local speed_display = {
         bold = true,
     },
     text = {
-	    font = 'Consolas',
         size = 12,
     },
 }
@@ -156,8 +156,6 @@ end
 
 local function get_self_name()
     local self = windower.ffxi.get_player()
-        or windower.ffxi.get_mob_by_target('me')
-
     return self and self.name and self.name:lower() or nil
 end
 
@@ -204,13 +202,13 @@ local function start_following(name)
 
     -- Initial server follow helps establish facing/targeting.
     -- Actual movement is IPC-driven after updates arrive.
-    windower.ffxi.follow()
+--    windower.ffxi.follow()
 
     return true
 end
 
 local function become_leader()
-    local self = windower.ffxi.get_mob_by_target('me')
+    local self = windower.ffxi.get_player()
 
     if not self and not repeated then
         repeated = true
@@ -227,6 +225,7 @@ local function become_leader()
     -- New followme leader overrides previous group leader.
     broadcasting = false
     following = false
+    follower_count = 0
 
     clear_target()
     stop_running()
@@ -310,16 +309,7 @@ local function send_position_if_needed()
     last_sent_y = self.y
     last_sent_zone = info.zone
 
-    windower.send_ipc_message(
-        'update '
-        .. self.name:lower()
-        .. ' '
-        .. info.zone
-        .. ' '
-        .. self.x
-        .. ' '
-        .. self.y
-    )
+    windower.send_ipc_message(('update %s %s %s %s'):format(self.name:lower(), info.zone, self.x, self.y))
 end
 
 local function hide_speed_box()
@@ -336,10 +326,6 @@ local function show_speed_box()
     end
 end
 
-local function apply_speed_display_settings()
-    speed_display.bg.alpha = tonumber(settings.alpha) or defaults.alpha
-end
-
 local function ensure_speed_box()
     if speed_box then
         return
@@ -349,7 +335,7 @@ local function ensure_speed_box()
         texts = require('texts')
     end
 
-    apply_speed_display_settings()
+    speed_display.bg.alpha = settings.alpha
 
     -- Use the same texts.new(text, settings) pattern as DParty.
     speed_box = texts.new('  +0', speed_display)
@@ -364,20 +350,17 @@ local function update_speed_box_position()
     end
 
     local party = windower.ffxi.get_party()
-    local party_count = party and tonumber(party.party1_count) or 1
-
-    if party_count < 1 then
-        party_count = 1
-    elseif party_count > 6 then
-        party_count = 6
-    end
+	local party_count = party and party.party1_count or 1
 
     if not speed_x then
         speed_x = windower.get_windower_settings().ui_x_res - 166
+        speed_box:pos_x(speed_x)
     end
 
-    speed_box:pos_x(speed_x)
-    speed_box:pos_y(-20 * party_count - 24)
+    if party_count ~= last_party_count then
+        last_party_count = party_count
+        speed_box:pos_y(-20 * party_count - 24)
+    end
 end
 
 local function get_speed_text(mob)
@@ -460,6 +443,7 @@ windower.register_event('addon command', function(command, ...)
     elseif command == 'stopall' then
         broadcasting = false
         following = false
+        follower_count = 0
 
         clear_target()
         stop_running()
@@ -521,17 +505,34 @@ windower.register_event('addon command', function(command, ...)
 
         windower.add_to_chat(207, 'TurboFollow: ShowSpeed is ' .. (settings.show_speed and 'ON' or 'OFF'))
 
+    elseif command == 'mode' then
+        local value = (...)
+        value = value and value:lower() or nil
+
+        if value == 'strict' then
+            settings.strict_mode = true
+        elseif value == 'soft' then
+            settings.strict_mode = false
+        else
+            settings.strict_mode = not settings.strict_mode
+        end
+
+        pcall(save_settings)
+
+        windower.add_to_chat(207,'TurboFollow: Follow mode set to '..(settings.strict_mode and 'strict' or 'soft')
+        )
+
     elseif command == 'help' then
-        windower.add_to_chat(207, 'TurboFollow Commands:')
-        windower.add_to_chat(207, '//tfo me or //ffo me - Make others follow this character')
+        windower.add_to_chat(207, '-- TurboFollow '.._addon.version..' Commands:')
+        windower.add_to_chat(207, '//tfo me - Make others follow this character')
         windower.add_to_chat(207, '//tfo follow <name> or //tfo <name> - Follow a character')
         windower.add_to_chat(207, '//tfo stop - Stop following on this character')
         windower.add_to_chat(207, '//tfo stopall - Stop all TurboFollow clients')
-        windower.add_to_chat(207, '//tfo min <distance> - Set minimum follow distance')
+        windower.add_to_chat(207, '-- TurboFollow '.._addon.version..' Settings:')
+		windower.add_to_chat(207, '//tfo min <distance> - Set minimum follow distance')
         windower.add_to_chat(207, '//tfo showspeed on|off - Show current movement speed')
         windower.add_to_chat(207, '//tfo alpha <0-255> - Set ShowSpeed background alpha')
-        windower.add_to_chat(207, '//tfo help - Show this help')
-        windower.add_to_chat(207, 'Settings save to data/<character>.xml.')
+        windower.add_to_chat(207, '//tfo mode [strict|soft] - Toggle or set follow steering mode')
 
     else
         -- Shorthand: //tfo <name>
@@ -552,6 +553,7 @@ windower.register_event('ipc message', function(msg)
     if command == 'stop' then
         broadcasting = false
         following = false
+        follower_count = 0
 
         clear_target()
         stop_running()
@@ -569,6 +571,7 @@ windower.register_event('ipc message', function(msg)
         if self_name == new_leader then
             broadcasting = false
             following = false
+            follower_count = 0
 
             clear_target()
             stop_running()
@@ -585,8 +588,16 @@ windower.register_event('ipc message', function(msg)
             return
         end
 
-        -- One or more followers exist, so this character should broadcast position.
-        broadcasting = true
+        -- Track how many followers are attached to this leader.
+        -- This prevents one follower using stop from stopping broadcasts for everyone.
+        follower_count = follower_count + 1
+        broadcasting = follower_count > 0
+
+        -- Force a fresh position update for the newly attached follower.
+        last_sent_x = nil
+        last_sent_y = nil
+        last_sent_zone = nil
+        send_position_if_needed()
 
     elseif command == 'stopfollowing' then
         local self_name = get_self_name()
@@ -595,7 +606,8 @@ windower.register_event('ipc message', function(msg)
             return
         end
 
-        broadcasting = false
+        follower_count = math.max(0, follower_count - 1)
+        broadcasting = follower_count > 0
 
     elseif command == 'update' then
         if not following or a ~= following then
@@ -624,10 +636,13 @@ windower.register_event('prerender', function()
 
     if broadcasting then
         send_position_if_needed()
-        return
     end
 
     if following then
-        check_stop_only()
+        if settings.strict_mode then
+            move_to_target()
+        else
+            check_stop_only()
+        end
     end
 end)

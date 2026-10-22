@@ -27,7 +27,7 @@ function user_job_setup()
 	gear.tp_da_jse_back = { name="Camulus's Mantle", augments={'DEX+20','Accuracy+20 Attack+20','Accuracy+10','"Dbl.Atk."+10','Phys. dmg. taken-10%',}}
 	gear.ranger_wsd_jse_back = { name="Camulus's Mantle", augments={'AGI+20','Rng.Acc.+20 Rng.Atk.+20','AGI+10','Weapon skill damage +10%',}}
 	gear.magic_wsd_jse_back = { name="Camulus's Mantle", augments={'AGI+20','Mag. Acc+20 /Mag. Dmg.+20','Weapon skill damage +10%',}}
-	gear.str_wsd_jse_back = { name="Camulus's Mantle", augments={'STR+20','Accuracy+20 Attack+20','Weapon skill damage +10%',}}
+	gear.str_wsd_jse_back = { name="Camulus's Mantle", augments={'STR+20','Accuracy+20 Attack+20','STR+10','Weapon skill damage +10%',}}
 	
 	gear.rostam_a = { name="Lanun Knife", augments={'Path: A',}}
 	gear.rostam_b = { name="Lanun Knife", augments={'Path: B',}}
@@ -44,14 +44,14 @@ function init_gear_sets()
 
 	-- Weapons sets
 
-	sets.weapons.SavageBlade = {main="Kaja Sword",sub="Blurred Knife +1",range="Anarchy +2"}
+	sets.weapons.SavageBlade = {main="Naegling",sub="Gleti's Knife",range="Anarchy +2"}
 	sets.weapons.LeadenMelee = {main=gear.rostam_b,sub="Tauret",range="Death Penalty"}
 	sets.weapons.LeadenRanged = {main=gear.rostam_a,sub="Tauret",range="Death Penalty"}
 	sets.weapons.LastStandMelee = {main=gear.rostam_b,sub="Gleti's Knife",range="Fomalhaut"}
 	sets.weapons.LastStandRanged = {main=gear.rostam_a,sub="Nusku Shield",range="Fomalhaut"}
 	sets.weapons.Aeolian = {main=gear.rostam_b,sub="Tauret",range="Anarchy +2"}
 	sets.weapons.HotShot = {main=gear.rostam_b,sub="Tauret",range="Fomalhaut"}
-	sets.weapons.Dynamis = {main=gear.rostam_c,sub="Blurred Knife +1",range="Anarchy +2"}
+	sets.weapons.Dynamis = {main=gear.rostam_c,sub="Gleti's Knife",range="Anarchy +2"}
 
     -- Precast Sets
 
@@ -63,7 +63,7 @@ function init_gear_sets()
     sets.precast.JA['Random Deal'] = {body="Lanun Frac +3"}
     sets.precast.FoldDoubleBust = {hands="Lanun Gants +1"}
 
-	sets.precast.CorsairRoll = set_combine(sets.idle, {main=gear.rostam_c,range="Compensator",head="Lanun Tricorne",neck="Regal Necklace",hands="Chasseur's Gants +3",legs="Desultor Tassets", back=gear.tp_da_jse_back})
+	sets.precast.CorsairRoll = set_combine(sets.idle, {main=gear.rostam_c,range="Compensator",head="Lanun Tricorne",neck="Regal Necklace",hands="Chasseur's Gants +1",legs="Desultor Tassets", back=gear.tp_da_jse_back})
 
     sets.precast.LuzafRing = {ring2="Luzaf's Ring"}
     
@@ -147,7 +147,7 @@ function init_gear_sets()
 		waist="Sailfi Belt +1",
 		left_ear="Moonshade Earring",
 		right_ear="Ishvara Earring",
-		left_ring="Regal Ring",
+		left_ring="Sroda Ring",
 		right_ring="Epaminondas's Ring",
 		back=gear.str_wsd_jse_back,}
 				
@@ -363,7 +363,7 @@ function init_gear_sets()
 		neck="Iskur Gorget",
 		waist="Windbuffet Belt +1",
 		left_ear="Brutal Earring",
-		right_ear="Telos Earring",
+		right_ear="Dedition Earring",
 		left_ring="Murky Ring",
   	    right_ring="Epona's Ring",
 		back=gear.tp_da_jse_back,

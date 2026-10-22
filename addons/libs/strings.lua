@@ -89,7 +89,7 @@ do
         end,
         [string.encoding.shift_jis] = function(byte)
             return
-                (byte < 0x80 or byte >= 0xA1 and byte <= 0xDF) and 1 or
+                (byte <= 0x1D or byte >= 0x20 and byte < 0x80 or byte >= 0xA1 and byte <= 0xDF) and 1 or
                 (byte >= 0x1E and byte <= 0x1F or byte >= 0x80 and byte <= 0x9F or byte >= 0xE0 and byte <= 0xEF or byte >= 0xFA and byte <= 0xFC) and 2 or
                 byte == 0xFD and 6
         end,
@@ -99,16 +99,18 @@ do
     }
 
     do
-        local process = function(str, from, to, fn)
+        local process = function(str, from, to, encoding)
             local index = from
+            local fn = lengths[encoding]
             return function()
                 if index > to then
                     return nil
                 end
 
-                local length = fn(str:byte(index, index))
+                local byte = str:byte(index, index)
+                local length = fn(byte)
                 if length == false then
-                    _raw.error('Invalid code point')
+                    _raw.error(('Invalid code point: %02X (%s)'):format(byte, tostring(encoding)))
                 end
 
                 index = index + length
@@ -121,10 +123,10 @@ do
                 return str:sub(from, to):gmatch('.')
             end,
             [string.encoding.utf8] = function(str, from, to)
-                return process(str, from, to, lengths[string.encoding.utf8])
+                return process(str, from, to, string.encoding.utf8)
             end,
             [string.encoding.shift_jis] = function(str, from, to)
-                return process(str, from, to, lengths[string.encoding.shift_jis])
+                return process(str, from, to, string.encoding.shift_jis)
             end,
             [string.encoding.binary] = function(str, from, to)
                 return str:sub(from, to):gmatch('.')
@@ -816,6 +818,60 @@ do
             end
 
             return res
+        end
+    end
+
+    do
+        _raw.string.lower = string.lower
+        _raw.string.upper = string.upper
+
+        local upper_min = 0x41
+        local upper_max = 0x5A
+        local lower_min = 0x61
+        local lower_max = 0x7A
+
+        local process = function(str, encoding, from, to, min, max, modify)
+            if type(encoding) ~= 'table' then
+                encoding, from, to = string.encoding.ascii, encoding, from
+            end
+
+            if encoding == string.encoding.ascii and from == nil and to == nil then
+                return modify(str)
+            end
+
+            from = adjust_from(str, from)
+            to = adjust_to(str, to)
+
+            local result = ''
+
+            local last_change = false
+            local last = 1
+            local pos = from
+            for c in str:it(encoding, from, to) do
+                local b = c:byte()
+                local change = b >= min and b <= max
+                if last_change ~= change then
+                    local sub = str:sub(last, pos - 1)
+                    if last_change then
+                        sub = modify(sub)
+                    end
+                    result = result .. sub
+                    last_change = change
+                    last = pos
+                end
+
+                pos = pos + #c
+            end
+
+            return result .. str:sub(last)
+        end
+
+        function string.lower(str, encoding, from, to)
+            return process(str, encoding, from, to, upper_min, upper_max, _raw.string.lower)
+        end
+
+        function string.upper(str, encoding, from, to)
+            return process(str, encoding, from, to, lower_min, lower_max, _raw.string.upper)
         end
     end
 end

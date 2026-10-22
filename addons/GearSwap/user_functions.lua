@@ -46,7 +46,7 @@ function debug_mode(boolean)
     elseif boolean == nil then
         _settings.debug_mode = true
     else
-        error('\nGearSwap: show_swaps() was passed an invalid value ('..tostring(boolean)..'). (true/no value/nil=on, false=off)', 2)
+        error('\nGearSwap: debug_mode() was passed an invalid value ('..tostring(boolean)..'). (true/no value/nil=on, false=off)', 2)
     end
 end
 
@@ -97,7 +97,7 @@ function change_target(name)
     end
     if name and type(name)=='string' then
         if valid_target(name) then
-            _,_global.new_target = valid_target(name)
+            _global.new_target = valid_target(name)
         else
             error('\nGearSwap: change_target() was passed an invalid value ('..tostring(name)..'). (must be a valid target)', 2)
         end
@@ -245,7 +245,7 @@ function print_set(set,title)
 end
 
 function send_cmd_user(command)
-    if string.byte(1) ~= 0x40 then
+    if command:byte(1) ~= 0x40 then
         command='@'..command
     end
     windower.send_command(command)
@@ -355,7 +355,7 @@ function user_midaction(bool)
 
     for i,v in pairs(command_registry) do
         if type(v) == 'table' and v.midaction then
-            return true, v.spell
+            return true, v.spell, i
         end
     end
 
@@ -366,7 +366,7 @@ function user_pet_midaction(bool)
     if bool == false then
         for i,v in pairs(command_registry) do
             if v.pet_midaction then
-                command_registry.pet_midaction = false
+                command_registry[i].pet_midaction = false
             end
         end
     end

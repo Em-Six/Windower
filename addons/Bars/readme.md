@@ -5,7 +5,7 @@ Displays bars for Target, Sub Target, Focus Target, Self Actions, and Player Sta
 ↑ The `//bars ui` command triggers the Screen Test where you can drag any of the highlighted bars.
 <br><br><br>
 ![Bars_drain](https://github.com/user-attachments/assets/01955128-6341-4823-9211-8a225417f13e)  
-↑ New animations Bar Drain, Bar Pulse, and Floating TP shown.
+↑ Bar Drain, Bar Pulse, and Floating TP animations.
 <br><br><br>
 ![Bars_BLU](https://github.com/user-attachments/assets/c3c99ca5-4ec6-48e8-aceb-bee383615e0b)  
 ↑ The Target and Self Action bars visible and in action showing how many targets were hit and the total of all damage done.
@@ -16,14 +16,20 @@ Displays bars for Target, Sub Target, Focus Target, Self Actions, and Player Sta
 ![Bars_SP_Abilities](https://github.com/user-attachments/assets/fe34144a-5e7f-42b5-a3f4-5ae48fbe3ca6)  
 ↑ Bumba with Yaegasumi active before it wears off (update now includes a timer countdown).
 <br><br><br>
-<img width="238" height="144" alt="Bars_debuffs" src="https://github.com/user-attachments/assets/52280a58-bc21-40cf-be3d-06907d707da5" />  
+![Bars_Debuffs](https://github.com/user-attachments/assets/52280a58-bc21-40cf-be3d-06907d707da5)  
 ↑ The Debuff Icons and Timers displayed above a target.
 <br><br><br>
 ![Bars_Party_Actions](https://github.com/user-attachments/assets/093af1f8-2ad8-40cb-8660-b25f7d11c527)  
 ↑ The Party Actions displayed next to each of your party members.
 <br><br><br>
-<img width="385" height="189" alt="Bars_aggro_list" src="https://github.com/user-attachments/assets/b7c0a31a-7a1e-486d-ab5d-a075537818f4" />  
+![Bars_aggro_list](https://github.com/user-attachments/assets/b7c0a31a-7a1e-486d-ab5d-a075537818f4)  
 ↑ The Aggro List with most monsters asleep, set to display a maximum of 6 monsters at a time.
+<br><br><br>
+![Bars_xp](https://github.com/user-attachments/assets/c89cbc68-d50f-4370-897d-9ed129fe0094)  
+↑ The XP bar in Exemplar Points mode showing various stats, including Kills Per Hour, Points Per Kill, and Seconds Per Kill.
+<br><br><br>
+![Bars_chat](https://github.com/user-attachments/assets/358f5f3f-b1d3-4be4-9c27-a243dff6ddf9)  
+↑ The Chat bar showing the All tab with messages from different chat channels.
 <br><br>
 ## Features
 - Target Actions.
@@ -39,6 +45,14 @@ Displays bars for Target, Sub Target, Focus Target, Self Actions, and Player Sta
   - A simplified display of the actions performed by each party/alliance member.
 - Aggro List
   - A simplified list of all monsters aggressive to you/your party.
+- XP Bar
+  - Displays XP, CP, or EP in a bar meter with dynamic information based on your current job.
+- Chat Bar
+  - Displays tabs for All, Say, Tell, Party, LS1, LS2, Unity, and Shout.
+  - Each tab can be individually disabled if you don't want or need it.
+  - Messages will persist between logouts and different characters.
+  - By default will hold up to a maximum of 500 messages before oldest are removed.
+  - Can be minimized to a bar when you don't need it, or maximized to a window to read messages.
 - Focus Target.
   - A customizable list of targets to automatically track in a dedicated bar.
   - Update this list by name, id, or your current cursor target.
@@ -48,6 +62,7 @@ Displays bars for Target, Sub Target, Focus Target, Self Actions, and Player Sta
 - Debuff Icons for Monsters.
   - Shows the tiers of the debuffs (Frazzle 3, Dia 4, Slow 2, etc.)
   - Will show a best guess timer for each.
+  - Shows Treasure Hunter level after TH procs.
   - Removes the icon only when the debuff is known to be removed/off (ie Benediction or "wears off" message), otherwise displays "??" if unsure.
   - Use a custom list of duration bonuses for your static group or friends to refine timers more precisely.
 - Display Monster levels.
@@ -68,15 +83,21 @@ Displays bars for Target, Sub Target, Focus Target, Self Actions, and Player Sta
 - Names and bars colored based on type (NPC, Party member, mob claimed by someone else, etc.).
 - Nearly every feature can be turned on/off or adjusted via settings file or in-game commands.
 
+| PACKET USE |
+|------------|
+| Default settings: **Read Only** |
+| The option `show_monster_level` will send outgoing Wide Scan request packets (this is simulating opening your map and hitting Wide Scan) in a controlled manner: Never in town, at a random interval between 30 and 60 seconds, and stops when you go idle (specifically, when the bars fade out).<br>All other packet use in this addon is read only. |
+
 ## How To Setup
 1. Load the addon with `//lua load bars`.
 2. Type `//bars ui` and follow the guide from there.
 3. Once you have the bar positions settled, you can add or remove any of the Player Stats bars using `//bars hp` (where 'hp' can be replaced with 'mp', 'tp', or 'pet' to add/remove those bars instead). Remember that the "player stat" bars displayed are specific to the job you are currently on.
 
 #### Extra
-4. You can type `//bars help` at any time to display the list of in game commands the addon supports. See **Commands** below.
+4. You can type `//bars help` at any time to display the list of in-game commands the addon supports. See **Commands** below.
 5. If you have a different number of the Player Stats bars shown for different jobs and would like them aligned to the bottom (for example, sitting on top of your chat log), you can adjust the vertical offset for each bar for each job as needed in the `data/settings.xml` file.
 6. Explore the `data/settings.xml` file to see the full list of options that are available to tweak. See **Options** below.
+7. If you multi-box and have different screen sizes for different characters, and therefore different position needs for your bars, make a copy of the main `data/settings.xml` file and rename it as `<charactername>_settings.xml` (ex: `Keylesta_settings.xml`). Make any separate settings changes you would like within this character-specific file, bars will then use that file for that character.
 
 ## Commands
 All commands must be preceded with `//bars` (ex: `//bars focus`)  
@@ -86,9 +107,8 @@ All commands must be preceded with `//bars` (ex: `//bars focus`)
 |---------|-------------|
 | `add/a [target]` | Add a target to the Auto Focus Target list.<br> - Valid targets: Names, IDs,  or current highlighted target.<br> - Use quotes to surround names with spaces. |
 | `remove/r [target]` | Remove a target from the Auto Focus Target list.<br> - Valid targets: Names, IDs,  or current highlighted target.<br> - Use quotes to surround names with spaces. |
-| `focus/f` | Temporarily override the Auto Focus Target with the current cursor target.<br> - Type again to remove the override.<br> - Automatically removed when target moves out of range. |
+| `ft/f` | Temporarily override the Auto Focus Target with the current cursor target.<br> - Type again to remove the override.<br> - Automatically removed when target moves out of range. |
 | `list/l` | Show the Auto Focus Target list. |
-| `aggro/agg` | Toggle the Aggro List. |
 | `help` | Display a list of commands and addon info. |
 | **Target Bar Display Options** |
 | `distance/d` | Toggle the target Distance option. |
@@ -96,8 +116,9 @@ All commands must be preceded with `//bars` (ex: `//bars focus`)
 | `hex/h` | Toggle the target Hex option (overrides Index). |
 | `index/i` | Toggle the target Index option (overrides Hex). |
 | **UI Adjustments** |
+| `focus/sub/target/aggro/chat/xp` | Toggle the display of the different bars. |
 | `hp/mp/tp/pet` | Toggle HP/MP/TP/Pet bar display setting for current job. |
-| `ui/lock/unlock` | Toggle Screen Test to drag sections of the UI around. |
+| `ui` | Toggle Screen Test to drag sections of the UI around. |
 | `width/w` | Display bar widths and how to update them. |
 | `size/s` | Display bar sizes and how to update them. |
 | `text/t` | Display text sizes and how to update them. |
@@ -136,12 +157,9 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | `abbreviate_common_mob_names` | Common mob names will be abbreviated to save space (ex. Sweetwater Rabbit → Swt. Rabbit). Does not apply to the main name on the Target bar. |
 | `animations` | Controls various aspects of the different types of animations. |
 | → `drain_brightness` | Brightness (alpha) of the Bar Drain effect.<br># 1-10<br>1 = 10% of the meters alpha<br> 10 = 100% of the meters alpha |
-| → `drain_hp_bar` | Display the Bar Drain effect for the Player Stats **HP** bar. |
-| → `drain_mp_bar` | Display the Bar Drain effect for the Player Stats **MP** bar. |
-| → `drain_pet_bar` | Display the Bar Drain effect for the Player Stats **PET** bar. |
+| → `drain_player_stats_bars` | Display the Bar Drain effect for the Player Stats bars (HP, MP, TP, Pet). |
 | → `drain_speed` | Speed of the Bar Drain effect.<br># >= 1<br>Higher = faster |
 | → `drain_target_bars` | Display the Bar Drain effect on the Focus Target, Sub Target, and Target bars. |
-| → `drain_tp_bar` | Display the Bar Drain effect for the Player Stats **TP** bar. |
 | → `fade_after_a_delay` | Fades all bars out of view after a set time delay of inaction. |
 | → `fade_delay` | Time in seconds to delay fade. |
 | → `fade_down_to_alpha` | Number the alpha will stop at after fading.<br>0 = completely invisible<br>255 = completely visible |
@@ -157,7 +175,7 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | → `pulse_when_pet_low` | Pulses the Pet bar when pet HP is critically low. |
 | → `pulse_when_tp_ready` | Pulses the TP bar when TP is ready to use. |
 | `clear_action_delay` | The delay in seconds after an action completes before it will be cleared from the target (supports decimals, e.g., 5.5). |
-| `clear_action_delay_for_rolls` |  The delay in seconds specifically after a Phantom Roll or Double-Up before it will be cleared from the target. |
+| `clear_action_delay_for_self_rolls` |  The delay in seconds specifically after a Phantom Roll or Double-Up performed by the player before it will be cleared from the Self Actions Bar. |
 | `colorize_spells` | Colorize the names of spells to match their element. |
 | `condense_target_and_subtarget_bars` | Display sub-targets in the Target bar instead of their own separate Sub-Target bar. |
 | `condense_target_name_and_sp_name`<br>`focus_target`<br>`sub_target`<br>`target` | The name of the target and the SP ability it is using will rotate, displaying one at a time. False will display the SP ability name after the target name. |
@@ -176,12 +194,13 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | `remove_tachi_blade_from_ws_name` | Removes "Tachi: " and "Blade: " from weapon skill names to help save space (ex. *Tachi: Yukikaze* → *Yukikaze*). |
 | `short_skillchain_names` | Uses shortened names for skillchains (4 characters long) to help save space. |
 | `show_action_status_indicators` | Shows icons depicting when a spell/ability is casting, completed, or interrupted. |
+| `show_automaton_mp` | Displays the MP percent for your Automaton on the Pet bar. |
 | `show_commas_on_numbers` | Adds commas to numbers for easier readability. |
-| `show_dyna_jobs` | Show the job of Dynamis Divergence mobs. |
 | `show_fancy_rolls` | Show a fancified version of COR rolls (if `show_lucky_roll_info` is turned on). |
 | `show_focus_target_when_targeted` | Show the Auto Focus Target bar when the subject of it has been targeted. False prevents a target being on both at the same time. |
 | `show_hp_tp_markers` | Shows marker dots on the TP bar indicating 1k and 2k TP, as well as a marker dot on the HP bar indicating yellow HP. |
 | `show_max_hp_mp_on_bars` | Shows the current maximum HP and MP on their respective bars. |
+| `show_monster_job` | Show the job(s) of specific monsters. |
 | `show_pet_distance` | Show the distance between you and your pet. |
 | `show_pet_status` | Show the current status of your pet (Idle, Engaged, etc.). |
 | `show_pet_tp` | Show the current TP of your pet. |
@@ -209,6 +228,7 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | → `ignore_list` | Comma separated list of monster names to not display. |
 | → `italic` | Text within this section is italic. |
 | → `max_monsters_listed` | Maximum number of monsters to display separately (0-15). |
+| → `meter_alpha` | Opacity level for the meter in this section (0-255). |
 | → `min_monsters_to_show` | Minimum number of monsters before the Aggro List will display (0-15). |
 | → `open_mobs` | Comma separated list of monster names that anyone can fight and are not claimed (bypassing the party/alliance only filter). |
 | → `pos` | X and Y position of the Aggro List. |
@@ -217,11 +237,34 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | → `stroke_alpha` | Opacity level of the stroke (outline) for the text in this section (0-255). |
 | → `stroke_color` | RGB color of the stroke (ouline) for the text in this section. |
 | → `stroke_width` | Width in pixels of the stroke (outline) for the text in this section. |
-| `focus_target`<br>`player_stats`<br>`self_action`<br>`sub_target`<br>`target` | These sections are for the 5 bars.<br>NOTE: Not all sections have all options. |
+| `chat` | The On Screen Display box for the Aggro List. |
+| → `bar_width` | Width in characters of the bar. This can also be adjusted by dragging the ↔ icon. |
+| → `bg_alpha` | Opacity level for the background in this section (0-255). |
+| → `display_you_for_outgoing` | Messages sent by your current character will display in the message log as from "YOU" instead of your character name. |
+| → `font` | Text within this section is this font (MUST be a monospaced font for UI elements to line up properly). |
+| → `indent_width` | Number of spaces allowed for the message sender name and it's formatting before the message begins. |
+| → `max_lines` | Maximum number of message lines displayed in the window. This can also be adjusted by dragging the ↕ icon. |
+| → `max_message_limit` | Maximum number of messages saved before oldest are deleted. |
+| → `minimized` | Controls if the bar is currently minimized or not. Can be toggled by clicking the □ and ▬ icons. |
+| → `pad` | Padding around the bar |
+| → `pos` | X and Y position of the Chat bar. |
+| → `save_to_file` | Saves all current messages to an external file, allowing messages to persist between reloads of the addon. |
+| → `show` | Show the Chat bar. |
+| → `show_during_zoning` | Continue to display the Chat bar while zoning. |
+| → `show_message_counter` | Display the current number of messages in memory compared to the `max_message_limit`. |
+| → `show_timestamps` | Display a timestamp in front of each message. |
+| → `size` | Font size of the text within this section. |
+| → `stroke_alpha` | Opacity level of the stroke (outline) for the text in this section (0-255). |
+| → `stroke_color` | RGB color of the stroke (ouline) for the text in this section. |
+| → `stroke_width` | Width in pixels of the stroke (outline) for the text in this section. |
+| → `tabs` | Toggle individual chat tabs on or off. |
+| `focus_target`<br>`player_stats`<br>`self_action`<br>`sub_target`<br>`target`<br>`xp` | These sections are for the 6 bars.<br>NOTE: Not all sections have all options. |
 | → `bar_size` | Font size of the bar. |
 | → `bar_width` | Width in characters of the bar. |
 | → `bold` | Text within this section is bold. |
-| → `debuff_icon_offset` | Horizontal offset for the debuff icons (centered on the bar, positive moves downward, negative moves upward). (Focus Target, Sub Target, and Target only) |
+| → `condensed_job_points` | Job Points are displayed in a condensed fashion. (XP bar only) |
+| → `condensed_merits` | Merit Points are displayed in a condensed fashion. (XP bar only) |
+| → `debuff_icon_offset` | Horizontal offset for the debuff icons (centered on the bar, positive moves downward, negative moves upward). (Focus Target, Sub Target, and Target bars only) |
 | → `debuff_icon_size` | Size in pixels of the debuff icons (this number is used for both height and width). |
 | → `debuff_icon_spacing` | Number of pixels between each debuff icon. |
 | → `debuff_icons` | Show the debuff icons for monsters. |
@@ -229,13 +272,31 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 | → `debuff_timer_offset` | Horizontal offset for the debuff timers (centered on the bar, positive moves downward, negative moves upward). |
 | → `debuff_timer_size` | Font size of the debuff timers text. |
 | → `debuff_timers` | Show the debuff timers for monsters. Requires `debuff_icons` to be `true`. |
+| → `exclude_from_fade` | Bar will not fade with other bars (XP bar only). |
 | → `font` | Font of the text within this section. |
 | → `italic` | Text within this section is italic. |
+| → `legacy_per_hour_calculation` | use legacy calculations to determine points per hour. (XP bar only) |
+| → `per_hour_rolling_window_in_minutes` | The size of the window in minutes that xp calculations are made. (XP bar only) |
 | → `pos` | X and Y position of the bar. |
-| → `show` | Show this specific section. |
+| → `show` | Show this specific bar section. |
 | → `show_bar` | Show the progress bar in the Self Action section. |
-| → `show_monster_level` | Show the level of the currently targeted monster. |
+| → `show_base_conq_pt_per_hour` | Shows the estimated amount of Conquest Points gained per hour. Does not take into account any Region modifiers. Will not display if Signet is not active or if not in a zone you are able to gain Conquest Points in. (XP bar only) |
+| → `show_battle_target_by_default` | Displays your party's current battle target (not guaranteed to be the same as <bt>) when no Focus Target or Focus Target Override is active. (Focus Taraget bar only) |
+| → `show_cast_time_bar` | Displays the position of the bar when a self action completes, allowing a visual indication of your fast cast. |
+| → `show_job_levels` | Display main and sub job levels, as well as Master Levels if appropriate. (XP bar only) |
+| → `show_job_points_stored_after_master` | Will continue to display stored Job Points after current job has been mastered. (XP bar only) |
+| → `show_kills_per_hour` | Display approximate Kills per Hour. (XP bar only) |
+| → `show_merits` | Display the number of current Merit Points stored. (XP bar only) |
+| → `show_monster_level` | Show the level of the currently targeted monster. (NOTE: Uses outgoing packets, see PACKET USE above) |
 | → `show_monster_target` | Show the currently targeted monster's target. |
+| → `show_percent` | Display the percentage of completion for the current level. (XP bar only) |
+| → `show_player_angle_from_target_facing` | Shows an arrow indicating which direction the *player* is relative to the direction the *target* is facing. |
+| → `show_points_per_kill` | Display the average number of points per kill. (XP bar only) |
+| → `show_seconds_per_kill` | Display the average seconds between kills. (XP bar only) |
+| → `show_target_angle_from_player_facing` | Shows an arrow indicating which direction the *target* is relative to the direction the *player* is facing. |
+| → `show_time_tnl` | Shows the estimated amount of time until your next level/master/master level at the current points/hour rate. (XP bar only) |
+| → `show_tnl` | Display the number of points until your next level. (XP bar only) |
+| → `show_wyvern_breath` | Shows your Wyvern's breath attacks when on DRG. (Self Action bar only) |
 | → `spaces_between_text_parts` | Number of spaces between the different components that make up the text line in this section. |
 | → `stroke_alpha` | Opacity level of the stroke (outline) for the text in this section (0-255). |
 | → `stroke_color` | RGB color of the stroke (ouline) for the text in this section. |
@@ -264,6 +325,7 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 ## Known Issues
 - The name of a weapon skill used by a player being blinked by an enemy will be displayed incorrectly as a job ability.
 - Bar dragging does not work properly if Window Mode is set to "Window" in Windower. It seems the height of the window's title bar is included when Windower returns the position of the mouse, but is not included when determing the position of a text object on screen, resulting in the numbers not quite matching up and needing to grab slightly below where the actual bar is on the screen in order to grab and drag it.
+- There is a hard limit of 15 total targets on any single action. Even if you land a single action (Sleepga, for example) on more than 15 targets, only 15 will be returned in the action packet. This results in some debuff icons not being added to some monsters when more than 15 targets are hit by it at once. Additionally, the number returned in the action results for how many targets were hit by the action will also be capped at 15, as well as the total amount of damage calculated being limited to adding together numbers for only up to 15 targets. This is, unfortunately, not something I can work around.
 - The Target Lock icons/underline very rarely will display incorrectly. A simple reload of the addon (`//lua r bars`) should fix the issue. I have done what I can to prevent this from happening, but `:extents()` occasionally just doesn't cooperate ¯\_(ツ)_/¯.  
 ![Bars_known_issue_1](https://github.com/user-attachments/assets/71e98977-4589-4501-841e-adbe3819294d)
 
@@ -286,6 +348,140 @@ Open the `/bars/data/settings.xml` file to adjust these settings.
 ------
 
 ## Changelog
+
+Version 4.14.1
+- Adjusted the Wild Card and Cutting Cards SP Ability names to include the roll number at the end.
+- Fixed an issue with the latest adjustment for removing Sleep/Bind/Petrify where the debuff icons for those would get stuck on when they should have been removed.
+
+Version 4.14
+- Adjusted the Party Actions sections to be draggable during the Screen Test (//bars ui). The top player in each party is now highlighted in green and able to be dragged, the rest of the party members will snap into place once the drag is released.
+- Adjusted (yet again) how the monitoring for removing Sleep/Bind/Petrify is handled. Instead of delaying recording the position info for the monster it now records immediately but adds a timestamp delay for when to check for movement to then remove the debuffs.
+- Adjusted Tier 1 Threnodies that land with a "no effect" to not overwrite the previous Tier 2 Threnody.
+
+Version 4.13
+- Added `show_wyvern_breath` option under the Self Action section. Shows your Wyvern's breath attacks when on DRG. (thanks olgi!)
+- Adjusted Kills Per Hour (KPH) and Seconds Per Kill (SPK) stats in the XP bar to use the XP table regardless of which type of points are displaying (XP, CP, or EP). Since you always earn XP/LP even when earning CP or EP, this allows the KPH and SPK stats to display much more frequently, even if you are not earning CP or EP.
+
+Version 4.12
+- Added Debuff icons for Dancer Dazes levels 6-10. New icons have been added for them as well as redoing the icons for Daze levels 1-5 to match the new icons.
+- Added Tabbiyaa Gambit to list of moves that remove all monster debuffs.
+- Added various BCNM mobs (Macrocosmic Orbs, some Master Trials, etc.) to the list of mobs that show their jobs.
+- Added an icon to the jobs displayed to indicate NMs in Dynamis. Icon is set as `dynamis_nm_icon` under Settings.xml > icons.
+- Added Dynamis NM jobs highlight color.
+- Added missing results for Healing Waltz.
+- Renamed the `show_dyna_jobs` setting to `show_monster_job` to better match the now wider range of mobs included.
+- Fixed the check for when a monster moves and removing Sleep, Petrify, Bind not actually working since adjusting it to try to accound for fast moving monsters.
+- Fixed some minor padding issues when a bar is at 1%.
+- Fixed tiny black square showing up on screen when the addon is loaded before a character is logged in.
+
+Version 4.11.2
+- Fixed errors on a fresh install when the bars fade out, introduced with moving `bg_alpha` inside each bar section.
+- Adjusted the function that returns the Dynamis mob jobs. Now uses a static lookup table with an instant return, instead of the previous looping string match, hella more efficient. Will additionally label NM monsters.
+
+Version 4.11.1
+- Added Raksha Stance and Yaksha Stance to the list of moves that remove all mob debuffs.
+- Adjusted the distance threshold for mob movement to determine if the mob has moved after Sleep, Petrify, or Bind back from 2 to 3.
+
+Version 4.11
+- Added `focus` `sub` `chat` and `xp` in game commands to toggle those bars on/off.
+- Added `cbs` and `als` in game commands for adjusting the size of the Chat Bar and Aggro List.
+- Added `bg_alpha` and `meter_alpha` settings to the Focus Target, Sub Target, Target, Player Stats, Self Actions, and XP sections in the settings file.
+- Added missing results for Beastmaster and Puppetmaster pet actions. (thanks rkfogg and Galin!)
+- Added new Limbus NMs to the default list of open mobs (attackable by anyone) for the Aggro List.
+- Added missing `font` setting under Target section in the settings file. (Thanks zeta!)
+- Adjusted the Aggro List to work like other bars in the Screen Test (`//bars ui`). It is now only draggable during the Screen Test, will highlight in green, and will show fake test data in order to show the full size of the window.
+- Adjusted the previous `focus` in game command to `ft` instead (alternate `f` command has not changed) to make room for new bar toggle commands.
+- Adjusted the Seconds Per Kill number on the XP bar to display to one decimal place.
+- Adjusted the Self Action bar to display "Self Action" during the Screen Test (`//bars ui`) instead of "Screen Test" to align with the other bars labeling themselves.
+- Adjusted individual Player Stats bars (HP, MP, TP, and Pet) drain settings to condense to a single `drain_player_stats_bars` setting. Note that if you are upgrading from a previous verison this will leave the previous individual settings in your settings file, though they will no longer be functional.
+- Fixed Focus Target bar meter getting occasionally stuck on screen until another target replaces it, when the `show_battle_target_by_default` settings is enabled.
+
+Version 4.10.2
+- Fixed (I hope) parts of the Chat bar UI occasionally loading all in the top left corner of the screen.
+- Fixed an issue where the Scroll Bar and Handle would occasionally get stuck displaying in the Chat window.
+
+Version 4.10.1
+- Fixed issues with Signet not being tracked properly for the new `show_base_conq_pt_per_hour` option.
+- Fixed an issue with the `show_battle_target_by_default` option where a dead target would occasionally get stuck displaying on screen. This feature no longer uses Windower's `get_mob_by_target('bt')` and instead pulls from the Aggro List table.
+- Fixed an issue with the recent update to the XP bar that would capture other players Job Points earned and use that as the player's own stored amount. (Thanks Galin and Moonstrahl!)
+- Fixed an an error with the XP bar when leveling a sub-99 job causing errors on leveling up. (Thanks Asura.Jintawk!)
+
+Version 4.10
+- Added `show_battle_target_by_default` option to the Focus Target bar. Displays your party's current battle target (not guaranteed to be the same as `<bt>`) when no Focus Target or Focus Target Override is active.
+- Added `show_base_conq_pt_per_hour` option to the XP bar. Shows the estimated amount of Conquest Points gained per hour. Does not take into account any Region modifiers. Will not display if Signet is not active or if not in a zone you are able to gain Conquest Points in. (Thanks for the suggestion macy85!)
+- Added `show_time_tnl` option to the XP bar. Shows the estimated amount of time until your next level/master/master level at the current points/hour rate.
+- Adjusted the XP bar so that when you are mastering a job the bar meter will be based on progress towards the 63m Capacity Points needed for all 2100 Job Points to master. The meter will now progress as Capacity Points are gained instead of when you spend your stored Job Points.
+- Adjusted default Fade Delay to 120 seconds (will not affect previously saved setting).
+- Adjusted a few options so that when they are disabled, their functions are stopped higher up in their respective processing paths.
+- Adjusted the Aggro List to no longer display during the Screen Test (`//bars ui`) when disabled.
+- Fixed the Self Action bar background from displaying during the Screen Test (`//bars ui`) when disabled.
+- Fixed targets with " of " in their name not working correctly when added to the Auto Focus Target list via the full command with name (ie `//bars a "Keeper of Halidom"`). (Thanks darsinger!)
+
+Version 4.9
+- Added Chat Bar.
+- Added Blind I & II, Paralyze I & II, and Slow I & II to the list of spells that get boosted with Quick Draw. (You will need to make sure to get the 6 new icons representing them.)
+- Added Flash and Stun debuffs.
+
+Version 4.8
+- Added XP Bar. Displays XP, CP, or EP in a bar meter with dynamic information based on your current job (Job/Master level, Merit Points, Job Points, current/required XP/CP/EP, points per hour, kills per hour, points per kill, and seconds per kill).
+- Fixed an issue where switching characters would occasionally display the wrong Player Stat bars under certain circumstances.
+
+Version 4.7.2
+- Fixed an error popping up within high lag areas (mostly Besieged, really).
+
+Version 4.7.1
+- Fixed an issue with updating bar sizes through in-game commands setting the size to 10x what it should be. When I updated the bars to have finer step sizes I divided the size by 10 then multiplied the output by 10 to equal out to the actual desired size. The in-game commands simply set the new bar size to the actual size desired, without dividing it by 10, so the output for the bar would then multiply by 10 creating a giant new meter on that bar. (Thanks Nautilus1222!)
+
+Version 4.7
+- Added `show_cast_time_bar` option for the Self Action bar. Displays the position of the bar when an self action completes, allowing a visual indication of your fast cast.
+- Added `drop_shadow` color option into the `text` settings. Controls the color of the drop shadow for all text.
+- Added an indicator to the Aggro List for monsters who have their SP ability currently active.
+- Adjusted sleep/petrify/bind wearing off detection to delay half a second before recording the mobs initial position data. This should be more accurate for mobs that are moving quickly when they are slept/petrified/bound and reduce the number of false positives that clear these debuffs immediately.
+- Adjusted sleep/petrify wearing off detection to also check the mobs facing to determine if they have worn off.
+- Adjusted Job Abilities with Additional Effect Damage (ie Soul Jump and Spirit Jump) to display the combined damage amount.
+- Fixed Impact not showing up on Monster Debuffs. Recent update had broken this.
+
+Version 4.6.4
+- Fixed Impact Monster Debuff no longer showing up.
+
+Version 4.6.3
+- Fixed an issue with autoloading producing an error and not actually loading the addon.
+
+Version 4.6.2
+- Fixed (hopefully) a rare issue where bars may seemingly disappear, getting stuck saved to a possition off-screen.
+
+Version 4.6.1
+- Fixed coloring for the Player HP and MP bars not changing as they get lower. (thanks **Bahamut.Navius**!)
+
+Version 4.6
+- Added `show_target_angle_from_player_facing` option to the Focus Target, Sub Target, and Target sections. Shows an arrow indicating which direction the target is relative to the direction your character is facing.
+- Added `show_player_angle_from_target_facing` option to the Focus Target, Sub Target, and Target sections. Shows an arrow indicating which direction the player is relative to the direction your target is facing.
+- Added missing Kaustra Monster Debuff icon. Since duration is based on the casters Dark Magic skill, I took the base Dark Magic skill of a mastered (Mlvl 0) SCH and made the default duration 100 seconds based on that.
+- Added check for custom per-character settings. Copy your `data/settings.xml` file and name it `<playername>_settings.xml` (for example: `Keylesta_settings.xml`). When Bars loads (or you log into a character) it will look for a settings file with the character name first.
+- Added `show_automaton_mp` Option. Displays Pet MP (Automaton, specifically) on the Pet bar.
+- Added Helix to the duration bonus calculations.
+- Adjusted SP Abilities to include a short 10 second timer for ones that are instant, making it easier to catch that they happened. Additionally added Charm, despite it not being an actual SP ability, since the BST mobs in Dyna use it in place of Familiar.
+- Fixed an issue where the TP Bar does not reset it's value, until your TP ticks, when changing jobs under specific conditions.
+- Fixed minor issue with distance coloring not being format-corrected, causing a very subtle wiggling of the target text as the distance colors change.
+
+Version 4.5.6
+- Fixed errors when in Monstrosity.
+- Fixed incorrect results with Weapon Skills that drain MP.
+
+Version 4.5.5
+- Adjusted "Resisted" action results to split off "Completely Resisted."
+
+Version 4.5.4
+- Adjusted the Aggro List highlighting behavior. Changed the `aggro_list_highlight` icon to `aggro_list_target` and added `aggro_list_sub_target` icon. The Aggro List highlighting will now differentiate between normal Target and Sub Targets with a different icon, Sub Target taking priority over Target.
+
+Version 4.5.3
+- Adjusted the Aggro List to highlight the current Sub Target as well as the Target.
+
+Version 4.5.2
+- Adjusted Phantom Roll, Double-Up, Wild Card, and Cutting Cards, removing the target name from the action.
+
+Version 4.5.1
+- Fixed the `clear_action_delay_for_rolls`. Now named `clear_action_delay_for_self_rolls` to better relay what it is for, and also now correctly only applies to rolls performed by the player.
 
 Version 4.5
 - Added Treasure Hunter tracking via monster debuff icons.
@@ -580,3 +776,15 @@ Version 1.1
 
 Version 1.0
 - First version
+
+------
+
+<p align="center">
+<h2 align="center">AI Usage</h2>
+</p>
+
+<p align="center">
+I use AI more for assistance, rather than letting it do it for me and straight-up vibe coding things. When I started learning how to code I did it because I thought it woud be cool to make useful things, and I wanted to learn for myself. Shortly after I started ChatGPT was released and since then I've purposely and specifically used it as a teaching tool. At first I would explain ideas that I wanted to do, not really know how to do them myself, then read through what it provided to be sure I understood what it was doing, asking it to expain specific sections I didn't understand. Then I would type in all the code myself rather than copy and paste, so that the learning would better stick with me. For the most part now, I find I mostly use it to create and access data within tables for me, just doing the tedious loop creating stuff.
+</p>
+
+------

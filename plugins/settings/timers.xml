@@ -11,12 +11,12 @@
         <!--List of spell names to display buffs for if in whitelistMode and to exclude otherwise-->
         <SpellBuffFilter />
         <!--If true will show a font outline-->
-        <Stroke>false</Stroke>
+        <Stroke>true</Stroke>
         <EnableRecast>true</EnableRecast>
         <EnableBuffs>true</EnableBuffs>
         <GraphicalMode>false</GraphicalMode>
         <ExtendText>true</ExtendText>
-        <TextColoring>true</TextColoring>
+        <TextColoring>false</TextColoring>
         <SlimMode>false</SlimMode>
         <ShowTenths>true</ShowTenths>
         <!--One of: Alphabetical, Creation, Duration-->
@@ -34,13 +34,13 @@
         <LowGreen>255</LowGreen>
         <LowBlue>0</LowBlue>
         <TextA>255</TextA>
-        <TextR>255</TextR>
-        <TextG>255</TextG>
-        <TextB>255</TextB>
+        <TextR>245</TextR>
+        <TextG>245</TextG>
+        <TextB>245</TextB>
         <RecastLowToHigh>true</RecastLowToHigh>
         <BuffsLowToHigh>true</BuffsLowToHigh>
         <CustomLowToHigh>false</CustomLowToHigh>
-        <BGA>128</BGA>
+        <BGA>155</BGA>
         <BGR>0</BGR>
         <BGG>0</BGG>
         <BGB>0</BGB>
@@ -50,8 +50,8 @@
         <FlashR>255</FlashR>
         <FlashG>255</FlashG>
         <FlashB>0</FlashB>
-        <FontName>Arial</FontName>
-        <FontSize>12</FontSize>
+        <FontName>Consolas</FontName>
+        <FontSize>11</FontSize>
         <FontBold>false</FontBold>
         <BarSpacing>0</BarSpacing>
         <RecastTimerLimit>10</RecastTimerLimit>

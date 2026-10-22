@@ -3212,6 +3212,7 @@ return {
     [3358] = {id=3358,en="Apollyon verification key",ja="アポリオン錬炉認証キー",category="Permanent Key Items"},
     [3359] = {id=3359,en="Temenos verification key",ja="テメナス錬炉認証キー",category="Permanent Key Items"},
     [3360] = {id=3360,en="sheet of divine tunes",ja="オーケストリオン譜：神威",category="Permanent Key Items"},
+    [3361] = {id=3361,en="cipher bracelet",ja="盟環の腕輪",category="Permanent Key Items"},
     [3362] = {id=3362,en="Shami's key",ja="シャミの鍵",category="Temporary Key Items"},
     [3363] = {id=3363,en="sheet of fishing tunes",ja="オーケストリオン譜：漁村",category="Permanent Key Items"},
     [3364] = {id=3364,en="Delineated Grace",ja="的中のグレース",category="Permanent Key Items"},
@@ -3225,6 +3226,12 @@ return {
     [3372] = {id=3372,en="Mog Kupon A-AF+3",ja="クーポンA-AF+3",category="Temporary Key Items"},
     [3373] = {id=3373,en="Mog Kupon A-Rel+3",ja="クーポンA-Rel+3",category="Temporary Key Items"},
     [3374] = {id=3374,en="Mog Kupon A-Emp+2",ja="クーポンA-Emp+2",category="Temporary Key Items"},
+    [3376] = {id=3376,en="Mog Kupon A-sAF+3",ja="クーポンA-sAF+3",category="Temporary Key Items"},
+    [3377] = {id=3377,en="Mog Kupon A-sRE1+3",ja="クーポンA-sRel+3",category="Temporary Key Items"},
+    [3378] = {id=3378,en="Mog Kupon A-sEmp+3",ja="クーポンA-sEmp+3",category="Temporary Key Items"},
+    [3379] = {id=3379,en="Mog Kupon A-sEmp",ja="クーポンA-sEmp",category="Temporary Key Items"},
+    [3380] = {id=3380,en="Mog Kupon I-Amb",ja="クーポンI-Amb",category="Temporary Key Items"},
+    [3381] = {id=3381,en="Ode of Life Bestowing phantom gem",ja="ファントムクォーツ【石夢】",category="Temporary Key Items"},
 }, {"id", "en", "ja", "category"}
 
 --[[

@@ -1,4 +1,4 @@
---Copyright (c) 2025, Key
+--Copyright (c) 2026, Key
 --All rights reserved.
 
 --Redistribution and use in source and binary forms, with or without
@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Bars'
-_addon.version = '4.4.5'
+_addon.version = '4.14.1'
 _addon.author = 'Key (Keylesta@Valefor)'
 _addon.commands = {'bars'}
 
@@ -53,12 +53,24 @@ register_event = windower.register_event
 windower_path = windower.windower_path
 
 defaults = {
-	bg = {alpha = 240, red = 0, green = 0, blue = 0},
-	text = {alpha = 255, blue = 255, green = 255, red = 255, size = 10, font = 'Consolas'},
+	bg = {red = 18, green = 18, blue = 20},
+	text = {
+		alpha = 255, blue = 255, green = 255, red = 255, size = 10, font = 'Consolas',
+		drop_shadow = {
+			r = 0, g = 0, b = 0
+		}
+	},
 	icons = {
+		aggro_list_target = "●",
+		aggro_list_sub_target = "►",
+		angle_down_arrow = "↓",
+		angle_left_arrow = "←",
+		angle_right_arrow = "→",
+		angle_up_arrow = "↑",
 		casting = "≈",
 		cancelled = "×",
 		completed = "√",
+		dynamis_nm = "¤",
 		monster_target = "►",
 		monster_target_aoe = "○",
 		number_of_targets_hit = "●",
@@ -115,6 +127,11 @@ defaults = {
 			},
 		},
 		mnk = {hp = false, mp = false, pet = false, tp = false,
+			vertical_offsets = {
+				target = 0, sub_target = 0, focus_target = 0, self_action = 0, player_stats = 0
+			},
+		},
+		mon = {hp = false, mp = false, pet = false, tp = false,
 			vertical_offsets = {
 				target = 0, sub_target = 0, focus_target = 0, self_action = 0, player_stats = 0
 			},
@@ -184,14 +201,11 @@ defaults = {
 		abbreviate_common_mob_names = true,
 		animations = {
 			drain_brightness = 6,
-			drain_hp_bar = true,
-			drain_mp_bar = true,
-			drain_pet_bar = true,
 			drain_speed = 5,
+			drain_player_stats_bars = true,
 			drain_target_bars = true,
-			drain_tp_bar = true,
 			fade_after_a_delay = true,
-			fade_delay = 60,
+			fade_delay = 120,
 			fade_down_to_alpha = 0,
 			fade_speed = 2,
 			floating_tp_number = false,
@@ -206,6 +220,7 @@ defaults = {
 			pulse_when_tp_ready = true,
 		},
 		clear_action_delay = 5.5,
+		clear_action_delay_for_self_rolls = 10,
 		colorize_spells = true,
 		condense_target_and_subtarget_bars = false,
 		condense_target_name_and_sp_name = {
@@ -220,7 +235,7 @@ defaults = {
 		},
 		flip_doom_timer_coloring = false,
 		focus_target_max_distance = 40,
-		hide_pet_bar_when_no_pet = true,
+		hide_pet_bar_when_no_pet = false,
 		hide_player_stats_bars_when_no_target = false,
 		max_action_length = 17,
 		max_monster_target_length = 8,
@@ -229,8 +244,8 @@ defaults = {
 		remove_tachi_blade_from_ws_name = true,
 		short_skillchain_names = true,
 		show_action_status_indicators = true,
+		show_automaton_mp = true,
 		show_commas_on_numbers = true,
-		show_dyna_jobs = true,
 		show_fancy_rolls = true,
 		show_focus_target_when_targeted = false,
 		show_hp_tp_markers = true,
@@ -258,6 +273,7 @@ defaults = {
 			player_stats_pet = 0.05,
 			sub_target = 0.05,
 			target = 0.05,
+			xp = 1,
 		},
 	},
 	sections = {
@@ -269,7 +285,7 @@ defaults = {
 			},
 			italic = false,
 			max_monsters_listed = 6,
-			min_monsters_to_show = 0,
+			min_monsters_to_show = 1,
 			open_mobs = S{
 				"Mireu", "Azi Dahaka", "Naga Raja", "Quetzalcoatl",
 				"Azi Dahaka's Dragon", "Naga Raja's Lamia", "Quetzalcoatl's Sibilus",
@@ -284,8 +300,15 @@ defaults = {
 				"Plunderer's", "Pteroslaver", "Pummeler's", "Reverence",
 				"Runeist", "Sakonji", "Spaekona's", "Theophany",
 				"Totemic", "Vishap", "Vitiation", "Wakido",
+				"Ischyros Sandworm", "Ischyros Mantis", "Ischyros Adamantoise",
+				"Tolimi Wyrm", "Tolimi Dvergr", "Tolimi Vampyr",
+				"Agrios Ixion", "Agrios Alicorn", "Agrios Aern",
+				"Pallikari Khrysokhimaira", "Pallikari Ironclad", "Pallikari Mammet",
+				"Ultima Forerunner", "Omega Forerunner", "Omega's Bit",
+				"Temenos Hume Echo", "Temenos Galka Echo", "Temenos Tarutaru Echo", "Temenos Elvaan Echo", "Temenos Mithra Echo",
+				"Apollyon Hume Shade", "Apollyon Galka Shade", "Apollyon Tarutaru Shade", "Apollyon Elvaan Shade", "Apollyon Mithra Shade",
 			},
-			pos = {x = 200, y = 320},
+			pos = {x = 200, y = 350},
 			show = true,
 			show_cursor_target = true,
 			size = 10,
@@ -293,9 +316,42 @@ defaults = {
 			stroke_color = {r = 0, g = 0, b = 0,},
 			stroke_width = 1,
 		},
+		chat = {
+			bar_width = 60,
+			bg_alpha = 200,
+			display_you_for_outgoing = true,
+			font = 'Consolas',
+			indent_width = 15,
+			max_lines = 10,
+			max_message_limit = 500,
+			minimized = true,
+			pad = 8,
+			pos = {x = windower.get_windower_settings().ui_x_res - 750, y = 25},
+			save_to_file = true,
+			show = true,
+			show_during_zoning = true,
+			show_message_counter = true,
+			show_timestamps = true,
+			size = 10,
+			stroke_alpha = 255,
+			stroke_color = {r = 0, g = 0, b = 0,},
+			stroke_width = 1,
+			tabs = {
+				say = true,
+				party = true,
+				linkshell1 = true,
+				linkshell2 = true,
+				tell = true,
+				shout = true,
+				yell = true,
+				unity = true,
+				dmg = false,
+			},
+		},
 		focus_target = {
 			bar_size = 10,
 			bar_width = 50,
+			bg_alpha = 240,
 			bold = true,
 			debuff_icon_offset = -37,
 			debuff_icon_size = 18,
@@ -307,7 +363,13 @@ defaults = {
 			debuff_timers = true,
 			font = 'Consolas',
 			italic = false,
+			meter_alpha = 240,
 			pos = {x = 576, y = 180},
+			show = true,
+			show_battle_target_by_default = true,
+			show_player_angle_from_target_facing = false,
+			show_target_angle_from_player_facing = false,
+			show_monster_job = true,
 			show_monster_level = false,
 			show_monster_target = true,
 			spaces_between_text_parts = 1,
@@ -384,9 +446,11 @@ defaults = {
 		player_stats = {
 			bar_size = 10,
 			bar_width = 100,
+			bg_alpha = 240,
 			bold = true,
 			font = 'Consolas',
 			italic = false,
+			meter_alpha = 240,
 			pos = {x = 200, y = 330},
 			stroke_alpha = 255,
 			stroke_color = {r = 0, g = 0, b = 0,},
@@ -399,12 +463,16 @@ defaults = {
 		self_action = {
 			bar_size = 10,
 			bar_width = 100,
+			bg_alpha = 240,
 			bold = true,
 			font = 'Consolas',
 			italic = false,
+			meter_alpha = 240,
 			pos = {x = 200, y = 300},
 			show = true,
 			show_bar = true,
+			show_cast_time_bar = true,
+			show_wyvern_breath = false,
 			stroke_alpha = 255,
 			stroke_color = {r = 0, g = 0, b = 0,},
 			stroke_width = 0.5,
@@ -417,6 +485,7 @@ defaults = {
 		sub_target = {
 			bar_size = 10,
 			bar_width = 50,
+			bg_alpha = 240,
 			bold = true,
 			debuff_icon_offset = -37,
 			debuff_icon_size = 18,
@@ -428,9 +497,14 @@ defaults = {
 			debuff_timers = true,
 			font = 'Consolas',
 			italic = false,
+			meter_alpha = 240,
 			pos = {x = 200, y = 180},
+			show = true,
+			show_monster_job = true,
 			show_monster_level = false,
 			show_monster_target = true,
+			show_player_angle_from_target_facing = false,
+			show_target_angle_from_player_facing = false,
 			spaces_between_text_parts = 1,
 			stroke_alpha = 255,
 			stroke_color = {r = 0, g = 0, b = 0,},
@@ -447,7 +521,7 @@ defaults = {
 		target= {
 			bar_size = 10,
 			bar_width = 100,
-			bold = true,
+			bg_alpha = 240,
 			debuff_icon_offset = -44,
 			debuff_icon_size = 20,
 			debuff_icon_spacing = 2,
@@ -457,9 +531,12 @@ defaults = {
 			debuff_timer_size = 9,
 			debuff_timers = true,
 			font = 'Consolas',
-			italic = false,
+			meter_alpha = 240,
 			pos = {x = 200, y = 250},
-			show_monster_level = true,
+			show_player_angle_from_target_facing = false,
+			show_target_angle_from_player_facing = false,
+			show_monster_job = true,
+			show_monster_level = false,
 			show_monster_target = true,
 			spaces_between_text_parts = 1,
 			stroke_alpha = 255,
@@ -479,13 +556,46 @@ defaults = {
 			ui_bg = true,
 			ui_bg_alpha = 100,
 		},
+		xp = {
+			bar_size = 15,
+			bar_width = 85,
+			bg_alpha = 240,
+			bold = true,
+			condensed_job_points = true,
+			condensed_merits = true,
+			exclude_from_fade = true,
+			font = 'Consolas',
+			italic = false,
+			legacy_per_hour_calculation = false,
+			meter_alpha = 240,
+			per_hour_rolling_window_in_minutes = 15,
+			pos = {x = 600, y = windower.get_windower_settings().ui_y_res -17},
+			show = true,
+			show_base_conq_pt_per_hour = false,
+			show_job_levels = true,
+			show_job_points_stored_after_master = false,
+			show_kills_per_hour = true,
+			show_merits = true,
+			show_percent = true,
+			show_points_per_kill = true,
+			show_seconds_per_kill = true,
+			show_time_tnl = true,
+			show_tnl = true,
+			stroke_alpha = 255,
+			stroke_color = {r = 0, g = 0, b = 0,},
+			stroke_width = 0.5,
+			text_offset = 4,
+			text_shadow_offset = 2,
+			text_size = 11,
+		},
 	},
 	colors = {
 		bar_bg = {
-			normal = {r = 0, g = 0, b = 0},
+			normal = {r = 18, g = 18, b = 20},
 			dead = {r = 150, g = 30, b = 30},
 		},
 		target = {
+			dynamis_nm = {r = 200, g = 200, b = 25},
 			monster_passive = {r = 247, g = 237, b = 141},
 			monster_claimed_party = {r = 255, g = 50, b = 50},
 			monster_claimed_alliance = {r = 255, g = 92, b = 114},
@@ -539,7 +649,7 @@ defaults = {
 			eleven = {r = 255, g = 255, b = 50},
 			lucky = {r = 50, g = 255, b = 50},
 			total = {r = 30, g = 144, b = 255},
-			unlucky = {r = 255, g = 50, b = 50},
+			unlucky = {r = 255, g = 165, b = 0},
 		},
 		range = {
 			out_of_range = {r = 255, g = 255, b = 255},
@@ -560,10 +670,61 @@ defaults = {
 			low = {r = 255, g = 139, b = 56},
 			normal = {r = 255, g = 255, b = 255},
 		},
+		angle = {
+			front = {r = 150, g = 255, b = 150},
+			sides = {r = 125, g = 125, b = 255},
+			rear = {r = 255, g = 150, b = 150},
+		},
+		xp = {
+			capped = {r = 40, g = 140, b = 255},
+			xp_meter = {r = 0, g = 165, b = 40},
+			jp_meter = {r = 45, g = 140, b = 255},
+			ep_meter = {r = 117, g = 60, b = 148},
+		},
+		chat = {
+			all = {r = 240, g = 240, b = 240},
+			party = {r = 90, g = 255, b = 255},
+			ls1 = {r = 180, g = 255, b = 130},
+			ls2 = {r = 30, g = 255, b = 30},
+			say = {r = 240, g = 240, b = 240},
+			shoutyell = {r = 200, g = 120, b = 100},
+			unity = {r = 255, g = 255, b = 125},
+			tell = {r = 238, g = 117, b = 238}
+		},
 	},
 }
 
-settings = config.load(defaults)
+custom_settings_loaded = false
+
+function loadSettings()
+
+	local player = get_player()
+	local player_name = player and player.name or false
+	local relative_path = player_name and 'data/'..player_name..'_settings.xml' or false
+	local absolute_path = relative_path and windower.addon_path..relative_path or false
+
+	-- Check if the specific character file exists and load from it instead of the normal settings.xml file
+	if absolute_path and file_exists(absolute_path) then
+
+		settings = config.load(relative_path, defaults)
+		config.save(settings, 'all')
+
+		coroutine.schedule(function()
+			print('Bars: Custom settings file loaded for '..get_player().name)
+		end, .5)
+
+		-- So we don't infinite loop this
+		custom_settings_loaded = true
+
+	else
+
+		settings = config.load(defaults)
+
+	end
+
+end
+loadSettings()
+
 settings:save('all') --only useful for when Bars gets updated, will automatically add in any new default settings.
 
 --Default/example targets to pre-populate the auto_focus_targets.lua file
@@ -621,6 +782,8 @@ default_auto_focus_targets = {
 	['Naga Raja'] = true,
 	['Quetzalcoatl'] = true,
 	['Mireu'] = true,
+	['Omega Forerunner'] = true,
+	['Ultima Forerunner'] = true,
 }
 
 --Location of the targets file
@@ -657,16 +820,19 @@ end
 --Capitalize accordingly
 function capitalize(str)
 
-	str = string.gsub(str, "(%w)(%w*)", function(firstLetter, rest)
-		return string.upper(firstLetter)..string.lower(rest)
+	str = string.gsub(str, "(%w)(%w*)", function(first_letter, rest)
+		return string.upper(first_letter)..string.lower(rest)
 	end)
 
-	-- Fix capitalizing " ii" at the end of the string back to " II" (ex. Enstone II)
+	--Fix capitalizing " of " back to lowercase " of "
+	str = string.gsub(str, "%f[%a][Oo]f%f[%A]", "of")
+
+	--Fix capitalizing " ii" at the end of the string back to " II" (ex. Enstone II)
 	str = string.gsub(str, " Ii$", " II")
 
-	-- Ensure letters after an apostrophe are not capitalized
-	str = string.gsub(str, "('%w)", function(apostropheLetter)
-		return string.lower(apostropheLetter)
+	--Ensure letters after an apostrophe are not capitalized
+	str = string.gsub(str, "('%w)", function(apostrophe_letter)
+		return string.lower(apostrophe_letter)
 	end)
 
 	return str
@@ -698,7 +864,7 @@ if not auto_focus_targets_file:exists() then
 				end
 			end
 			add_to_chat(8,('[Bars] '):color(220)..('Migration of old Auto Focus Target data complete.'):color(36))
-			add_to_chat(8,('[Bars] '):color(220)..('You may safely delete '):color(8)..('auto_focus_target_list '):color(1)..('data in '):color(8)..('data/settings.xml '):color(1)..('if you wish.'):color(8))
+			add_to_chat(8,('You may safely delete '):color(8)..('auto_focus_target_list '):color(1)..('data in '):color(8)..('data/settings.xml '):color(1)..('if you wish.'):color(8))
 			return migrated_targets
 		else
 			return nil
@@ -777,6 +943,7 @@ default_durations = {
 			["Shadowbind"] = 0,
 			["Singing"] = 161,
 			["Tomahawk"] = 60,
+			["Helix"] = 0,
 		}
 	},
 }
@@ -784,7 +951,7 @@ default_durations = {
 --Location of the durations file
 durations_file = files.new('data\\durations.lua')
 
-durations_help_msg = "--This file is used to store custom duration bonuses used by the `debuff_icons` and `debuff_timers` options in Bars.\n--Please note the servers, character names, and duration labels are case-sensitive.\n--Available durations: Angon, Arcane Crest, Dragon Breaker, Enfeebling Magic, Gambit, Hamanoha, Rayke, Sepulcher, Shadowbind, Singing, and Tomahawk.\n--Enfeebling Magic and Singing are the total PERCENT bonus from all gear combined. These may vary based on specific gear for specific spells/songs, but a good ballpark average should be fine.\n--All abilities and Cumulative Magic are total SECONDS bonus from all gear, merits, and/or job gifts combined.\n--Only set duration bonuses that are known. Any duration numbers defined here will be taken as a \"known value\", meaning if you set a duration to 0 it will assume you have a specific bonus of 0 and will remove the relevant debuff based on that duration. If a specific duration is unknown, do not include it under the character.\n--Included by default are my own current durations as an example.\n\n"
+durations_help_msg = "--This file is used to store custom duration bonuses used by the `debuff_icons` and `debuff_timers` options in Bars.\n--Please note the servers, character names, and duration labels are case-sensitive.\n--Available durations: Angon, Arcane Crest, Dragon Breaker, Enfeebling Magic, Gambit, Hamanoha, Helix, Rayke, Sepulcher, Shadowbind, Singing, and Tomahawk.\n--Enfeebling Magic, Singing, and Helix are the total PERCENT bonus from all gear, merits, and/or job gifts combined. These may vary based on specific gear for specific spells/songs, but a good ballpark average should be fine.\n--All abilities and Cumulative Magic are total SECONDS bonus from all gear, merits, and/or job gifts combined.\n--Only define duration bonuses that are known. Any duration numbers defined here will be taken as a \"known value\", meaning if you set a duration to 0 it will assume you have a specific bonus of 0 and will remove the relevant debuff based on that duration. If a specific duration is unknown, do not include it under the character.\n--Included by default are my own current durations as an example.\n\n"
 
 durations_data = {}
 
@@ -800,31 +967,34 @@ else
 	durations_data = require('data.durations')
 end
 
-bg_alpha = settings.bg.alpha
 text_alpha = settings.text.alpha
 
 abbreviate_common_mob_names = settings.options.abbreviate_common_mob_names
 aggro_list_ignore = settings.sections.aggro_list.ignore_list
 aggro_list_open_mobs = settings.sections.aggro_list.open_mobs
 clear_action_delay = settings.options.clear_action_delay
+clear_action_delay_for_self_rolls = settings.options.clear_action_delay_for_self_rolls
 colorize_spells = settings.options.colorize_spells
 condense_target_and_subtarget_bars = settings.options.condense_target_and_subtarget_bars
 condense_focus_target_name_and_sp_name = settings.options.condense_target_name_and_sp_name.focus_target
 condense_sub_target_name_and_sp_name = settings.options.condense_target_name_and_sp_name.sub_target
 condense_target_name_and_sp_name = settings.options.condense_target_name_and_sp_name.target
+condensed_job_points = settings.sections.xp.condensed_job_points
+condensed_merits = settings.sections.xp.condensed_merits
 debuff_duration_cap = settings.options.debuffs.duration_cap
 drain_decay = (settings.options.animations.drain_speed / 10)
 drain_brightness = math.max(1, math.min(10, settings.options.animations.drain_brightness))
-drain_bg_alpha = bg_alpha * (drain_brightness / 10)
-meter_bg_alpha = bg_alpha * ((10 - drain_brightness) / 10)
-drain_hp_bar = settings.options.animations.drain_hp_bar
-drain_mp_bar = settings.options.animations.drain_mp_bar
-drain_pet_bar = settings.options.animations.drain_pet_bar
+drain_player_stats_bars = settings.options.animations.drain_player_stats_bars
 drain_target_bars = settings.options.animations.drain_target_bars
-drain_tp_bar = settings.options.animations.drain_tp_bar
+exclude_from_fade = settings.sections.xp.exclude_from_fade
 fade_after_a_delay = settings.options.animations.fade_after_a_delay
 fade_down_to_alpha = settings.options.animations.fade_down_to_alpha
-fade_bg_num = settings.bg.alpha
+fade_focus_target_bg_num = settings.sections.focus_target.bg_alpha
+fade_sub_target_bg_num = settings.sections.sub_target.bg_alpha
+fade_target_bg_num = settings.sections.target.bg_alpha
+fade_self_action_bg_num = settings.sections.self_action.bg_alpha
+fade_xp_bg_num = settings.sections.xp.bg_alpha
+fade_player_stats_bg_num = settings.sections.player_stats.bg_alpha
 fade_delay = settings.options.animations.fade_delay
 fade_speed = settings.options.animations.fade_speed
 fade_text_num = settings.text.alpha
@@ -836,6 +1006,7 @@ focus_target_max_distance = settings.options.focus_target_max_distance
 hide_pet_bar_when_no_pet = settings.options.hide_pet_bar_when_no_pet
 hide_player_stats_bars_when_no_target = settings.options.hide_player_stats_bars_when_no_target
 job_specific = settings.job_specific
+legacy_per_hour_calculation = settings.sections.xp.legacy_per_hour_calculation
 max_action_length = settings.options.max_action_length
 max_icons = {
 	focus_target = math.max(0, math.min(settings.sections.focus_target.debuff_max_icons, 32)),
@@ -847,6 +1018,7 @@ max_monsters_listed = math.max(0, math.min(settings.sections.aggro_list.max_mons
 max_name_length = settings.options.max_name_length
 min_monsters_to_show = math.max(0, math.min(settings.sections.aggro_list.min_monsters_to_show, 15))
 monster_target_confidence_timer = settings.options.monster_target_confidence_timer
+per_hour_rolling_window_in_minutes = math.max(settings.sections.xp.per_hour_rolling_window_in_minutes, 10)
 pulse_brightness = settings.options.animations.pulse_brightness
 pulse_bar_when_target_sp_active = settings.options.animations.pulse_bar_when_target_sp_active
 pulse_when_hp_low = settings.options.animations.pulse_when_hp_low
@@ -860,23 +1032,37 @@ remove_tachi_blade_from_ws_name = settings.options.remove_tachi_blade_from_ws_na
 short_skillchain_names = settings.options.short_skillchain_names
 show_action_status_indicators = settings.options.show_action_status_indicators
 show_aggro_list = settings.sections.aggro_list.show
-show_cursor_target = settings.sections.aggro_list.show_cursor_target
-show_hp_tp_markers = settings.options.show_hp_tp_markers
+show_automaton_mp = settings.options.show_automaton_mp
+show_battle_target_by_default = settings.sections.focus_target.show_battle_target_by_default
+show_chat_bar = settings.sections.chat.show
 show_commas_on_numbers = settings.options.show_commas_on_numbers
-show_dyna_jobs = settings.options.show_dyna_jobs
+show_cursor_target = settings.sections.aggro_list.show_cursor_target
 show_fancy_rolls = settings.options.show_fancy_rolls
+show_focus_target_bar = settings.sections.focus_target.show
 show_focus_target_when_targeted = settings.options.show_focus_target_when_targeted
+show_hp_tp_markers = settings.options.show_hp_tp_markers
+show_job_levels = settings.sections.xp.show_job_levels
+show_job_points_stored_after_master = settings.sections.xp.show_job_points_stored_after_master
+show_kills_per_hour = settings.sections.xp.show_kills_per_hour
+show_base_conq_pt_per_hour = settings.sections.xp.show_base_conq_pt_per_hour
 show_max_hp_mp_on_bar = settings.options.show_max_hp_mp_on_bar
+show_merits = settings.sections.xp.show_merits
+show_percent = settings.sections.xp.show_percent
 show_pet_status = settings.options.show_pet_status
 show_pet_distance = settings.options.show_pet_distance
 show_pet_tp = settings.options.show_pet_tp
+show_points_per_kill = settings.sections.xp.show_points_per_kill
 show_result_totals = settings.options.show_result_totals
 show_roll_lucky_info = settings.options.show_roll_lucky_info
+show_seconds_per_kill = settings.sections.xp.show_seconds_per_kill
 show_self_action = settings.sections.self_action.show
 show_self_action_bar = settings.sections.self_action.show_bar
+show_self_action_cast_bar = settings.sections.self_action.show_cast_time_bar
+show_self_action_wyvern_breath = settings.sections.self_action.show_wyvern_breath
 show_self_action_result = settings.options.show_self_action_result
 show_self_when_sub_targeted = settings.options.show_self_when_sub_targeted
 show_self_when_targeted = settings.options.show_self_when_targeted
+show_sub_target_bar = settings.sections.sub_target.show
 show_sub_target_when_targeted = settings.options.show_sub_target_when_targeted
 show_target_action = settings.options.show_target_action
 show_target_action_result = settings.options.show_target_action_result
@@ -885,33 +1071,50 @@ show_target_distance_colors = settings.options.show_target_distance_colors
 show_target_hex = settings.options.show_target_hex
 show_target_index = settings.options.show_target_index
 show_target_lock = settings.options.show_target_lock
+show_time_tnl = settings.sections.xp.show_time_tnl
+show_tnl = settings.sections.xp.show_tnl
+show_xp_bar = settings.sections.xp.show
 
 focus_target_bar_size = settings.sections.focus_target.bar_size
 focus_target_bar_width = settings.sections.focus_target.bar_width
+focus_target_bg_alpha = settings.sections.focus_target.bg_alpha
+focus_target_meter_alpha = settings.sections.focus_target.meter_alpha
 focus_target_stroke_alpha = settings.sections.focus_target.stroke_alpha
 focus_target_stroke_color = settings.sections.focus_target.stroke_color
 focus_target_stroke_width = settings.sections.focus_target.stroke_width
 focus_target_sub_text_size = settings.sections.focus_target.sub_text_size
 focus_target_text_size = settings.sections.focus_target.text_size
+focus_target_drain_bg_alpha = focus_target_meter_alpha * (drain_brightness / 10)
+focus_target_meter_bg_alpha = drain_target_bars and focus_target_meter_alpha * ((10 - drain_brightness) / 10) or focus_target_meter_alpha
 
 sub_target_bar_size = settings.sections.sub_target.bar_size
 sub_target_bar_width = settings.sections.sub_target.bar_width
+sub_target_bg_alpha = settings.sections.sub_target.bg_alpha
+sub_target_meter_alpha = settings.sections.sub_target.meter_alpha
 sub_target_stroke_alpha = settings.sections.sub_target.stroke_alpha
 sub_target_stroke_color = settings.sections.sub_target.stroke_color
 sub_target_stroke_width = settings.sections.sub_target.stroke_width
 sub_target_sub_text_size = settings.sections.sub_target.sub_text_size
 sub_target_text_size = settings.sections.sub_target.text_size
+sub_target_drain_bg_alpha = sub_target_meter_alpha * (drain_brightness / 10)
+sub_target_meter_bg_alpha = drain_target_bars and sub_target_meter_alpha * ((10 - drain_brightness) / 10) or sub_target_meter_alpha
 
 target_bar_size = settings.sections.target.bar_size
 target_bar_width = settings.sections.target.bar_width
+target_bg_alpha = settings.sections.target.bg_alpha
+target_meter_alpha = settings.sections.target.meter_alpha
 target_stroke_alpha = settings.sections.target.stroke_alpha
 target_stroke_color = settings.sections.target.stroke_color
 target_stroke_width = settings.sections.target.stroke_width
 target_sub_text_size = settings.sections.target.sub_text_size
 target_text_size = settings.sections.target.text_size
+target_drain_bg_alpha = target_meter_alpha * (drain_brightness / 10)
+target_meter_bg_alpha = drain_target_bars and target_meter_alpha * ((10 - drain_brightness) / 10) or target_meter_alpha
 
 self_action_bar_size = settings.sections.self_action.bar_size
 self_action_bar_width = settings.sections.self_action.bar_width
+self_action_bg_alpha = settings.sections.self_action.bg_alpha
+self_action_meter_alpha = settings.sections.self_action.meter_alpha
 self_action_stroke_alpha = settings.sections.self_action.stroke_alpha
 self_action_stroke_color = settings.sections.self_action.stroke_color
 self_action_stroke_width = settings.sections.self_action.stroke_width
@@ -919,10 +1122,23 @@ self_action_text_size = settings.sections.self_action.text_size
 
 player_stats_bar_size = settings.sections.player_stats.bar_size
 player_stats_bar_width = settings.sections.player_stats.bar_width
+player_stats_bg_alpha = settings.sections.player_stats.bg_alpha
+player_stats_meter_alpha = settings.sections.player_stats.meter_alpha
 player_stats_stroke_alpha = settings.sections.player_stats.stroke_alpha
 player_stats_stroke_color = settings.sections.player_stats.stroke_color
 player_stats_stroke_width = settings.sections.player_stats.stroke_width
 player_stats_text_size = settings.sections.player_stats.text_size
+player_stats_drain_bg_alpha = player_stats_meter_alpha * (drain_brightness / 10)
+player_stats_meter_bg_alpha = drain_player_stats_bars and player_stats_meter_alpha * ((10 - drain_brightness) / 10) or player_stats_meter_alpha
+
+xp_bar_size = settings.sections.xp.bar_size
+xp_bar_width = settings.sections.xp.bar_width
+xp_bg_alpha = settings.sections.xp.bg_alpha
+xp_meter_alpha = settings.sections.xp.meter_alpha
+xp_stroke_alpha = settings.sections.xp.stroke_alpha
+xp_stroke_color = settings.sections.xp.stroke_color
+xp_stroke_width = settings.sections.xp.stroke_width
+xp_text_size = settings.sections.xp.text_size
 
 aggro_list_size = settings.sections.aggro_list.size
 aggro_list_bg_alpha = settings.sections.aggro_list.bg_alpha
@@ -941,9 +1157,12 @@ target_lock_icon_stroke_color = settings.sections.target.target_lock_icon_stroke
 target_lock_icon_stroke_width = settings.sections.target.target_lock_icon_stroke_width
 target_lock_icon_size = settings.sections.target.target_lock_icon_size
 
+aggro_t_icon = settings.icons.aggro_list_target
+aggro_st_icon = settings.icons.aggro_list_sub_target
 casting_icon = settings.icons.casting
 cancelled_icon = settings.icons.cancelled
 completed_icon = settings.icons.completed
+dynamis_nm_icon = settings.icons.dynamis_nm
 targeting_icon = settings.icons.targeting
 num_hit_icon = settings.icons.number_of_targets_hit
 truncate_icon = settings.icons.truncate
@@ -954,6 +1173,12 @@ party_actions_update_interval = settings.options.update_intervals.party_actions
 player_stats_pet_update_interval = settings.options.update_intervals.player_stats_pet
 sub_target_update_interval = settings.options.update_intervals.sub_target
 target_update_interval = settings.options.update_intervals.target
+xp_update_interval = settings.options.update_intervals.xp
+
+--Format RGB values with leading zeros (helps prevent an issue with the shadow text not lining up correctly)
+function formatRGB(value)
+	return string.format("%03d", value)
+end
 
 color = settings.colors
 font = settings.text.font
@@ -964,6 +1189,9 @@ pt3_text_color = {r = party_3_actions.text_color.r, g = party_3_actions.text_col
 pt1_stroke_color = {r = party_1_actions.stroke_color.r, g = party_1_actions.stroke_color.g, b = party_1_actions.stroke_color.b}
 pt2_stroke_color = {r = party_2_actions.stroke_color.r, g = party_2_actions.stroke_color.g, b = party_2_actions.stroke_color.b}
 pt3_stroke_color = {r = party_3_actions.stroke_color.r, g = party_3_actions.stroke_color.g, b = party_3_actions.stroke_color.b}
+c_shdw_r = formatRGB(settings.text.drop_shadow.r)
+c_shdw_g = formatRGB(settings.text.drop_shadow.g)
+c_shdw_b = formatRGB(settings.text.drop_shadow.b)
 
 element_colors = {
 	[0] = { r = color.elements.fire.r, g = color.elements.fire.g, b = color.elements.fire.b },
@@ -980,24 +1208,26 @@ element_colors = {
 sp_abils = {
 	['Mighty Strikes'] = 45, ['Brazen Rush'] = 30,
 	['Hundred Fists'] = 45, ['Inner Strength'] = 30,
+	['Benediction'] = 10, ['Asylum'] = 10,
 	['Manafont'] = 60, ['Subtle Sorcery'] = 60,
-	['Chainspell'] = 60,
-	['Perfect Dodge'] = 30,
-	['Invincible'] = 30,
+	['Chainspell'] = 60, ['Stymie'] = 10,
+	['Perfect Dodge'] = 30, ['Larceny'] = 10,
+	['Invincible'] = 30, ['Intervene'] = 10,
 	['Blood Weapon'] = 30, ['Soul Enslavement'] = 30,
-	['Unleash'] = 60,
+	['Unleash'] = 60, ['Familiar'] = 10, ['Charm'] = 10,
 	['Soul Voice'] = 180, ['Clarion Call'] = 180,
-	['Overkill'] = 60,
+	['Eagle Eye Shot'] = 10, ['Overkill'] = 60,
 	['Meikyo Shisui'] = 30, ['Yaegasumi'] = 45,
-	['Mikage'] = 45,
+	['Mijin Gakure'] = 10,['Mikage'] = 45,
 	['Spirit Surge'] = 60, ['Fly High'] = 30,
 	['Astral Flow'] = 180, ['Astral Conduit'] = 30,
 	['Azure Lore'] = 30, ['Unbridled Wisdom'] = 60,
-	['Overdrive'] = 60,
+	['Wild Card'] = 10, ['Cutting Cards'] = 10,
+	['Overdrive'] = 60, ['Heady Artifice'] = 10,
 	['Trance'] = 60, ['Grand Pas'] = 30,
-	['Tabula Rasa'] = 180,
+	['Tabula Rasa'] = 180, ['Caper Emissarius'] = 10,
 	['Bolster'] = 180, ['Widened Compass'] = 60,
-	['Elemental Sforzo'] = 30,
+	['Elemental Sforzo'] = 30, ['Odyllic Subterfuge'] = 10,
 }
 
 sp_shorter_names = {
@@ -1005,19 +1235,28 @@ sp_shorter_names = {
 	['Brazen Rush'] = 'Brzn. Rush',
 	['Hundred Fists'] = 'Hnd. Fists',
 	['Inner Strength'] = 'Inner Str.',
+	['Benediction'] = 'Benedctn.',
+	['Asylum'] = 'Asylum',
 	['Manafont'] = 'Manafont',
 	['Subtle Sorcery'] = 'Sbtl. Src.',
 	['Chainspell'] = 'Chainspell',
+	['Stymie'] = 'Stymie',
 	['Perfect Dodge'] = 'Prf. Dodge',
+	['Larceny'] = 'Larceny',
 	['Invincible'] = 'Invincible',
+	['Intervene'] = 'Intervene',
 	['Blood Weapon'] = 'Bl. Weapon',
 	['Soul Enslavement'] = 'Soul Enslv.',
 	['Unleash'] = 'Unleash',
+	['Familiar'] = 'Familiar',
+	['Charm'] = 'Charm',
 	['Soul Voice'] = 'Soul Voice',
 	['Clarion Call'] = 'Clar. Call',
+	['Eagle Eye Shot'] = 'Egl. E. S.',
 	['Overkill'] = 'Overkill',
 	['Meikyo Shisui'] = 'Mk. Shisui',
 	['Yaegasumi'] = 'Yaegasumi',
+	['Mijin Gakure'] = 'Mijin Gak.',
 	['Mikage'] = 'Mikage',
 	['Spirit Surge'] = 'Spr. Surge',
 	['Fly High'] = 'Fly High',
@@ -1025,13 +1264,18 @@ sp_shorter_names = {
 	['Astral Conduit'] = 'Ast. Cond.',
 	['Azure Lore'] = 'Azure Lore',
 	['Unbridled Wisdom'] = 'Un. Wisdom',
+	['Wild Card'] = 'Wild C.',
+	['Cutting Cards'] = 'Cut. C.',
 	['Overdrive'] = 'Overdrive',
+	['Heady Artifice'] = 'Heady Art.',
 	['Trance'] = 'Trance',
 	['Grand Pas'] = 'Grand Pas',
 	['Tabula Rasa'] = 'Tab. Rasa',
+	['Caper Emissarius'] = 'Caper Ems.',
 	['Bolster'] = 'Bolster',
 	['Widened Compass'] = 'W. Compass',
 	['Elemental Sforzo'] = 'El. Sforzo',
+	['Odyllic Subterfuge'] = 'Odl. Subt.',
 }
 
 --note that these aren't the actual spell names, just used to denote the tier of cumulative magic boost
@@ -1042,10 +1286,16 @@ custom_spells = {
 	[9230]	= "Boosted Bio",
 	[9231]	= "Boosted Bio II",
 	[9232]	= "Boosted Bio III",
+	[9254]	= "Boosted Blind",
+	[9276]	= "Boosted Blind II",
 	[9235]	= "Boosted Burn",
 	[9236]	= "Boosted Frost",
+	[9058]	= "Boosted Paralyze",
+	[9080]	= "Boosted Paralyze II",
 	[9237]	= "Boosted Choke",
 	[9238]	= "Boosted Rasp",
+	[9056]	= "Boosted Slow",
+	[9079]	= "Boosted Slow II",
 	[9239]	= "Boosted Shock",
 	[9240]	= "Boosted Drown",
 	[9219]	= "Comet",
@@ -1083,17 +1333,55 @@ custom_spells = {
 	[11501]	= "Waterja III",
 	[12501]	= "Waterja IV",
 	[13501]	= "Waterja V",
+	[9902]	= "Treasure Hunter II",
+	[9903]	= "Treasure Hunter III",
+	[9904]	= "Treasure Hunter IV",
+	[9905]	= "Treasure Hunter V",
+	[9906]	= "Treasure Hunter VI",
+	[9907]	= "Treasure Hunter VII",
+	[9908]	= "Treasure Hunter VIII",
+	[9909]	= "Treasure Hunter IX",
+	[9910]	= "Treasure Hunter X",
+	[9911]	= "Treasure Hunter XI",
+	[9912]	= "Treasure Hunter XII",
+	[9913]	= "Treasure Hunter XIII",
+	[9914]	= "Treasure Hunter XIV",
+	[99106] = "Lethargic Daze VI",
+	[99107] = "Lethargic Daze VII",
+	[99108] = "Lethargic Daze VIII",
+	[99109] = "Lethargic Daze IX",
+	[99110] = "Lethargic Daze X",
+	[99206] = "Sluggish Daze VI",
+	[99207] = "Sluggish Daze VII",
+	[99208] = "Sluggish Daze VIII",
+	[99209] = "Sluggish Daze IX",
+	[99210] = "Sluggish Daze X",
+	[99306] = "Weakened Daze VI",
+	[99307] = "Weakened Daze VII",
+	[99308] = "Weakened Daze VIII",
+	[99309] = "Weakened Daze IX",
+	[99310] = "Weakened Daze X",
+	[99406] = "Bewildered Daze VI",
+	[99407] = "Bewildered Daze VII",
+	[99408] = "Bewildered Daze VIII",
+	[99409] = "Bewildered Daze IX",
+	[99410] = "Bewildered Daze X",
 }
 remove_all_debuffs = S{
 	"Benediction",
 	"Depuration",
 	"Stygian Sphere",
+	"Oppressive Yawp",
+	"Raksha Stance",
+	"Yaksha Stance",
+	"Tabbiyaa Gambit",
 }
 
 in_cutscene = false
 zoning = false
 logged_in = false
 job = false
+pet_mp = 100
 pet_tp = 0
 current_actions = {}
 current_sp_actions = {}
@@ -1106,6 +1394,7 @@ last_party_actions_update = 0
 last_player_stats_update = 0
 last_sub_target_update = 0
 last_target_update = 0
+last_xp_update = 0
 next_wide_scan_time = os.time() + math.random(30, 45)
 ft_targeting_id = nil
 st_targeting_id = nil
@@ -1121,6 +1410,7 @@ player_stats_top_bar = ''
 index = 0
 Heartbeat = 0
 server = nil
+current_zone = nil
 in_dyna = false
 wide_scan_locked = false
 drain_previous_ft_id = nil
@@ -1144,13 +1434,13 @@ Pulse_Target_Bar = false
 Pulse_Focus_Target_Name = false
 Pulse_Sub_Target_Name = false
 Pulse_Target_Name = false
-pulse_hp_alpha_num = settings.bg.alpha
-pulse_mp_alpha_num = settings.bg.alpha
-pulse_tp_alpha_num = settings.bg.alpha
-pulse_pet_alpha_num = settings.bg.alpha
-pulse_focus_target_alpha_num = settings.bg.alpha
-pulse_sub_target_alpha_num = settings.bg.alpha
-pulse_target_alpha_num = settings.bg.alpha
+pulse_hp_alpha_num = settings.sections.player_stats.bg_alpha
+pulse_mp_alpha_num = settings.sections.player_stats.bg_alpha
+pulse_tp_alpha_num = settings.sections.player_stats.bg_alpha
+pulse_pet_alpha_num = settings.sections.player_stats.bg_alpha
+pulse_focus_target_alpha_num = settings.sections.focus_target.bg_alpha
+pulse_sub_target_alpha_num = settings.sections.sub_target.bg_alpha
+pulse_target_alpha_num = settings.sections.target.bg_alpha
 pulse_hp_directio_up = true
 pulse_mp_direction_up = true
 pulse_tp_direction_up = true
@@ -1170,6 +1460,373 @@ target_bar_pixel_height = 0
 num_party1_members = 0
 num_party2_members = 0
 num_party3_members = 0
+
+chat_calculated_char_width = 0
+chat_calculated_char_height = 0
+chat_initialized = false
+chat_width_resizing = false
+chat_height_resizing = false
+chat_minimized = settings.sections.chat.minimized
+chat_grabbed_window = false
+chat_grabbed_scrollbar = false
+chat_min_char_width = 0 --(set dynamically below based on enabled tabs)
+chat_min_max_lines = 5
+chat_max_raw_history = settings.sections.chat.max_message_limit
+chat_drag_offset_x = 0
+chat_drag_offset_y = 0
+chat_line_buffer = {}
+chat_last_outbound = { --used to fix occasional duplicated outgoing chat
+	text = "",
+	mode = -1,
+	time = 0
+}
+chat_box = {
+	current_tab = 'All', -- Default focus view on load
+	raw_history = {}, 
+	tab_order = {'All', 'Say', 'Tell', 'Party', 'Linkshell1', 'Linkshell2', 'Unity', 'ShoutYell', 'DMG'},
+	tabs = {
+		All = {
+			name = "All",
+			color = color.chat.all,
+			messages = {},
+			has_new = false,
+			scroll_offset = 0
+		},
+		Say = {
+			name = "Say",
+			color = color.chat.say,
+			messages = {},
+			has_new = false,
+			scroll_offset = 0
+		},
+		Party = {
+			name = "Party",
+			color = color.chat.party,
+			messages = {}, 
+			has_new = false,
+			scroll_offset = 0
+		},
+		Linkshell1 = {
+			name = "LS1",
+			color = color.chat.ls1,
+			messages = {},
+			has_new = false,
+			scroll_offset = 0
+		},
+		Linkshell2 = {
+			name = "LS2",
+			color = color.chat.ls2,
+			messages = {},
+			has_new = false,
+			scroll_offset = 0
+		},
+		ShoutYell = {
+			name = "Shout",
+			color = color.chat.shoutyell,
+			messages = {},
+			has_new = false,
+			scroll_offset = 0
+		},
+		Unity = {
+			name = "Unity",
+			color = color.chat.unity,
+			messages = {},
+			has_new = false,
+			scroll_offset = 0
+		},
+		Tell = {
+			name = "Tell",
+			color = color.chat.tell,
+			messages = {},
+			scroll_offset = 0,
+			has_new = false,
+		},
+		DMG = {
+			name = "DMG",
+			color = color.chat.all,
+			messages = {},
+			scroll_offset = 0,
+			has_new = false,
+		},
+	}
+}
+
+--Formats channel decorations, forces player name capitalization, truncates long names, and pads to margin
+function formatSenderHeader(sender, source_tab, view_key, tell_target)
+
+	local player = get_player()
+
+	--Sender name adjustments
+	if tell_target then
+		sender = tell_target
+	elseif player and settings.sections.chat.display_you_for_outgoing and sender:lower() == player.name:lower() then
+		sender = "YOU"
+	end
+
+	--Sender name wrappers
+	local prefix = ""
+	local suffix = ""
+
+	if source_tab == 'Party' then
+		prefix, suffix = "(", ")"
+	elseif source_tab == 'Linkshell1' then
+		--Only include the LS number if we are viewing the combined 'All' tab
+		if view_key == 'All' then
+			prefix, suffix = "[1]<", ">"
+		else
+			prefix, suffix = "<", ">"
+		end
+	elseif source_tab == 'Linkshell2' then
+		if view_key == 'All' then
+			prefix, suffix = "[2]<", ">"
+		else
+			prefix, suffix = "<", ">"
+		end
+	elseif source_tab == 'Say' then
+		prefix, suffix = "", ":"
+	elseif source_tab == 'Shout' then
+		prefix, suffix = "[S]", ":"
+	elseif source_tab == 'Yell' then
+		prefix, suffix = "[Y]", ":"
+	elseif source_tab == 'Unity' then
+		prefix, suffix = "{", "}"
+	elseif source_tab == 'Tell' then
+		if tell_target then
+			prefix, suffix = "To ", ":"
+		else
+			prefix, suffix = "", ">>"
+		end
+	else
+		prefix, suffix = "[", "]"
+	end
+
+	local wrapper_len = #prefix + #suffix
+	local total_allotted = settings.sections.chat.indent_width
+
+	--Truncate name if needed
+	local max_name_len = total_allotted - wrapper_len
+
+	--Check the mob_abbreviations.lua list first, just in case
+	if abbreviate_common_mob_names then
+		for key, abbreviation in pairs(mob_abbreviations_data) do
+			sender = sender:gsub(key, abbreviation, 1)
+		end
+	end
+
+	if #sender > max_name_len then
+		local cut_length = math.max(0, max_name_len - 1)
+		sender = sender:sub(1, cut_length).."…"
+	end
+
+	local header = prefix..sender..suffix
+	local current_len = #header
+	local needed_padding = math.max(0, total_allotted - current_len)
+
+	return header..(" "):rep(needed_padding).." "
+end
+
+--Word Wrapper
+function wrapTextByChars(sender_header, message_body, char_limit, indent_spaces)
+	--Clear previous items from line_buffer without reallocating
+	for i = #chat_line_buffer, 1, -1 do
+		chat_line_buffer[i] = nil
+	end
+
+	local pad = (" "):rep(indent_spaces or 0)
+	local current_line = sender_header or pad
+	local is_first_word = true
+	local max_text_width_per_line = char_limit - #pad
+
+	for word in message_body:gmatch("%S+") do
+		if #word > max_text_width_per_line then
+			if current_line ~= "" and current_line ~= pad then
+				table.insert(chat_line_buffer, current_line)
+				current_line = pad
+			end
+
+			local word_index = 1
+			while word_index <= #word do
+				local available_space = char_limit - #current_line
+				if available_space < 1 then
+					table.insert(chat_line_buffer, current_line)
+					current_line = pad
+					available_space = max_text_width_per_line
+				end
+
+				local chunk = word:sub(word_index, word_index + available_space - 1)
+				if word_index + #chunk > #word then
+					current_line = current_line..chunk
+				else
+					table.insert(chat_line_buffer, current_line..chunk)
+					current_line = pad
+				end
+				word_index = word_index + #chunk
+			end
+			is_first_word = false
+		else
+			local test_line = (is_first_word and sender_header) and (current_line..word) 
+				or ((current_line == "" or current_line == pad) and (current_line..word) or (current_line.." "..word))
+			is_first_word = false
+
+			if #test_line > char_limit then
+				if current_line ~= "" and current_line ~= pad then
+					table.insert(chat_line_buffer, current_line)
+				end
+				current_line = pad..word
+			else
+				current_line = test_line
+			end
+		end
+	end
+
+	if current_line ~= "" and current_line ~= pad then
+		table.insert(chat_line_buffer, current_line)
+	end
+
+	return chat_line_buffer
+end
+
+-- function wrapTextByChars(sender_header, message_body, char_limit, indent_spaces)
+-- 	local lines = {}
+-- 	local pad = (" "):rep(indent_spaces or 0)
+
+-- 	local current_line = sender_header or pad
+-- 	local is_first_word = true
+
+-- 	local max_text_width_per_line = char_limit - #pad
+
+-- 	for word in message_body:gmatch("%S+") do
+-- 		--If an individual word is physically wider than a clean row's allotment
+-- 		if #word > max_text_width_per_line then
+
+-- 			if current_line ~= "" and current_line ~= pad then
+-- 				table.insert(lines, current_line)
+-- 				current_line = pad
+-- 			end
+
+-- 			local word_index = 1
+-- 			while word_index <= #word do
+-- 				local available_space = char_limit - #current_line
+
+-- 				if available_space < 1 then
+-- 					table.insert(lines, current_line)
+-- 					current_line = pad
+-- 					available_space = max_text_width_per_line
+-- 				end
+
+-- 				local chunk = word:sub(word_index, word_index + available_space - 1)
+
+-- 				if word_index + #chunk > #word then
+-- 					current_line = current_line .. chunk
+-- 				else
+-- 					table.insert(lines, current_line .. chunk)
+-- 					current_line = pad
+-- 				end
+
+-- 				word_index = word_index + #chunk
+-- 			end
+
+-- 			is_first_word = false
+-- 		else
+-- 			local test_line
+-- 			if is_first_word and sender_header then
+-- 				test_line = current_line..word
+-- 				is_first_word = false
+-- 			else
+-- 				test_line = (current_line == "" or current_line == pad) and (current_line..word) or (current_line.." "..word)
+-- 			end
+
+-- 			if #test_line > char_limit then
+-- 				if current_line ~= "" and current_line ~= pad then
+-- 					table.insert(lines, current_line)
+-- 				end
+-- 				current_line = pad .. word
+-- 			else
+-- 				current_line = test_line
+-- 			end
+-- 		end
+-- 	end
+
+-- 	if current_line ~= "" and current_line ~= pad then
+-- 		table.insert(lines, current_line)
+-- 	end
+
+-- 	return lines
+-- end
+
+--Re-wrap text history with destination-specific header wrappers, timestamp histories, and dynamic margins
+function rebuildWrappedHistory()
+	for _, tab_data in pairs(chat_box.tabs) do
+		tab_data.messages = {}
+	end
+
+	local usable_width = settings.sections.chat.bar_width - 1
+	local base_indent = settings.sections.chat.indent_width
+
+	local last_senders_by_view = {}
+	local last_sources_by_view = {}
+
+	for _, entry in ipairs(chat_box.raw_history) do
+
+		local primary_tab = entry.tab
+		if entry.tab == 'Shout' or entry.tab == 'Yell' then
+			primary_tab = 'ShoutYell'
+		end
+
+		local targets = { primary_tab, 'All' }
+
+		for _, view_key in ipairs(targets) do
+			local target_tab = chat_box.tabs[view_key]
+			if target_tab then
+
+				--Assemble our timestamp string prefix from history entries if enabled
+				local timestamp_prefix = ""
+				if settings.sections.chat.show_timestamps and entry.time then
+					timestamp_prefix = entry.time.." "
+				end
+
+				local total_layout_indent = base_indent + #timestamp_prefix + 1
+				local pass_header = nil
+
+				if last_senders_by_view[view_key] == entry.sender and last_sources_by_view[view_key] == entry.tab then
+					--Keep timestamp, but turn name space into an empty padding block
+					pass_header = timestamp_prefix..(" "):rep(base_indent).." "
+				else
+					local base_header = formatSenderHeader(entry.sender, entry.tab, view_key)
+					pass_header = timestamp_prefix..base_header
+					
+					last_senders_by_view[view_key] = entry.sender
+					last_sources_by_view[view_key] = entry.tab
+				end
+
+				local wrapped = wrapTextByChars(pass_header, entry.text, usable_width, total_layout_indent)
+				for _, line in ipairs(wrapped) do
+					table.insert(target_tab.messages, {
+						text = line,
+						source_tab = entry.tab 
+					})
+				end
+			end
+		end
+	end
+end
+
+--Location of the chat file
+chat_file = files.new('data\\chat.lua')
+
+chat_help_msg = "--This file stores live chat messages as they come in, handled entirely within the addon itself. There are no options or settings to adjust in here. Oldest messages will be automatically deleted once the number of messages hits the limit (see data/settings.xml > sections > chat > max_message_limit), and can be manually deleted by tab/channel or in it's entirety via the 'Clear Tab' or 'Clear All' buttons in the chat window. Messages are stored here for persistance across reloads and in case you want to copy the chat log externally.\n\n"
+
+--If the data\chat.lua file doesn't exist, create it
+if not chat_file:exists() then
+
+	chat_file:write(chat_help_msg..'return {\n'..sortedTableString(chat_box.raw_history, '    ')..'\n}')
+
+else
+	--File already exists, load it
+	chat_box.raw_history = require('data.chat')
+	rebuildWrappedHistory()
+end
+
 Screen_Test = false
 screen_test_focus_target = {
 	name = "Focus Target",
@@ -1246,26 +1903,261 @@ ps_text_stroke = {
 	b = player_stats_stroke_color.b,
 	w = player_stats_stroke_width,
 }
+xp_text_stroke = {
+	a = xp_stroke_alpha,
+	r = xp_stroke_color.r,
+	g = xp_stroke_color.g,
+	b = xp_stroke_color.b,
+	w = xp_stroke_width,
+}
+
+master_level = nil
+synced_master_level = nil
+current_xp = nil
+required_xp = nil
+current_ep = nil
+required_ep = nil
+xp_capped = nil
+current_lp = nil
+current_mp = nil
+max_merit_points = nil
+current_cp = nil
+job_points_stored = nil
+xp_table = {}
+cp_table = {}
+ep_table = {}
+ctrl_down = false
 
 wide_scan_exclude_zones = S{
 	"Western Adoulin","Eastern Adoulin","Celennia Memorial Library","Silver Knife","Bastok Markets","Bastok Mines","Metalworks","Port Bastok","Chateau d'Oraguille","Northern San d'Oria","Port San d'Oria","Southern San d'Oria","Heavens Tower","Port Windurst","Windurst Walls","Windurst Waters","Windurst Woods","Lower Jeuno","Port Jeuno","Ru'Lude Gardens","Upper Jeuno","Aht Urhgan Whitegate","The Colosseum","Tavnazian Safehold","Southern San d'Oria [S]","Bastok Markets [S]","Windurst Waters [S]","Mhaura","Selbina","Rabao","Kazham","Norg","Nashmau","Mog Garden","Leafallia","Chocobo Circuit"
 }
 
+tnml = {
+	[2500] = 0, [5550] = 1, [8721] = 2, [11919] = 3, [15122] = 4, [18327] = 5, [21532] = 6, [24737] = 7, [27942] = 8, [31147] = 9, [41205] = 10, [48130] = 11, [53677] = 12, [58618] = 13, [63292] = 14, [67848] = 15, [72353] = 16, [76835] = 17, [81307] = 18, [85775] = 19, [109112] = 20, [127014] = 21, [141329] = 22, [153277] = 23, [163663] = 24, [173018] = 25, [181692] = 26, [189917] = 27, [197845] = 28, [205578] = 29, [258409] = 30, [307400] = 31, [353012] = 32, [395651] = 33, [435673] = 34, [473392] = 35, [509085] = 36, [542995] = 37, [575336] = 38, [606296] = 39, [769426] = 40, [951369] = 41, [1154006] = 42, [1379407] = 43, [1629848] = 44, [1907833] = 45, [2216116] = 46, [2557728] = 47, [2936001] = 48, [3354601] = 49, [3817561] = 50
+}
+
 --CREATE IMAGE/TEXT OBJECTS
+
+--CHAT BAR
+
+chat_ui = {
+	tabs = {}
+}
+
+function updateChatUIPositions(base_x, base_y)
+
+	chat_ui.bg_window:pos(base_x - settings.sections.chat.pad, base_y - settings.sections.chat.pad)
+
+	if chat_calculated_char_width > 0 and chat_calculated_char_height > 0 then
+		local running_x = base_x
+		local separation_gap_chars = 2
+
+		for _, tab_key in ipairs(chat_box.tab_order) do
+			local tab_data = chat_box.tabs[tab_key]
+			local obj = chat_ui.tabs[tab_key]
+
+			if obj and tab_data then
+				local is_enabled = true
+				if tab_key == 'ShoutYell' then
+					is_enabled = (settings.sections.chat.tabs.shout ~= false) or (settings.sections.chat.tabs.yell ~= false)
+				elseif tab_key ~= 'All' then
+					is_enabled = (settings.sections.chat.tabs[tab_key:lower()] ~= false)
+				end
+				if is_enabled then
+					obj:pos(running_x, base_y)
+					local current_tab_total_chars = 1 + #tab_data.name
+					local step_distance = (current_tab_total_chars + separation_gap_chars) * chat_calculated_char_width
+					running_x = running_x + step_distance
+				end
+			end
+		end
+
+		--Align the Toggle button all the way to the right
+		local toggle_btn_x = base_x + ((settings.sections.chat.bar_width - 1) * chat_calculated_char_width)
+		chat_ui.toggle_btn:pos(toggle_btn_x, base_y)
+
+		--Align the scroll system all the way to the right
+		local max_lines = settings.sections.chat.max_lines
+		local scroll_x = base_x + ((settings.sections.chat.bar_width - 1) * chat_calculated_char_width)
+		local scroll_y_top = base_y + 27
+
+		--Position the scroll background
+		chat_ui.scroll_bar:pos(scroll_x, scroll_y_top)
+
+		--Handle sliding the scroll handle up and down
+		local active_tab = chat_box.tabs[chat_box.current_tab]
+		local total_lines = #active_tab.messages
+
+		if total_lines > max_lines then
+			local max_scrollable_slots = total_lines - max_lines
+			local current_scroll_ratio = active_tab.scroll_offset / max_scrollable_slots
+
+			local scroll_y_bottom = scroll_y_top + ((max_lines - 1) * chat_calculated_char_height)
+
+			local total_track_pixel_span = scroll_y_bottom - scroll_y_top
+			local pixel_offset_from_bottom = current_scroll_ratio * total_track_pixel_span
+			local handle_y = scroll_y_bottom - pixel_offset_from_bottom
+
+			chat_ui.scroll_handle:pos(scroll_x + 1, handle_y)
+		end
+
+		--Footer alignment
+		local footer_y = base_y + 27 + (max_lines * chat_calculated_char_height) + 4 -- The +4 adds a little spacing
+
+		--Align the Resize Width Handle all the way to the right
+		chat_ui.resize_width_handle:pos(scroll_x, footer_y)
+
+		--Align the Resize Height Handle all the way to the left
+		chat_ui.resize_height_handle:pos(base_x, footer_y)
+
+		--Clear All Button (left of the resize handle)
+		local clear_all_chars = 12 -- Length of "[Clear All]" (plus 1 to give a little space)
+		local clear_all_x = scroll_x - (clear_all_chars * chat_calculated_char_width)
+		chat_ui.clear_all_btn:pos(clear_all_x, footer_y)
+
+		--Clear Tab Button (left of the Clear All button)
+		local clear_tab_chars = 12 -- Length of "[Clear Tab]" (plus 1 to give a little space)
+		local clear_tab_x = clear_all_x - (clear_tab_chars * chat_calculated_char_width)
+		chat_ui.clear_tab_btn:pos(clear_tab_x, footer_y)
+
+		--Align Message Counter to the far left
+		local counter_x = base_x + (chat_calculated_char_width * 2)
+		chat_ui.message_counter:pos(counter_x, footer_y)
+	else
+		coroutine.schedule(function()
+			initializeChatUIGrid()
+		end, .5)
+	end
+
+	chat_ui.divider:pos(base_x, base_y + 13)
+	chat_ui.body:pos(base_x, base_y + 27)
+end
+
+function applyBaseChatBarStyle(obj)
+	obj:font(settings.sections.chat.font)
+	obj:size(settings.sections.chat.size)
+	obj:bg_visible(false)
+	obj:draggable(false)
+	obj:stroke_width(1)
+	obj:stroke_color(0,0,0)
+	obj:stroke_alpha(255)
+end
+
+--Chat BG Window Object
+chat_ui.bg_window = texts.new()
+chat_ui.bg_window:font(settings.sections.chat.font)
+chat_ui.bg_window:size(settings.sections.chat.size)
+chat_ui.bg_window:bg_alpha(settings.sections.chat.bg_alpha)
+chat_ui.bg_window:bg_visible(true)
+chat_ui.bg_window:pad(settings.sections.chat.pad)
+chat_ui.bg_window:draggable(false)
+chat_ui.bg_window:bg_color(18,18,20)
+
+--Chat Tab Objects
+for _, tab_key in ipairs(chat_box.tab_order) do
+	chat_ui.tabs[tab_key] = texts.new()
+	applyBaseChatBarStyle(chat_ui.tabs[tab_key])
+end
+
+--Chat Horizontal Divider Line Object
+chat_ui.divider = texts.new()
+applyBaseChatBarStyle(chat_ui.divider)
+
+--Chat Body/Message Box Object
+chat_ui.body = texts.new()
+applyBaseChatBarStyle(chat_ui.body)
+chat_ui.body:bold(true)
+
+--Chat Scroll Bar Background Track Object
+chat_ui.scroll_bar = texts.new()
+applyBaseChatBarStyle(chat_ui.scroll_bar)
+chat_ui.scroll_bar:bg_color(0, 0, 0)
+chat_ui.scroll_bar:bg_alpha(100)
+chat_ui.scroll_bar:bg_visible(true)
+chat_ui.scroll_bar:stroke_alpha(0)
+
+--Chat Scroll Bar Handle Object
+chat_ui.scroll_handle = texts.new()
+applyBaseChatBarStyle(chat_ui.scroll_handle)
+chat_ui.scroll_handle:text("█")
+chat_ui.scroll_handle:bg_visible(false)
+chat_ui.scroll_handle:stroke_alpha(0)
+
+--Chat Toggle Minimize/Maximize Button Object
+chat_ui.toggle_btn = texts.new()
+applyBaseChatBarStyle(chat_ui.toggle_btn)
+chat_ui.toggle_btn:stroke_width(0.5)
+chat_ui.toggle_btn:stroke_color(255,255,255)
+
+--Chat Footer Control Bar Elements
+chat_ui.resize_width_handle = texts.new()
+applyBaseChatBarStyle(chat_ui.resize_width_handle)
+chat_ui.resize_width_handle:text("↔ ")
+chat_ui.resize_width_handle:size(settings.sections.chat.size + 2)
+
+chat_ui.resize_height_handle = texts.new()
+applyBaseChatBarStyle(chat_ui.resize_height_handle)
+chat_ui.resize_height_handle:text("↕ ")
+chat_ui.resize_height_handle:size(settings.sections.chat.size + 2)
+
+chat_ui.clear_all_btn = texts.new()
+applyBaseChatBarStyle(chat_ui.clear_all_btn)
+chat_ui.clear_all_btn:text("[Clear All]")
+
+chat_ui.clear_tab_btn = texts.new()
+applyBaseChatBarStyle(chat_ui.clear_tab_btn)
+chat_ui.clear_tab_btn:text("[Clear Tab]")
+
+chat_ui.message_counter = texts.new()
+applyBaseChatBarStyle(chat_ui.message_counter)
+
+--Chat Context Menu (right-click)
+chat_context_menu = {
+	visible = false,
+	target_player = nil,
+	x = 0,
+	y = 0,
+	ui = {
+		bg = texts.new(),
+		name = texts.new(),
+		tell = texts.new(),
+		invite = texts.new(),
+		search = texts.new(),
+		target = texts.new(),
+	}
+}
+
+applyBaseChatBarStyle(chat_context_menu.ui.bg)
+chat_context_menu.ui.bg:bg_visible(true)
+chat_context_menu.ui.bg:bg_alpha(220)
+applyBaseChatBarStyle(chat_context_menu.ui.name)
+applyBaseChatBarStyle(chat_context_menu.ui.tell)
+applyBaseChatBarStyle(chat_context_menu.ui.invite)
+applyBaseChatBarStyle(chat_context_menu.ui.search)
+applyBaseChatBarStyle(chat_context_menu.ui.target)
+
+chat_context_menu.ui.name:text()
+chat_context_menu.ui.tell:text(" Tell")
+chat_context_menu.ui.invite:text(" Invite")
+chat_context_menu.ui.search:text(" Search")
+chat_context_menu.ui.target:text(" Target")
+
+updateChatUIPositions(settings.sections.chat.pos.x, settings.sections.chat.pos.y)
 
 --MONSTER AGGRO LIST
 
 aggro_list_box = texts.new()
-aggro_list_box:text(test_text)
+aggro_list_box:text()
 aggro_list_box:pos(settings.sections.aggro_list.pos.x,settings.sections.aggro_list.pos.y)
 aggro_list_box:bold(true)
-aggro_list_box:show(true)
+-- aggro_list_box:show(true)
 aggro_list_box:font(font)
-aggro_list_box:size(settings.sections.aggro_list.size)
+aggro_list_box:size(aggro_list_size)
 aggro_list_box:bg_alpha(aggro_list_bg_alpha)
+aggro_list_box:draggable(false)
 aggro_list_box:pad(2)
 
---MONSTER DEBUFFS
+--TARGET LOCK
 
 --Create the UI BG LEFT image objects
 ui_bg_left = {
@@ -1323,6 +2215,8 @@ for section in pairs(ui_bg_right) do
 		draggable = false,
 	})
 end
+
+--MONSTER DEBUFFS
 
 --Create the DEBUFF ICON image objects
 debuff_icons = {
@@ -1407,9 +2301,15 @@ target_bar_lock_right:size(target_lock_icon_size)
 target_bar_lock_underline = texts.new()
 target_bar_lock_underline:font(font)
 target_bar_lock_underline:pad(-(focus_target_bar_size - settings.sections.target.target_lock_underline_pixel_width))
-target_bar_lock_underline:bg_alpha(bg_alpha)
+target_bar_lock_underline:bg_alpha(target_bg_alpha)
 target_bar_lock_underline:draggable(false)
 target_bar_lock_underline:size(focus_target_bar_size)
+
+--CHAT MESSAGES
+
+chat_bg = texts.new()
+local text = (" "):rep(20)
+chat_bg:text(text)
 
 --BAR BACKGROUNDS
 
@@ -1418,7 +2318,7 @@ focus_target_bar_bg = texts.new()
 focus_target_bar_bg:font('Consolas')
 focus_target_bar_bg:pad(-4)
 focus_target_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
-focus_target_bar_bg:bg_alpha(bg_alpha)
+focus_target_bar_bg:bg_alpha(focus_target_bg_alpha)
 focus_target_bar_bg:draggable(false)
 focus_target_bar_bg:size(focus_target_bar_size)
 
@@ -1427,7 +2327,7 @@ sub_target_bar_bg = texts.new()
 sub_target_bar_bg:font('Consolas')
 sub_target_bar_bg:pad(-4)
 sub_target_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
-sub_target_bar_bg:bg_alpha(bg_alpha)
+sub_target_bar_bg:bg_alpha(sub_target_bg_alpha)
 sub_target_bar_bg:draggable(false)
 sub_target_bar_bg:size(sub_target_bar_size)
 
@@ -1436,7 +2336,7 @@ target_bar_bg = texts.new()
 target_bar_bg:font('Consolas')
 target_bar_bg:pad(-4)
 target_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
-target_bar_bg:bg_alpha(bg_alpha)
+target_bar_bg:bg_alpha(target_bg_alpha)
 target_bar_bg:draggable(false)
 target_bar_bg:size(target_bar_size)
 
@@ -1445,7 +2345,7 @@ self_action_bar_bg = texts.new()
 self_action_bar_bg:font('Consolas')
 self_action_bar_bg:pad(-4)
 self_action_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
-self_action_bar_bg:bg_alpha(bg_alpha)
+self_action_bar_bg:bg_alpha(self_action_bg_alpha)
 self_action_bar_bg:draggable(false)
 self_action_bar_bg:size(self_action_bar_size)
 
@@ -1454,7 +2354,7 @@ player_stats_hp_bar_bg = texts.new()
 player_stats_hp_bar_bg:font('Consolas')
 player_stats_hp_bar_bg:pad(-4)
 player_stats_hp_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
-player_stats_hp_bar_bg:bg_alpha(bg_alpha)
+player_stats_hp_bar_bg:bg_alpha(player_stats_bg_alpha)
 player_stats_hp_bar_bg:draggable(false)
 player_stats_hp_bar_bg:size(player_stats_bar_size)
 
@@ -1463,7 +2363,7 @@ player_stats_mp_bar_bg = texts.new()
 player_stats_mp_bar_bg:font('Consolas')
 player_stats_mp_bar_bg:pad(-4)
 player_stats_mp_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
-player_stats_mp_bar_bg:bg_alpha(bg_alpha)
+player_stats_mp_bar_bg:bg_alpha(player_stats_bg_alpha)
 player_stats_mp_bar_bg:draggable(false)
 player_stats_mp_bar_bg:size(player_stats_bar_size)
 
@@ -1472,7 +2372,7 @@ player_stats_tp_bar_bg = texts.new()
 player_stats_tp_bar_bg:font('Consolas')
 player_stats_tp_bar_bg:pad(-4)
 player_stats_tp_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
-player_stats_tp_bar_bg:bg_alpha(bg_alpha)
+player_stats_tp_bar_bg:bg_alpha(player_stats_bg_alpha)
 player_stats_tp_bar_bg:draggable(false)
 player_stats_tp_bar_bg:size(player_stats_bar_size)
 
@@ -1481,9 +2381,18 @@ player_stats_pet_bar_bg = texts.new()
 player_stats_pet_bar_bg:font('Consolas')
 player_stats_pet_bar_bg:pad(-4)
 player_stats_pet_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
-player_stats_pet_bar_bg:bg_alpha(bg_alpha)
+player_stats_pet_bar_bg:bg_alpha(player_stats_bg_alpha)
 player_stats_pet_bar_bg:draggable(false)
 player_stats_pet_bar_bg:size(player_stats_bar_size)
+
+--Create the XP BAR BACKGROUND text object
+xp_bar_bg = texts.new()
+xp_bar_bg:font('Consolas')
+xp_bar_bg:pad(-4)
+xp_bar_bg:bg_color(color.bar_bg.normal.r,color.bar_bg.normal.g,color.bar_bg.normal.b)
+xp_bar_bg:bg_alpha(xp_bg_alpha)
+xp_bar_bg:draggable(false)
+xp_bar_bg:size(xp_bar_size)
 
 --BAR PULSE
 
@@ -1552,7 +2461,7 @@ target_bar_pulse:size(target_bar_size)
 focus_target_bar_drain_meter = texts.new()
 focus_target_bar_drain_meter:font('Consolas')
 focus_target_bar_drain_meter:pad(-5)
-focus_target_bar_drain_meter:bg_alpha(drain_target_bars and drain_bg_alpha or 0)
+focus_target_bar_drain_meter:bg_alpha(drain_target_bars and focus_target_drain_bg_alpha or 0)
 focus_target_bar_drain_meter:draggable(false)
 focus_target_bar_drain_meter:size(focus_target_bar_size / 10)
 
@@ -1560,7 +2469,7 @@ focus_target_bar_drain_meter:size(focus_target_bar_size / 10)
 sub_target_bar_drain_meter = texts.new()
 sub_target_bar_drain_meter:font('Consolas')
 sub_target_bar_drain_meter:pad(-5)
-sub_target_bar_drain_meter:bg_alpha(drain_target_bars and drain_bg_alpha or 0)
+sub_target_bar_drain_meter:bg_alpha(drain_target_bars and sub_target_drain_bg_alpha or 0)
 sub_target_bar_drain_meter:draggable(false)
 sub_target_bar_drain_meter:size(sub_target_bar_size / 10)
 
@@ -1568,7 +2477,7 @@ sub_target_bar_drain_meter:size(sub_target_bar_size / 10)
 target_bar_drain_meter = texts.new()
 target_bar_drain_meter:font('Consolas')
 target_bar_drain_meter:pad(-5)
-target_bar_drain_meter:bg_alpha(drain_target_bars and drain_bg_alpha or 0)
+target_bar_drain_meter:bg_alpha(drain_target_bars and target_drain_bg_alpha or 0)
 target_bar_drain_meter:draggable(false)
 target_bar_drain_meter:size(target_bar_size / 10)
 
@@ -1576,7 +2485,7 @@ target_bar_drain_meter:size(target_bar_size / 10)
 player_stats_hp_bar_drain_meter = texts.new()
 player_stats_hp_bar_drain_meter:font('Consolas')
 player_stats_hp_bar_drain_meter:pad(-5)
-player_stats_hp_bar_drain_meter:bg_alpha(drain_hp_bar and drain_bg_alpha or 0)
+player_stats_hp_bar_drain_meter:bg_alpha(drain_player_stats_bars and player_stats_drain_bg_alpha or 0)
 player_stats_hp_bar_drain_meter:draggable(false)
 player_stats_hp_bar_drain_meter:size(player_stats_bar_size / 10)
 
@@ -1584,7 +2493,7 @@ player_stats_hp_bar_drain_meter:size(player_stats_bar_size / 10)
 player_stats_mp_bar_drain_meter = texts.new()
 player_stats_mp_bar_drain_meter:font('Consolas')
 player_stats_mp_bar_drain_meter:pad(-5)
-player_stats_mp_bar_drain_meter:bg_alpha(drain_mp_bar and drain_bg_alpha or 0)
+player_stats_mp_bar_drain_meter:bg_alpha(drain_player_stats_bars and player_stats_drain_bg_alpha or 0)
 player_stats_mp_bar_drain_meter:draggable(false)
 player_stats_mp_bar_drain_meter:size(player_stats_bar_size / 10)
 
@@ -1592,7 +2501,7 @@ player_stats_mp_bar_drain_meter:size(player_stats_bar_size / 10)
 player_stats_tp_bar_drain_meter = texts.new()
 player_stats_tp_bar_drain_meter:font('Consolas')
 player_stats_tp_bar_drain_meter:pad(-5)
-player_stats_tp_bar_drain_meter:bg_alpha(drain_tp_bar and drain_bg_alpha or 0)
+player_stats_tp_bar_drain_meter:bg_alpha(drain_player_stats_bars and player_stats_drain_bg_alpha or 0)
 player_stats_tp_bar_drain_meter:draggable(false)
 player_stats_tp_bar_drain_meter:size(player_stats_bar_size / 10)
 
@@ -1600,7 +2509,7 @@ player_stats_tp_bar_drain_meter:size(player_stats_bar_size / 10)
 player_stats_pet_bar_drain_meter = texts.new()
 player_stats_pet_bar_drain_meter:font('Consolas')
 player_stats_pet_bar_drain_meter:pad(-5)
-player_stats_pet_bar_drain_meter:bg_alpha(drain_pet_bar and drain_bg_alpha or 0)
+player_stats_pet_bar_drain_meter:bg_alpha(drain_player_stats_bars and player_stats_drain_bg_alpha or 0)
 player_stats_pet_bar_drain_meter:draggable(false)
 player_stats_pet_bar_drain_meter:size(player_stats_bar_size / 10)
 
@@ -1610,7 +2519,7 @@ player_stats_pet_bar_drain_meter:size(player_stats_bar_size / 10)
 focus_target_bar_meter = texts.new()
 focus_target_bar_meter:font('Consolas')
 focus_target_bar_meter:pad(-5)
-focus_target_bar_meter:bg_alpha(drain_target_bars and meter_bg_alpha or bg_alpha)
+focus_target_bar_meter:bg_alpha(focus_target_meter_bg_alpha)
 focus_target_bar_meter:draggable(false)
 focus_target_bar_meter:size(focus_target_bar_size / 10)
 
@@ -1618,7 +2527,7 @@ focus_target_bar_meter:size(focus_target_bar_size / 10)
 sub_target_bar_meter = texts.new()
 sub_target_bar_meter:font('Consolas')
 sub_target_bar_meter:pad(-5)
-sub_target_bar_meter:bg_alpha(drain_target_bars and meter_bg_alpha or bg_alpha)
+sub_target_bar_meter:bg_alpha(sub_target_meter_bg_alpha)
 sub_target_bar_meter:draggable(false)
 sub_target_bar_meter:size(sub_target_bar_size / 10)
 
@@ -1626,7 +2535,7 @@ sub_target_bar_meter:size(sub_target_bar_size / 10)
 target_bar_meter = texts.new()
 target_bar_meter:font('Consolas')
 target_bar_meter:pad(-5)
-target_bar_meter:bg_alpha(drain_target_bars and meter_bg_alpha or bg_alpha)
+target_bar_meter:bg_alpha(target_meter_bg_alpha)
 target_bar_meter:draggable(false)
 target_bar_meter:size(target_bar_size / 10)
 
@@ -1634,16 +2543,26 @@ target_bar_meter:size(target_bar_size / 10)
 self_action_bar_meter = texts.new()
 self_action_bar_meter:font('Consolas')
 self_action_bar_meter:pad(-5)
-self_action_bar_meter:bg_alpha(bg_alpha)
+self_action_bar_meter:bg_alpha(self_action_meter_alpha)
 self_action_bar_meter:bg_color(color.self.bar.r,color.self.bar.g,color.self.bar.b)
 self_action_bar_meter:draggable(false)
 self_action_bar_meter:size(self_action_bar_size / 10)
+
+--Create the Self Action BAR CAST METER text object
+self_action_bar_cast_meter = texts.new()
+self_action_bar_cast_meter:font('Consolas')
+self_action_bar_cast_meter:pad(-5)
+self_action_bar_cast_meter:bg_alpha(75)
+self_action_bar_cast_meter:color(0,0,0)
+self_action_bar_cast_meter:draggable(false)
+self_action_bar_cast_meter:bold(true)
+self_action_bar_cast_meter:size(self_action_bar_size / 10)
 
 --Create the HP BAR METER text object
 player_stats_hp_bar_meter = texts.new()
 player_stats_hp_bar_meter:font('Consolas')
 player_stats_hp_bar_meter:pad(-5)
-player_stats_hp_bar_meter:bg_alpha(drain_hp_bar and meter_bg_alpha or bg_alpha)
+player_stats_hp_bar_meter:bg_alpha(player_stats_meter_bg_alpha)
 player_stats_hp_bar_meter:draggable(false)
 player_stats_hp_bar_meter:size(player_stats_bar_size / 10)
 
@@ -1651,7 +2570,7 @@ player_stats_hp_bar_meter:size(player_stats_bar_size / 10)
 player_stats_mp_bar_meter = texts.new()
 player_stats_mp_bar_meter:font('Consolas')
 player_stats_mp_bar_meter:pad(-5)
-player_stats_mp_bar_meter:bg_alpha(drain_mp_bar and meter_bg_alpha or bg_alpha)
+player_stats_mp_bar_meter:bg_alpha(player_stats_meter_bg_alpha)
 player_stats_mp_bar_meter:draggable(false)
 player_stats_mp_bar_meter:size(player_stats_bar_size / 10)
 
@@ -1659,7 +2578,7 @@ player_stats_mp_bar_meter:size(player_stats_bar_size / 10)
 player_stats_tp_bar_meter = texts.new()
 player_stats_tp_bar_meter:font('Consolas')
 player_stats_tp_bar_meter:pad(-5)
-player_stats_tp_bar_meter:bg_alpha(drain_tp_bar and meter_bg_alpha or bg_alpha)
+player_stats_tp_bar_meter:bg_alpha(player_stats_meter_bg_alpha)
 player_stats_tp_bar_meter:draggable(false)
 player_stats_tp_bar_meter:size(player_stats_bar_size / 10)
 
@@ -1667,9 +2586,17 @@ player_stats_tp_bar_meter:size(player_stats_bar_size / 10)
 player_stats_pet_bar_meter = texts.new()
 player_stats_pet_bar_meter:font('Consolas')
 player_stats_pet_bar_meter:pad(-5)
-player_stats_pet_bar_meter:bg_alpha(drain_pet_bar and meter_bg_alpha or bg_alpha)
+player_stats_pet_bar_meter:bg_alpha(player_stats_meter_bg_alpha)
 player_stats_pet_bar_meter:draggable(false)
 player_stats_pet_bar_meter:size(player_stats_bar_size / 10)
+
+--Create the XP BAR METER text object
+xp_bar_meter = texts.new()
+xp_bar_meter:font('Consolas')
+xp_bar_meter:pad(-5)
+xp_bar_meter:bg_alpha(xp_meter_alpha)
+xp_bar_meter:draggable(false)
+xp_bar_meter:size(xp_bar_size / 10)
 
 --MARKERS
 
@@ -1698,7 +2625,7 @@ player_stats_tp_marker:size(player_stats_bar_size / 5) --Only shrinking by 5x so
 --Create the Focus Target TEXT SHADOW text object
 focus_target_text_shadow = texts.new()
 focus_target_text_shadow:font(settings.sections.focus_target.font)
-focus_target_text_shadow:color(0,0,0)
+focus_target_text_shadow:color(c_shdw_r,c_shdw_g,c_shdw_b)
 focus_target_text_shadow:alpha(text_alpha)
 focus_target_text_shadow:bg_alpha(0)
 focus_target_text_shadow:draggable(false)
@@ -1709,7 +2636,7 @@ focus_target_text_shadow:size(settings.sections.focus_target.text_size)
 --Create the Focus Target Action TEXT SHADOW text object
 focus_target_action_text_shadow = texts.new()
 focus_target_action_text_shadow:font(settings.sections.focus_target.font)
-focus_target_action_text_shadow:color(0,0,0)
+focus_target_action_text_shadow:color(c_shdw_r,c_shdw_g,c_shdw_b)
 focus_target_action_text_shadow:alpha(text_alpha)
 focus_target_action_text_shadow:bg_alpha(0)
 focus_target_action_text_shadow:draggable(false)
@@ -1720,7 +2647,7 @@ focus_target_action_text_shadow:size(settings.sections.focus_target.sub_text_siz
 --Create the Sub Target TEXT SHADOW text object
 sub_target_text_shadow = texts.new()
 sub_target_text_shadow:font(settings.sections.sub_target.font)
-sub_target_text_shadow:color(0,0,0)
+sub_target_text_shadow:color(c_shdw_r,c_shdw_g,c_shdw_b)
 sub_target_text_shadow:alpha(text_alpha)
 sub_target_text_shadow:bg_alpha(0)
 sub_target_text_shadow:draggable(false)
@@ -1731,7 +2658,7 @@ sub_target_text_shadow:size(settings.sections.sub_target.text_size)
 --Create the Sub Target Action TEXT SHADOW text object
 sub_target_action_text_shadow = texts.new()
 sub_target_action_text_shadow:font(settings.sections.sub_target.font)
-sub_target_action_text_shadow:color(0,0,0)
+sub_target_action_text_shadow:color(c_shdw_r,c_shdw_g,c_shdw_b)
 sub_target_action_text_shadow:alpha(text_alpha)
 sub_target_action_text_shadow:bg_alpha(0)
 sub_target_action_text_shadow:draggable(false)
@@ -1742,7 +2669,7 @@ sub_target_action_text_shadow:size(settings.sections.sub_target.sub_text_size)
 --Create the Target TEXT SHADOW text object
 target_text_shadow = texts.new()
 target_text_shadow:font(settings.sections.target.font)
-target_text_shadow:color(0,0,0)
+target_text_shadow:color(c_shdw_r,c_shdw_g,c_shdw_b)
 target_text_shadow:alpha(text_alpha)
 target_text_shadow:bg_alpha(0)
 target_text_shadow:draggable(false)
@@ -1753,7 +2680,7 @@ target_text_shadow:size(settings.sections.target.text_size)
 --Create the Target Action TEXT SHADOW text object
 target_action_text_shadow = texts.new()
 target_action_text_shadow:font(settings.sections.target.font)
-target_action_text_shadow:color(0,0,0)
+target_action_text_shadow:color(c_shdw_r,c_shdw_g,c_shdw_b)
 target_action_text_shadow:alpha(text_alpha)
 target_action_text_shadow:bg_alpha(0)
 target_action_text_shadow:draggable(false)
@@ -1764,7 +2691,7 @@ target_action_text_shadow:size(settings.sections.target.sub_text_size)
 --Create the Self Action TEXT SHADOW text object
 self_action_text_shadow = texts.new()
 self_action_text_shadow:font(settings.sections.self_action.font)
-self_action_text_shadow:color(0,0,0)
+self_action_text_shadow:color(c_shdw_r,c_shdw_g,c_shdw_b)
 self_action_text_shadow:alpha(text_alpha)
 self_action_text_shadow:bg_alpha(0)
 self_action_text_shadow:draggable(false)
@@ -1775,7 +2702,7 @@ self_action_text_shadow:size(settings.sections.self_action.text_size)
 --Create the Player Stats HP TEXT SHADOW text object
 player_stats_hp_text_shadow = texts.new()
 player_stats_hp_text_shadow:font(settings.sections.player_stats.font)
-player_stats_hp_text_shadow:color(0,0,0)
+player_stats_hp_text_shadow:color(c_shdw_r,c_shdw_g,c_shdw_b)
 player_stats_hp_text_shadow:alpha(text_alpha)
 player_stats_hp_text_shadow:bg_alpha(0)
 player_stats_hp_text_shadow:draggable(false)
@@ -1786,7 +2713,7 @@ player_stats_hp_text_shadow:size(settings.sections.player_stats.text_size)
 --Create the Player Stats MP TEXT SHADOW text object
 player_stats_mp_text_shadow = texts.new()
 player_stats_mp_text_shadow:font(settings.sections.player_stats.font)
-player_stats_mp_text_shadow:color(0,0,0)
+player_stats_mp_text_shadow:color(c_shdw_r,c_shdw_g,c_shdw_b)
 player_stats_mp_text_shadow:alpha(text_alpha)
 player_stats_mp_text_shadow:bg_alpha(0)
 player_stats_mp_text_shadow:draggable(false)
@@ -1797,7 +2724,7 @@ player_stats_mp_text_shadow:size(settings.sections.player_stats.text_size)
 --Create the Player Stats TP TEXT SHADOW text object
 player_stats_tp_text_shadow = texts.new()
 player_stats_tp_text_shadow:font(settings.sections.player_stats.font)
-player_stats_tp_text_shadow:color(0,0,0)
+player_stats_tp_text_shadow:color(c_shdw_r,c_shdw_g,c_shdw_b)
 player_stats_tp_text_shadow:alpha(text_alpha)
 player_stats_tp_text_shadow:bg_alpha(0)
 player_stats_tp_text_shadow:draggable(false)
@@ -1808,13 +2735,24 @@ player_stats_tp_text_shadow:size(settings.sections.player_stats.text_size)
 --Create the Player Stats Pet TEXT SHADOW text object
 player_stats_pet_text_shadow = texts.new()
 player_stats_pet_text_shadow:font(settings.sections.player_stats.font)
-player_stats_pet_text_shadow:color(0,0,0)
+player_stats_pet_text_shadow:color(c_shdw_r,c_shdw_g,c_shdw_b)
 player_stats_pet_text_shadow:alpha(text_alpha)
 player_stats_pet_text_shadow:bg_alpha(0)
 player_stats_pet_text_shadow:draggable(false)
 player_stats_pet_text_shadow:bold(settings.sections.player_stats.bold)
 player_stats_pet_text_shadow:italic(settings.sections.player_stats.italic)
 player_stats_pet_text_shadow:size(settings.sections.player_stats.text_size)
+
+--Create the XP TEXT SHADOW text object
+xp_text_shadow = texts.new()
+xp_text_shadow:font(settings.sections.xp.font)
+xp_text_shadow:color(c_shdw_r,c_shdw_g,c_shdw_b)
+xp_text_shadow:alpha(text_alpha)
+xp_text_shadow:bg_alpha(0)
+xp_text_shadow:draggable(false)
+xp_text_shadow:bold(settings.sections.xp.bold)
+xp_text_shadow:italic(settings.sections.xp.italic)
+xp_text_shadow:size(xp_text_size)
 
 --TEXT
 
@@ -1971,6 +2909,20 @@ player_stats_pet_text:stroke_width(ps_text_stroke.w)
 player_stats_pet_text:bold(settings.sections.player_stats.bold)
 player_stats_pet_text:italic(settings.sections.player_stats.italic)
 player_stats_pet_text:size(settings.sections.player_stats.text_size)
+
+--Create the XP TEXT text object
+xp_text = texts.new()
+xp_text:font(settings.sections.xp.font)
+xp_text:color(text_color.r,text_color.g,text_color.b)
+xp_text:alpha(text_alpha)
+xp_text:bg_alpha(0)
+xp_text:draggable(false)
+xp_text:stroke_color(xp_text_stroke.r,xp_text_stroke.g,xp_text_stroke.b)
+xp_text:stroke_alpha(xp_text_stroke.a)
+xp_text:stroke_width(xp_text_stroke.w)
+xp_text:bold(settings.sections.xp.bold)
+xp_text:italic(settings.sections.xp.italic)
+xp_text:size(xp_text_size)
 
 --Create the Party 1 P0 TEXT text object
 party_actions_pt1_p0_text = texts.new()
@@ -2284,9 +3236,6 @@ function setUIPositions()
 		self_action_bar_pixel_width, self_action_bar_pixel_height = self_action_bar_bg:extents()
 		player_stats_bars_pixel_width, player_stats_bars_pixel_height = player_stats_hp_bar_bg:extents()
 
-		--Done with extent calculations
-		calculating_dimensions = false
-
 		--Position of bar sections
 		local ft_pos = {x = settings.sections.focus_target.pos.x, y = settings.sections.focus_target.pos.y + job_specific[job].vertical_offsets.focus_target}
 		local st_pos = {x = settings.sections.sub_target.pos.x, y = settings.sections.sub_target.pos.y + job_specific[job].vertical_offsets.sub_target}
@@ -2373,6 +3322,9 @@ function setUIPositions()
 		ui_bg_right.self_action:pos(ui_bg_sa_r_x,ui_bg_sa_y)
 		ui_bg_right.self_action:size(10,25)
 
+		--Done with extent calculations
+		calculating_dimensions = false
+
 	end, 0.1)
 
 end
@@ -2398,10 +3350,13 @@ function setPositions()
 
 	local sa_text_offset = settings.sections.self_action.text_offset
 	local sa_text_shadow_offset = settings.sections.self_action.text_shadow_offset
-	
+
 	local ps_vertical_spacing_between_player_stats = settings.sections.player_stats.vertical_spacing_between_player_stats
 	local ps_text_offset = settings.sections.player_stats.text_offset
 	local ps_text_shadow_offset = settings.sections.player_stats.text_shadow_offset
+
+	local xp_text_offset = settings.sections.xp.text_size / 2 - settings.sections.xp.text_offset
+	local xp_text_shadow_offset = settings.sections.xp.text_shadow_offset
 
 	--Set section anchor positions
 	local ft_pos = {x = settings.sections.focus_target.pos.x, y = settings.sections.focus_target.pos.y + job_specific[job].vertical_offsets.focus_target}
@@ -2409,6 +3364,7 @@ function setPositions()
 	local t_pos = {x = settings.sections.target.pos.x, y = settings.sections.target.pos.y + job_specific[job].vertical_offsets.target}
 	local sa_pos = {x = settings.sections.self_action.pos.x, y = settings.sections.self_action.pos.y + job_specific[job].vertical_offsets.self_action}
 	local ps_pos = {x = settings.sections.player_stats.pos.x, y = settings.sections.player_stats.pos.y + job_specific[job].vertical_offsets.player_stats}
+	local xp_pos = {x = settings.sections.xp.pos.x, y = settings.sections.xp.pos.y}
 
 	local player_stats_1 = {x = ps_pos.x, y = ps_pos.y}
 	local player_stats_2 = {x = t_pos.x, y = player_stats_1.y + ps_vertical_spacing_between_player_stats}
@@ -2475,6 +3431,7 @@ function setPositions()
 	target_action_text_shadow:pos(t_pos.x + t_sub_text_shadow_offset, t_pos.y + t_sub_text_offset + t_sub_text_shadow_offset)
 
 	self_action_bar_meter:pos(sa_pos.x + 1, sa_pos.y + 1)
+	self_action_bar_cast_meter:pos(sa_pos.x + 1, sa_pos.y + 1)
 	self_action_bar_bg:pos(sa_pos.x, sa_pos.y)
 	self_action_text:pos(sa_pos.x, sa_pos.y + sa_text_offset)
 	self_action_text_shadow:pos(sa_pos.x + sa_text_shadow_offset, sa_pos.y + sa_text_offset + sa_text_shadow_offset)
@@ -2508,6 +3465,11 @@ function setPositions()
 	player_stats_pet_bar_pulse:pos(pos_pet.x, pos_pet.y)
 	player_stats_pet_text:pos(pos_pet.x, pos_pet.y + ps_text_offset)
 	player_stats_pet_text_shadow:pos(pos_pet.x + ps_text_shadow_offset, pos_pet.y + ps_text_offset + ps_text_shadow_offset)
+
+	xp_bar_meter:pos(xp_pos.x + 1, xp_pos.y + 1)
+	xp_bar_bg:pos(xp_pos.x, xp_pos.y)
+	xp_text:pos(xp_pos.x, xp_pos.y - xp_text_offset)
+	xp_text_shadow:pos(xp_pos.x + xp_text_shadow_offset, xp_pos.y - xp_text_offset + xp_text_shadow_offset)
 
 	--Determine which Player Stat is at the top Player Stat bar position
 	if positions.hp and positions.hp.y == player_stats_1.y then
@@ -2706,10 +3668,29 @@ function setWidth()
 		{ var = "player_stats_bar_width",	target = player_stats_tp_bar_pulse },
 		{ var = "player_stats_bar_width",	target = player_stats_pet_bar_bg },
 		{ var = "player_stats_bar_width",	target = player_stats_pet_bar_pulse },
+		{ var = "xp_bar_width",				target = xp_bar_bg },
 	}
 
 	for _, item in ipairs(width_config) do
 		item.target:text(generateWidthString(_G[item.var]))
+	end
+
+end
+
+-- Check for a custom <playername>_settings.xml file, this is for when Bars gets autoloaded before we get logged into a character or we switch characters
+function checkCustomSettings(player)
+
+	-- NOTE: This is a cheap way of doing this, but I could not for the life of me get it to reload settings from the <playername>_settings.xml file after the fact and get it to save correctly, but it works fine when loading directly into it when the addon loads, and I had other things I wanted to work on, so here we are.
+
+	local relative_path = 'data/'..player.name..'_settings.xml'
+	local absolute_path = windower.addon_path..relative_path
+
+	-- Check if the specific character settings file exists
+	if file_exists(absolute_path) and not custom_settings_loaded then
+
+		-- If it does, reload bars so it loads the custom seettings file on addon load
+		windower.send_command('lua r bars')
+
 	end
 
 end
@@ -2796,6 +3777,7 @@ function hideBars()
 	end
 
 	self_action_bar_meter:hide()
+	self_action_bar_cast_meter:hide()
 	self_action_text:hide()
 	self_action_text_shadow:hide()
 	ui_bg_left.self_action:hide()
@@ -2832,6 +3814,11 @@ function hideBars()
 	player_stats_pet_text:hide()
 	player_stats_pet_text_shadow:hide()
 
+	xp_bar_meter:hide()
+	xp_bar_bg:hide()
+	xp_text:hide()
+	xp_text_shadow:hide()
+
 	party_actions_pt1_p0_text:hide()
 	party_actions_pt1_p1_text:hide()
 	party_actions_pt1_p2_text:hide()
@@ -2854,6 +3841,37 @@ function hideBars()
 	party_actions_pt3_p5_text:hide()
 
 	aggro_list_box:hide()
+
+end
+
+function hideChatBar()
+
+	chat_ui.bg_window:hide()
+	chat_ui.divider:hide()
+	chat_ui.body:hide()
+	chat_ui.toggle_btn:hide()
+	chat_ui.scroll_bar:hide()
+	chat_ui.scroll_handle:hide()
+	chat_ui.message_counter:hide()
+	chat_ui.clear_tab_btn:hide()
+	chat_ui.clear_all_btn:hide()
+	chat_ui.resize_width_handle:hide()
+	chat_ui.resize_height_handle:hide()
+
+	for _, tab_key in ipairs(chat_box.tab_order) do
+		local obj = chat_ui.tabs[tab_key]
+		if obj then
+			local is_enabled = true
+			if tab_key == 'ShoutYell' then
+				is_enabled = (settings.sections.chat.tabs['shout'] ~= false) or (settings.sections.chat.tabs['yell'] ~= false)
+			elseif tab_key ~= 'All' then
+				is_enabled = (settings.sections.chat.tabs[tab_key:lower()] ~= false)
+			end
+			if is_enabled then
+				obj:hide() --hide all the tabs that we have enabled
+			end
+		end
+	end
 
 end
 
@@ -2944,6 +3962,13 @@ function showBars(target)
 
 	end
 
+	if show_xp_bar then
+		xp_bar_meter:show()
+		xp_bar_bg:show()
+		xp_text:show()
+		xp_text_shadow:show()
+	end
+
 	if party_1_actions.show then
 		party_actions_pt1_p0_text:show()
 		party_actions_pt1_p1_text:show()
@@ -2973,15 +3998,598 @@ function showBars(target)
 
 end
 
---Set what job we are currently
-function setJob()
+function showChatBar()
 
-	local player = get_player()
+	if not show_chat_bar then return end
+
+	determineChatMinMaxState()
+	chat_ui.toggle_btn:show()
+
+	for _, tab_key in ipairs(chat_box.tab_order) do
+		local obj = chat_ui.tabs[tab_key]
+		if obj then
+			local is_enabled = true
+			if tab_key == 'ShoutYell' then
+				is_enabled = (settings.sections.chat.tabs['shout'] ~= false) or (settings.sections.chat.tabs['yell'] ~= false)
+			elseif tab_key ~= 'All' then
+				is_enabled = (settings.sections.chat.tabs[tab_key:lower()] ~= false)
+			end
+			--Show all the tabs that we have enabled
+			if is_enabled then
+				obj:show()
+			end
+		end
+	end
+
+	refreshChatUI()
+
+end
+
+--Generate the Space-Grid Background String for the Chat BG Window (and the Context Menu)
+function generateChatBGString(width, height)
+    local row = (" "):rep(width).."\n"
+    local full_bg = row:rep(height + 3)
+    return full_bg:sub(1, -2) 
+end
+
+--Update the Chat Tabs with new message notifications
+function updateChatTabs()
+
+	--Global Notification Clear - Only wipe notifications if looking at 'All' AND the window is open
+	if chat_box.current_tab == 'All' and not chat_minimized then
+		for _, tab_data in pairs(chat_box.tabs) do
+			tab_data.has_new = false
+		end
+	end
+
+	for _, tab_key in ipairs(chat_box.tab_order) do
+		local tab_data = chat_box.tabs[tab_key]
+		local obj = chat_ui.tabs[tab_key]
+		local is_current = (tab_key == chat_box.current_tab)
+		local is_enabled = true
+
+		if tab_key == 'ShoutYell' then
+			--ShoutYell is enabled if EITHER Shout or Yell is toggled true
+			is_enabled = (settings.sections.chat.tabs['shout'] ~= false) or (settings.sections.chat.tabs['yell'] ~= false)
+		elseif tab_key ~= 'All' then
+			is_enabled = (settings.sections.chat.tabs[tab_key:lower()] ~= false)
+		end
+
+		if not is_enabled then
+			if obj then obj:hide() end
+
+		else
+
+			obj:color(tab_data.color.r, tab_data.color.g, tab_data.color.b)
+
+			if chat_minimized then
+				obj:bold(tab_data.has_new)
+			else
+				obj:bold(is_current or tab_data.has_new)
+			end
+
+			obj:show()
+
+			if is_current and not chat_minimized then
+
+				--Highlight the current tab
+				local text_value = "|"..tab_data.name:upper().."|"
+				obj:text(text_value)
+				obj:bg_visible(true)
+				if tab_key == 'All' then
+					new_tell_pulse = false
+				end
+
+				--Light background highlight behind current tab name
+				local color = {
+					r = math.floor(tab_data.color.r * 0.25), 
+					g = math.floor(tab_data.color.g * 0.25), 
+					b = math.floor(tab_data.color.b * 0.25)
+				}
+
+				obj:bg_color(color.r, color.g, color.b)
+
+			else
+
+				--Dim not-current tabs just a little bit
+				local color = {
+					r = math.floor(tab_data.color.r * 0.9), 
+					g = math.floor(tab_data.color.g * 0.9), 
+					b = math.floor(tab_data.color.b * 0.9)
+				}
+
+				local text_value = tab_data.name
+
+				--Tab has new messages
+				if tab_data.has_new then
+
+					text_value = "●\\cs("..color.r..","..color.g..","..color.b..")"..text_value.."\\cr "
+
+					--New tell comes in Tell tab is either not the current tab or the window is minimized
+					if tab_key == 'Tell' and not new_tell_pulse_override then
+						new_tell_pulse_alpha = 0
+						new_tell_pulse_direction = true
+						new_tell_pulse = true
+						obj:bg_alpha(new_tell_pulse_alpha)
+						obj:bg_visible(true)
+						obj:bg_color(tab_data.color.r,tab_data.color.g,tab_data.color.b)
+
+					--Same as above except we've now replied back to it so no need to pulse any more
+					else
+						new_tell_pulse = false
+						obj:bg_visible(false)
+
+					end
+
+				--Tab has no new messages
+				else
+					text_value = " \\cs("..color.r..","..color.g..","..color.b..")"..text_value.."\\cr "
+					obj:bg_visible(false)
+					if tab_key == 'Tell' then
+						new_tell_pulse = false
+					end
+
+				end
+
+				obj:text(text_value)
+
+			end
+		end
+	end
+end
+
+--Show the correct Chat UI elements
+function determineChatMinMaxState()
+
+	if chat_minimized then
+		--Passing -2 cancels out the function's internal +2 padding, forcing the background string to render exactly 1 text row high.
+		--Kinda hacky, but if it works...
+		chat_ui.bg_window:text(generateChatBGString(settings.sections.chat.bar_width, -2))
+		chat_ui.divider:hide()
+		chat_ui.body:hide()
+		chat_ui.resize_width_handle:hide()
+		chat_ui.resize_height_handle:hide()
+		chat_ui.message_counter:hide()
+		chat_ui.clear_all_btn:hide()
+		chat_ui.scroll_bar:hide()
+		chat_ui.scroll_handle:hide()
+		chat_ui.clear_tab_btn:hide()
+	else
+		chat_ui.bg_window:text(generateChatBGString(settings.sections.chat.bar_width, settings.sections.chat.max_lines))
+		chat_ui.divider:show()
+		chat_ui.body:show()
+		chat_ui.resize_width_handle:show()
+		chat_ui.resize_height_handle:show()
+		chat_ui.clear_all_btn:show()
+		chat_ui.scroll_bar:show()
+		chat_ui.scroll_handle:show()
+		if settings.sections.chat.show_message_counter then
+			chat_ui.message_counter:show()
+		end
+		if chat_box.current_tab == 'All' then
+			chat_ui.clear_tab_btn:hide()
+		else
+			chat_ui.clear_tab_btn:show()
+		end
+	end
+
+end
+
+--Main Refresh and Render Chat Window function
+function refreshChatUI()
+
+	if not show_chat_bar or not chat_initialized or (zoning and not settings.sections.chat.show_during_zoning) or (in_cutscene and not zoning) then return end
+
+	local active_tab = chat_box.tabs[chat_box.current_tab]
+	local max_lines = settings.sections.chat.max_lines
+	local total_lines = #active_tab.messages
+
+	chat_ui.divider:text(("─"):rep(settings.sections.chat.bar_width))
+	chat_ui.divider:color(active_tab.color.r, active_tab.color.g, active_tab.color.b)
+	chat_ui.body:color(active_tab.color.r, active_tab.color.g, active_tab.color.b)
+
+	local display_lines = {}
+	if total_lines > 0 then
+		local ending_index = total_lines - active_tab.scroll_offset
+		local starting_index = math.max(1, ending_index - max_lines + 1)
+
+		for i = starting_index, ending_index do
+			local line_data = active_tab.messages[i]
+			local lookup_key = line_data.source_tab
+			if lookup_key == 'Shout' or lookup_key == 'Yell' then
+				lookup_key = 'ShoutYell'
+			end
+
+			--Escape backslashes so Windower treats them as plain text strings instead of broken control commands!
+			local sanitized_text = line_data.text:gsub('\\', '\\\\')
+			local source_config = chat_box.tabs[lookup_key] and chat_box.tabs[lookup_key].color or active_tab.color
+			local colorized_line = string.format("\\cs(%d,%d,%d)%s\\cr", source_config.r, source_config.g, source_config.b, sanitized_text)
+			table.insert(display_lines, colorized_line)
+		end
+	else
+		table.insert(display_lines, " No messages yet.")
+	end
+	chat_ui.body:text(table.concat(display_lines, "\n"))
+
+	determineChatMinMaxState()
+
+	--Scroll Track and Scroll Handle display
+	if not chat_minimized and total_lines > max_lines then
+		local background_track_string = (" \n"):rep(max_lines - 1).." "
+		chat_ui.scroll_bar:text(background_track_string)
+		chat_ui.scroll_handle:color(active_tab.color.r, active_tab.color.g, active_tab.color.b)
+
+		if active_tab.scroll_offset > 0 then
+			chat_ui.scroll_bar:bg_color(100, 100, 100) 
+		else
+			chat_ui.scroll_bar:bg_color(0, 0, 0)       
+		end
+
+		chat_ui.scroll_bar:show()
+		chat_ui.scroll_handle:show()
+	else
+		chat_ui.scroll_bar:hide()
+		chat_ui.scroll_handle:hide()
+	end
+
+	--Footer components display
+	local active_color = active_tab.color
+	chat_ui.resize_width_handle:color(active_color.r, active_color.g, active_color.b)
+	chat_ui.resize_height_handle:color(active_color.r, active_color.g, active_color.b)
+	chat_ui.clear_all_btn:color(active_color.r, active_color.g, active_color.b)
+	chat_ui.clear_tab_btn:color(active_color.r, active_color.g, active_color.b)
+	chat_ui.message_counter:color(active_color.r, active_color.g, active_color.b)
+
+	--Toggle button display
+	chat_ui.toggle_btn:color(active_color.r * 0.9, active_color.g * 0.9, active_color.b * 0.9)
+	chat_ui.toggle_btn:stroke_color(active_color.r * 0.9, active_color.g * 0.9, active_color.b * 0.9)
+	chat_ui.toggle_btn:text(chat_minimized and "□ " or "▬ ")
+	chat_ui.toggle_btn:show()
+
+	--Message Counter display
+	local current_raw_count = #chat_box.raw_history
+	chat_ui.message_counter:text(string.format("%d/%d", current_raw_count, chat_max_raw_history))
+
+	updateChatTabs()
+	updateChatUIPositions(settings.sections.chat.pos.x, settings.sections.chat.pos.y)
+
+	chat_ui.bg_window:show()
+
+end
+
+function updateChatContextMenu(mouse_x, mouse_y, show_menu, player_name)
+	chat_context_menu.visible = show_menu
+	chat_context_menu.target_player = player_name or chat_context_menu.target_player
+
+	if not chat_context_menu.visible then
+		chat_context_menu.ui.bg:hide()
+		chat_context_menu.ui.name:hide()
+		chat_context_menu.ui.tell:hide()
+		chat_context_menu.ui.invite:hide()
+		chat_context_menu.ui.search:hide()
+		chat_context_menu.ui.target:hide()
+		return
+	end
+
+	chat_context_menu.x = mouse_x
+	chat_context_menu.y = mouse_y
+
+	local menu_char_width = math.max(9, #player_name + 3)
+	local menu_lines = 3
+
+	chat_context_menu.ui.bg:text(generateChatBGString(menu_char_width, menu_lines))
+	chat_context_menu.ui.bg:pos(mouse_x, mouse_y)
+	chat_context_menu.ui.bg:show()
+
+	--Selected Players Name
+	chat_context_menu.ui.name:text(' '..player_name)
+	chat_context_menu.ui.name:pos(mouse_x + 4, mouse_y + 4)
+	chat_context_menu.ui.name:color(255, 255, 255)
+	chat_context_menu.ui.name:show()
+	chat_context_menu.ui.name:bold(true)
+
+	--Send Tell
+	chat_context_menu.ui.tell:pos(mouse_x + 4, mouse_y + 4 + chat_calculated_char_height)
+	chat_context_menu.ui.tell:color(240, 240, 240)
+	chat_context_menu.ui.tell:show()
+
+	--Invite Player
+	chat_context_menu.ui.invite:pos(mouse_x + 4, mouse_y + 4 + (chat_calculated_char_height * 2))
+	chat_context_menu.ui.invite:color(240, 240, 240)
+	chat_context_menu.ui.invite:show()
+
+	--Search Player
+	chat_context_menu.ui.search:pos(mouse_x + 4, mouse_y + 4 + (chat_calculated_char_height * 3))
+	chat_context_menu.ui.search:color(240, 240, 240)
+	chat_context_menu.ui.search:show()
+
+	--Target Player
+	chat_context_menu.ui.target:pos(mouse_x + 4, mouse_y + 4 + (chat_calculated_char_height * 4))
+	chat_context_menu.ui.target:color(240, 240, 240)
+	chat_context_menu.ui.target:show()
+end
+
+function getChatSenderAtMouseY(mouse_y)
+	local active_tab = chat_box.tabs[chat_box.current_tab]
+	local max_lines = settings.sections.chat.max_lines
+	local total_lines = #active_tab.messages
+	if total_lines == 0 then return nil end
+
+	--Determine screen boundary for where messages start
+	local start_y = settings.sections.chat.pos.y + 27
+
+	--Calculate exactly which text line index the mouse is floating over
+	local dynamic_row_index = math.floor((mouse_y - start_y) / chat_calculated_char_height) + 1
+
+	--Ensure the click was inside the actual body box
+	if dynamic_row_index >= 1 and dynamic_row_index <= math.min(max_lines, total_lines) then
+		local ending_index = total_lines - active_tab.scroll_offset
+		local starting_index = math.max(1, ending_index - max_lines + 1)
+
+		local target_msg_index = starting_index + (dynamic_row_index - 1)
+		local msg_data = active_tab.messages[target_msg_index]
+
+		if msg_data and msg_data.sender then
+			return msg_data.sender
+		end
+	end
+	return nil
+end
+
+function calculateDynamicChatMinWidth()
+	local total_chars = 0
+	local separation_gap_chars = 2
+
+	for _, tab_key in ipairs(chat_box.tab_order) do
+		local tab_data = chat_box.tabs[tab_key]
+
+		local is_enabled = true
+		if tab_key == 'ShoutYell' then
+			is_enabled = (settings.sections.chat.tabs['shout'] ~= false) or (settings.sections.chat.tabs['yell'] ~= false)
+		elseif tab_key ~= 'All' then
+			is_enabled = (settings.sections.chat.tabs[tab_key:lower()] ~= false)
+		end
+
+		if is_enabled and tab_data then
+			-- Tab name length plus 1
+			local current_tab_chars = 1 + #tab_data.name
+			total_chars = total_chars + current_tab_chars + separation_gap_chars
+		end
+	end
+
+	total_chars = total_chars + 1 --add 1 for the toggle button at the end
+
+	chat_min_char_width = total_chars
+
+	-- If the user's saved setting is narrower than the active tab layout bar, scale it up so elements don't overlap.
+	if settings.sections.chat.bar_width < chat_min_char_width then
+		settings.sections.chat.bar_width = chat_min_char_width
+	end
+end
+
+--Calculate exact pixel width and height of a single chat line so we can build things spaced out correctly
+function initializeChatUIGrid()
+
+	--Single line string to measure base metrics
+	local probe1 = texts.new()
+	probe1:font(settings.sections.chat.font)
+	probe1:size(settings.sections.chat.size)
+	probe1:pos(-500, -500)
+	probe1:bg_visible(false)
+	probe1:text((" "):rep(100))
+	probe1:show()
+
+	--Two-line string to capture multi-line spacing padding
+	local probe2 = texts.new()
+	probe2:font(settings.sections.chat.font)
+	probe2:size(settings.sections.chat.size)
+	probe2:pos(-500, -500)
+	probe2:bg_visible(false)
+	probe2:text("Line 1\nLine 2")
+	probe2:show()
+
+	coroutine.sleep(0.1)
+
+	--Extract widths and heights
+	local width1, height1 = probe1:extents()
+	local _, height2 = probe2:extents()
+
+	chat_calculated_char_width = width1 / 100
+
+	--The difference between 2 lines and 1 line gives us the precise vertical spacing used by multi-line text blocks.
+	chat_calculated_char_height = height2 - height1
+
+	--Thank you for your service
+	probe1:destroy()
+	probe2:destroy()
+
+	chat_initialized = true
+	if logged_in then
+		refreshChatUI()
+	end
+end
+
+function saveToChatFile()
+
+	if not settings.sections.chat.save_to_file then return end
+
+	coroutine.schedule(function()
+		chat_file:write(chat_help_msg..'return {\n'..sortedTableString(chat_box.raw_history, '    ')..'\n}')
+	end, 0)
+
+end
+
+--Add messages to the correct tab table and save related data attached to the message
+function addMessageToChatTab(target_tab_key, sender, message, tell_target)
+
+	if message then
+		message = windower.convert_auto_trans(message)
+	end
+
+	local captured_time = os.date('%H:%M:%S')
+
+	table.insert(chat_box.raw_history, { 
+		tab = target_tab_key, 
+		sender = sender,
+		text = message,
+		time = captured_time,
+		tell_target = tell_target,
+	})
+
+	--Remove oldest message if over limit
+	if #chat_box.raw_history > chat_max_raw_history then
+		table.remove(chat_box.raw_history, 1)
+	end
+
+	--Save chat message updates to the external chat file
+	saveToChatFile()
+
+	local usable_width = settings.sections.chat.bar_width - 1
+	local base_indent = settings.sections.chat.indent_width
+
+	if target_tab_key == 'Shout' or target_tab_key == 'Yell' then
+		target_tab_key = 'ShoutYell'
+	end
+
+	local targets = {target_tab_key, 'All'}
+
+	for _, view_key in ipairs(targets) do
+		local target_tab = chat_box.tabs[view_key]
+
+		local last_line = target_tab.messages[#target_tab.messages]
+		local last_sender = nil
+		local last_source = nil
+		local last_tell_target = nil
+
+		if last_line then
+			for i = #chat_box.raw_history - 1, 1, -1 do
+				if chat_box.raw_history[i].tab == last_line.source_tab then
+					last_sender = chat_box.raw_history[i].sender
+					last_source = chat_box.raw_history[i].tab
+					last_tell_target = chat_box.raw_history[i].tell_target
+					break
+				end
+			end
+		end
+
+		--Timestamp if enabled
+		local timestamp_prefix = ""
+		if settings.sections.chat.show_timestamps then
+			timestamp_prefix = captured_time.." "
+		end
+
+		--Calculate the exact layout indent including the timestamp width
+		local total_layout_indent = base_indent + #timestamp_prefix + 1
+
+		local pass_header = nil
+		if last_sender == sender and last_source == target_tab_key and last_tell_target == tell_target then
+			--Header is just the timestamp followed by spaces matching the base indent if it's a repeat sender
+			pass_header = timestamp_prefix..(" "):rep(base_indent).." "
+		else
+			--Header is the timestamp followed by the wrapped sender name
+			local base_header = formatSenderHeader(sender, target_tab_key, view_key, tell_target)
+			pass_header = timestamp_prefix..base_header
+		end
+
+		local wrapped = wrapTextByChars(pass_header, message, usable_width, total_layout_indent)
+		for _, line in ipairs(wrapped) do
+			table.insert(target_tab.messages, { 
+				text = line, 
+				source_tab = target_tab_key,
+				sender = sender,
+			})
+
+		end
+
+		--Clear all new chat notifications if the current tab is All
+		if not chat_minimized and (chat_box.current_tab == 'All' or view_key == 'All') then
+			target_tab.has_new = false
+		else
+			--Flag true if the message arrives for a different tab, if scrolled up, OR if the window is minimized
+			if view_key ~= chat_box.current_tab or target_tab.scroll_offset > 0 or chat_minimized then
+				--Do not apply the visual "has_new" bullet to the master 'All' tab label
+				if view_key ~= 'All' then
+					target_tab.has_new = true
+				end
+			end
+		end
+	end
+
+	refreshChatUI()
+end
+
+--Delete all messages from the current chat tab
+function clearCurrentChatTab()
+
+	local current_key = chat_box.current_tab
+
+	local tab_data = chat_box.tabs[current_key]
+	if tab_data then
+		tab_data.messages = {}
+		tab_data.scroll_offset = 0
+		tab_data.has_new = false
+
+		--Delete matching entries from the raw history buffer
+		for i = #chat_box.raw_history, 1, -1 do
+			local raw_tab = chat_box.raw_history[i].tab
+			if raw_tab == 'Shout' or raw_tab == 'Yell' then
+				raw_tab = 'ShoutYell'
+			end
+
+			if raw_tab == current_key then
+				table.remove(chat_box.raw_history, i)
+			end
+		end
+
+		saveToChatFile()
+
+		--Delete matching entries out of the All tab
+		local all_tab = chat_box.tabs['All']
+		if all_tab then
+			for i = #all_tab.messages, 1, -1 do
+				local lookup_key = all_tab.messages[i].source_tab
+				if lookup_key == 'Shout' or lookup_key == 'Yell' then
+					lookup_key = 'ShoutYell'
+				end
+				if lookup_key == current_key then
+					table.remove(all_tab.messages, i)
+				end
+			end
+			--Reset scroll position if it overflows after all the deletions
+			if all_tab.scroll_offset > #all_tab.messages then
+				all_tab.scroll_offset = 0
+			end
+		end
+
+		refreshChatUI()
+	end
+end
+
+--Delete ALL messages
+function clearAllChatHistory()
+
+	chat_box.raw_history = {}
+
+	saveToChatFile()
+
+	--Loop through every single tab entry block and delete all the things
+	for _, tab_data in pairs(chat_box.tabs) do
+		tab_data.messages = {}
+		tab_data.scroll_offset = 0
+		tab_data.has_new = false
+	end
+
+	refreshChatUI()
+end
+
+--Set what job we are currently
+function setJob(player)
+
 	job = string.lower(player.main_job)
 
 end
 
---Assign and incrememnt a new tracking index number
+--Assign and increment a new tracking index number
 function assignIndex()
 
 	local assignedIndex = index
@@ -3003,7 +4611,8 @@ function updateTargeting(actor_id, target_id, timestamp, icon)
 
 	--If the target of an action done by a monster (checked before this function was triggered)
 	--is in our alliance, or if the monster is on the open_mobs list, then add the monster to the aggro list table
-	if isInPartyOrAlliance(target_id) or aggro_list_open_mobs:contains(get_mob_by_id(actor_id).name) then
+	local mob = get_mob_by_id(actor_id)
+	if isInPartyOrAlliance(target_id) or (mob and aggro_list_open_mobs:contains(mob.name)) or current_zone == "Al Zahbi" then
 		current_aggro_list[actor_id] = {
 			target_id = target_id,
 			timestamp = timestamp,
@@ -3049,11 +4658,12 @@ function removeFromActionsTable(actor_id, index)
 end
 
 --Add an SP to the current_sp_actions table
-function addToSPTable(actor_id, sp_name)
+function addToSPTable(actor_id, sp_name, cor_roll)
 
 	current_sp_actions[actor_id] = {
 		sp_name = sp_name,
 		timestamp = os.clock() + sp_abils[sp_name],
+		cor_roll = cor_roll
 	}
 
 end
@@ -3070,12 +4680,12 @@ end
 --Check for expired SP abilities
 function checkSPTimers(clock)
 
-	for id, sp_action in pairs(current_sp_actions) do
+	for actor_id, sp_action in pairs(current_sp_actions) do
 
 		local timestamp = sp_action.timestamp
 
 		if clock > timestamp then
-			removeFromSPTable(id)
+			removeFromSPTable(actor_id)
 		end
 
 	end
@@ -3129,14 +4739,7 @@ end
 function isMonster(id)
 
 	local actor = get_mob_by_id(id)
-
-	--Is a monster (not in_party to exclude trusts)
-	if actor and actor.spawn_type == 16 and not actor.in_party then
-		return true
-	--Is not a monster
-	else
-		return false
-	end
+	return actor and actor.spawn_type == 16 and not actor.in_party --"not actor.in_party" to exclude trusts
 
 end
 
@@ -3144,14 +4747,7 @@ end
 function isPlayer(id)
 
 	local actor = get_mob_by_id(id)
-
-	--Is a player
-	if actor and (actor.spawn_type == 1 or actor.spawn_type == 9 or actor.spawn_type == 13) then
-		return true
-	--Is not a player
-	else
-		return false
-	end
+	return actor and (actor.spawn_type == 1 or actor.spawn_type == 9 or actor.spawn_type == 13)
 
 end
 
@@ -3364,13 +4960,6 @@ function truncateName(name)
 	return name
 end
 
---Format RGB values with leading zeros (helps prevent an issue with the shadow text not lining up correctly)
-function formatRGB(value)
-
-	return string.format("%03d", value)
-
-end
-
 function saveToAutoFocusTargetFile()
 
 	coroutine.schedule(function()
@@ -3430,78 +5019,269 @@ function removeFromAutoFocusTargetList(target)
 
 	else
 		add_to_chat(8,('[Bars] '):color(220)..(target):color(1)..(' was not found.'):color(28))
-		add_to_chat(8,('[Bars] '):color(220)..('Type '):color(8)..('//bars list'):color(1)..(' to see stored targets.'):color(8))
+		add_to_chat(8,('Type '):color(8)..('//bars list'):color(1)..(' to see stored targets.'):color(8))
 
 	end
 end
 
---Are we in Dyna-[D]?
-function inDyna()
-	local zone = res.zones[get_info().zone].en
-	in_dyna = string.match(zone, "%[D%]$") and true or false
-end
+--What job/s are the target mob?
+function mobJob(mob_name)
 
---What jobs are the target mob?
-function dynaJob(mob_name)
+	local c = settings.colors.target.dynamis_nm
+	local cs = "\\cs("..c.r..","..c.g..","..c.b..")"
 
-	--Volte NMs: Exact name-to-job mapping
-	local volte_nms = {
-		["Volte Cleaver"] = "WAR",
-		["Volte Fistfighter"] = "MNK",
-		["Volte Incanter"] = "BLM",
-		["Volte Priest"] = "WHM",
-		["Volte Duelist"] = "RUN",
-		["Volte Vagabond"] = "THF",
-		["Volte Crusader"] = "PLD",
-		["Volte Reaper"] = "DRK",
-		["Volte Trainer"] = "BST",
-		["Volte Conductor"] = "BRD",
-		["Volte Sniper"] = "RNG",
-		["Volte Mononofu"] = "SAM",
-		["Volte Shinobi"] = "NIN",
-		["Volte Highwind"] = "DRG",
-		["Volte Controller"] = "SMN",
-		["Volte Joiner"] = "BLU",
-		["Volte Sailor"] = "COR",
-		["Volte Manipulator"] = "PUP",
-		["Volte Twirler"] = "DNC",
-		["Volte Erudite"] = "SCH",
-		["Volte Communer"] = "GEO",
-		["Volte Illusionist"] = "RDM"
+	local mobs = {
+
+		--DYNAMIS JOBS--
+
+		--Volte NMs
+		["Volte Cleaver"]		= cs..dynamis_nm_icon.."WAR".."\\cr",	["Volte Crusader"]		= cs..dynamis_nm_icon.."PLD".."\\cr",
+		["Volte Communer"]		= cs..dynamis_nm_icon.."GEO".."\\cr",	["Volte Conductor"]		= cs..dynamis_nm_icon.."BRD".."\\cr",
+		["Volte Controller"]	= cs..dynamis_nm_icon.."SMN".."\\cr",	["Volte Duelist"]		= cs..dynamis_nm_icon.."RUN".."\\cr",
+		["Volte Erudite"]		= cs..dynamis_nm_icon.."SCH".."\\cr",	["Volte Fistfighter"]	= cs..dynamis_nm_icon.."MNK".."\\cr",
+		["Volte Highwind"]		= cs..dynamis_nm_icon.."DRG".."\\cr",	["Volte Illusionist"]	= cs..dynamis_nm_icon.."RDM".."\\cr",
+		["Volte Incanter"]		= cs..dynamis_nm_icon.."BLM".."\\cr",	["Volte Joiner"]		= cs..dynamis_nm_icon.."BLU".."\\cr",
+		["Volte Manipulator"]	= cs..dynamis_nm_icon.."PUP".."\\cr",	["Volte Mononofu"]		= cs..dynamis_nm_icon.."SAM".."\\cr",
+		["Volte Priest"]		= cs..dynamis_nm_icon.."WHM".."\\cr",	["Volte Reaper"]		= cs..dynamis_nm_icon.."DRK".."\\cr",
+		["Volte Sailor"]		= cs..dynamis_nm_icon.."COR".."\\cr",	["Volte Shinobi"]		= cs..dynamis_nm_icon.."NIN".."\\cr",
+		["Volte Sniper"]		= cs..dynamis_nm_icon.."RNG".."\\cr",	["Volte Trainer"]		= cs..dynamis_nm_icon.."BST".."\\cr",
+		["Volte Twirler"]		= cs..dynamis_nm_icon.."DNC".."\\cr",	["Volte Vagabond"]		= cs..dynamis_nm_icon.."THF".."\\cr",
+
+		--Standard Mobs
+
+		--WAR|DRK
+		["Squadron Berserker"]		= "WAR|DRK",	["Regiment Berserker"]		= "WAR|DRK",
+		["Squadron Skullcrusher"]	= "WAR|DRK",	["Regiment Skullcrusher"]	= "WAR|DRK",
+		["Squadron Ravager"]		= "WAR|DRK",	["Regiment Ravager"]		= "WAR|DRK",
+		["Squadron Weaponmaster"]	= "WAR|DRK",	["Regiment Weaponmaster"]	= "WAR|DRK",
+		["Squadron Fighter"]		= "WAR|DRK",	["Regiment Fighter"]		= "WAR|DRK",
+		["Squadron Hoplite"]		= "WAR|DRK",	["Regiment Hoplite"]		= "WAR|DRK",
+		--MNK|PUP
+		["Squadron Fistfighter"]	= "MNK|PUP",	["Regiment Fistfighter"]	= "MNK|PUP",
+		["Squadron Pugilist"]		= "MNK|PUP",	["Regiment Pugilist"]		= "MNK|PUP",
+		["Squadron Mendicant"]		= "MNK|PUP",	["Regiment Mendicant"]		= "MNK|PUP",
+		["Squadron Combatant"]		= "MNK|PUP",	["Regiment Combatant"]		= "MNK|PUP",
+		["Squadron Brother"]		= "MNK|PUP",	["Regiment Brother"]		= "MNK|PUP",
+		["Squadron Ascetic"]		= "MNK|PUP",	["Regiment Ascetic"]		= "MNK|PUP",
+		--THF|DNC
+		["Squadron Vandal"]			= "THF|DNC",	["Regiment Vandal"]			= "THF|DNC",
+		["Squadron Fleetfoot"]		= "THF|DNC",	["Regiment Fleetfoot"]		= "THF|DNC",
+		["Squadron Cutpurse"]		= "THF|DNC",	["Regiment Cutpurse"]		= "THF|DNC",
+		["Squadron Trickster"]		= "THF|DNC",	["Regiment Trickster"]		= "THF|DNC",
+		["Squadron Pickpocket"]		= "THF|DNC",	["Regiment Pickpocket"]		= "THF|DNC",
+		["Squadron Ruffian"]		= "THF|DNC",	["Regiment Ruffian"]		= "THF|DNC",
+		--BLM|GEO
+		["Squadron Arcanomancer"]	= "BLM|GEO",	["Regiment Arcanomancer"]	= "BLM|GEO",
+		["Squadron Evoker"]			= "BLM|GEO",	["Regiment Evoker"]			= "BLM|GEO",
+		["Squadron Invoker"]		= "BLM|GEO",	["Regiment Invoker"]		= "BLM|GEO",
+		["Squadron Magister"]		= "BLM|GEO",	["Regiment Magister"]		= "BLM|GEO",
+		["Squadron Magus"]			= "BLM|GEO",	["Regiment Magus"]			= "BLM|GEO",
+		["Squadron Magian"]			= "BLM|GEO",	["Regiment Magian"]			= "BLM|GEO",
+		--RDM|RUN
+		["Squadron Defiler"]		= "RDM|RUN",	["Regiment Defiler"]		= "RDM|RUN",
+		["Squadron Enchanter"]		= "RDM|RUN",	["Regiment Enchanter"]		= "RDM|RUN",
+		["Squadron Warlock"]		= "RDM|RUN",	["Regiment Warlock"]		= "RDM|RUN",
+		["Squadron Magician"]		= "RDM|RUN",	["Regiment Magician"]		= "RDM|RUN",
+		["Squadron Shaman"]			= "RDM|RUN",	["Regiment Shaman"]			= "RDM|RUN",
+		["Squadron Prognosticator"]	= "RDM|RUN",	["Regiment Prognosticator"]	= "RDM|RUN",
+		--PLD|DRG
+		["Squadron Banneret"]		= "PLD|DRG",	["Regiment Banneret"]		= "PLD|DRG",
+		["Squadron Knight"]			= "PLD|DRG",	["Regiment Knight"]			= "PLD|DRG",
+		["Squadron Stalwart"]		= "PLD|DRG",	["Regiment Stalwart"]		= "PLD|DRG",
+		["Squadron Cavalier"]		= "PLD|DRG",	["Regiment Cavalier"]		= "PLD|DRG",
+		["Squadron Chevalier"]		= "PLD|DRG",	["Regiment Chevalier"]		= "PLD|DRG",
+		["Squadron Champion"]		= "PLD|DRG",	["Regiment Champion"]		= "PLD|DRG",
+		--BST|RNG
+		["Squadron Animist"]		= "BST|RNG",	["Regiment Animist"]		= "BST|RNG",
+		["Squadron Tamer"]			= "BST|RNG",	["Regiment Tamer"]			= "BST|RNG",
+		["Squadron Hunter"]			= "BST|RNG",	["Regiment Hunter"]			= "BST|RNG",
+		["Squadron Harnesser"]		= "BST|RNG",	["Regiment Harnesser"]		= "BST|RNG",
+		["Squadron Domesticator"]	= "BST|RNG",	["Regiment Domesticator"]	= "BST|RNG",
+		["Squadron Empath"]			= "BST|RNG",	["Regiment Empath"]			= "BST|RNG",
+		--WHM|SMN
+		["Squadron Vivifier"]		= "WHM|SMN",	["Regiment Vivifier"]		= "WHM|SMN",
+		["Squadron Medic"]			= "WHM|SMN",	["Regiment Medic"]			= "WHM|SMN",
+		["Squadron Priest"]			= "WHM|SMN",	["Regiment Priest"]			= "WHM|SMN",
+		["Squadron Mender"]			= "WHM|SMN",	["Regiment Mender"]			= "WHM|SMN",
+		["Squadron Healer"]			= "WHM|SMN",	["Regiment Healer"]			= "WHM|SMN",
+		["Squadron Orisha"]			= "WHM|SMN",	["Regiment Orisha"]			= "WHM|SMN",
+		--BRD|SAM
+		["Squadron Flautist"]		= "BRD|SAM",	["Regiment Flautist"]		= "BRD|SAM",
+		["Squadron Troubador"]		= "BRD|SAM",	["Regiment Troubador"]		= "BRD|SAM",
+		["Squadron Minstrel"]		= "BRD|SAM",	["Regiment Minstrel"]		= "BRD|SAM",
+		["Squadron Balladeer"]		= "BRD|SAM",	["Regiment Balladeer"]		= "BRD|SAM",
+		["Squadron Joculator"]		= "BRD|SAM",	["Regiment Joculator"]		= "BRD|SAM",
+		["Squadron Minnesinger"]	= "BRD|SAM",	["Regiment Minnesinger"]	= "BRD|SAM",
+		--NIN|BLU
+		["Squadron Operative"]		= "NIN|BLU",	["Regiment Operative"]		= "NIN|BLU",
+		["Squadron Shinobi"]		= "NIN|BLU",	["Regiment Shinobi"]		= "NIN|BLU",
+		["Squadron Kagemusha"]		= "NIN|BLU",	["Regiment Kagemusha"]		= "NIN|BLU",
+		["Squadron Shadowstalker"]	= "NIN|BLU",	["Regiment Shadowstalker"]	= "NIN|BLU",
+		["Squadron Assassin"]		= "NIN|BLU",	["Regiment Assassin"]		= "NIN|BLU",
+		["Squadron Spy"]			= "NIN|BLU",	["Regiment Spy"]			= "NIN|BLU",
+		--COR|SCH
+		["Squadron Buccaneer"]		= "COR|SCH",	["Regiment Buccaneer"]		= "COR|SCH",
+		["Squadron Pirate"]			= "COR|SCH",	["Regiment Pirate"]			= "COR|SCH",
+		["Squadron Canoneer"]		= "COR|SCH",	["Regiment Canoneer"]		= "COR|SCH",
+		["Squadron Scallywag"]		= "COR|SCH",	["Regiment Scallywag"]		= "COR|SCH",
+		["Squadron Freebooter"]		= "COR|SCH",	["Regiment Freebooter"]		= "COR|SCH",
+		["Squadron Privateer"]		= "COR|SCH",	["Regiment Privateer"]		= "COR|SCH",
+
+		--NM Mobs
+
+		--WAR|DRK
+		["Berserker Commander"]		= cs..dynamis_nm_icon.."WAR|DRK".."\\cr",	["Berserker Leader"]		= cs..dynamis_nm_icon.."WAR|DRK".."\\cr",
+		["Skullcrusher Commander"]	= cs..dynamis_nm_icon.."WAR|DRK".."\\cr",	["Skullcrusher Leader"]		= cs..dynamis_nm_icon.."WAR|DRK".."\\cr",
+		["Ravager Commander"]		= cs..dynamis_nm_icon.."WAR|DRK".."\\cr",	["Ravager Leader"]			= cs..dynamis_nm_icon.."WAR|DRK".."\\cr",
+		["Weaponmaster Commander"]	= cs..dynamis_nm_icon.."WAR|DRK".."\\cr",	["Weaponmaster Leader"]		= cs..dynamis_nm_icon.."WAR|DRK".."\\cr",
+		["Fighter Commander"]		= cs..dynamis_nm_icon.."WAR|DRK".."\\cr",	["Fighter Leader"]			= cs..dynamis_nm_icon.."WAR|DRK".."\\cr",
+		["Hoplite Commander"]		= cs..dynamis_nm_icon.."WAR|DRK".."\\cr",	["Hoplite Leader"]			= cs..dynamis_nm_icon.."WAR|DRK".."\\cr",
+		-- MNK|PUP
+		["Fistfighter Commander"]	= cs..dynamis_nm_icon.."MNK|PUP".."\\cr",	["Fistfighter Leader"]		= cs..dynamis_nm_icon.."MNK|PUP".."\\cr",
+		["Pugilist Commander"]		= cs..dynamis_nm_icon.."MNK|PUP".."\\cr",	["Pugilist Leader"]			= cs..dynamis_nm_icon.."MNK|PUP".."\\cr",
+		["Mendicant Commander"]		= cs..dynamis_nm_icon.."MNK|PUP".."\\cr",	["Mendicant Leader"]		= cs..dynamis_nm_icon.."MNK|PUP".."\\cr",
+		["Combatant Commander"]		= cs..dynamis_nm_icon.."MNK|PUP".."\\cr",	["Combatant Leader"]		= cs..dynamis_nm_icon.."MNK|PUP".."\\cr",
+		["Brother Commander"]		= cs..dynamis_nm_icon.."MNK|PUP".."\\cr",	["Brother Leader"]			= cs..dynamis_nm_icon.."MNK|PUP".."\\cr",
+		["Ascetic Commander"]		= cs..dynamis_nm_icon.."MNK|PUP".."\\cr",	["Ascetic Leader"]			= cs..dynamis_nm_icon.."MNK|PUP".."\\cr",
+		-- THF|DNC
+		["Vandal Commander"]		= cs..dynamis_nm_icon.."THF|DNC".."\\cr",	["Vandal Leader"]			= cs..dynamis_nm_icon.."THF|DNC".."\\cr",
+		["Fleetfoot Commander"]		= cs..dynamis_nm_icon.."THF|DNC".."\\cr",	["Fleetfoot Leader"]		= cs..dynamis_nm_icon.."THF|DNC".."\\cr",
+		["Cutpurse Commander"]		= cs..dynamis_nm_icon.."THF|DNC".."\\cr",	["Cutpurse Leader"]			= cs..dynamis_nm_icon.."THF|DNC".."\\cr",
+		["Trickster Commander"]		= cs..dynamis_nm_icon.."THF|DNC".."\\cr",	["Trickster Leader"]		= cs..dynamis_nm_icon.."THF|DNC".."\\cr",
+		["Pickpocket Commander"]	= cs..dynamis_nm_icon.."THF|DNC".."\\cr",	["Pickpocket Leader"]		= cs..dynamis_nm_icon.."THF|DNC".."\\cr",
+		["Ruffian Commander"]		= cs..dynamis_nm_icon.."THF|DNC".."\\cr",	["Ruffian Leader"]			= cs..dynamis_nm_icon.."THF|DNC".."\\cr",
+		-- BLM|GEO
+		["Arcanomancer Commander"]	= cs..dynamis_nm_icon.."BLM|GEO".."\\cr",	["Arcanomancer Leader"]		= cs..dynamis_nm_icon.."BLM|GEO".."\\cr",
+		["Evoker Commander"]		= cs..dynamis_nm_icon.."BLM|GEO".."\\cr",	["Evoker Leader"]			= cs..dynamis_nm_icon.."BLM|GEO".."\\cr",
+		["Invoker Commander"]		= cs..dynamis_nm_icon.."BLM|GEO".."\\cr",	["Invoker Leader"]			= cs..dynamis_nm_icon.."BLM|GEO".."\\cr",
+		["Magister Commander"]		= cs..dynamis_nm_icon.."BLM|GEO".."\\cr",	["Magister Leader"]			= cs..dynamis_nm_icon.."BLM|GEO".."\\cr",
+		["Magus Commander"]			= cs..dynamis_nm_icon.."BLM|GEO".."\\cr",	["Magus Leader"]			= cs..dynamis_nm_icon.."BLM|GEO".."\\cr",
+		["Magian Commander"]		= cs..dynamis_nm_icon.."BLM|GEO".."\\cr",	["Magian Leader"]			= cs..dynamis_nm_icon.."BLM|GEO".."\\cr",
+		-- RDM|RUN
+		["Defiler Commander"]		= cs..dynamis_nm_icon.."RDM|RUN".."\\cr",	["Defiler Leader"]			= cs..dynamis_nm_icon.."RDM|RUN".."\\cr",
+		["Enchanter Commander"]		= cs..dynamis_nm_icon.."RDM|RUN".."\\cr",	["Enchanter Leader"]		= cs..dynamis_nm_icon.."RDM|RUN".."\\cr",
+		["Warlock Commander"]		= cs..dynamis_nm_icon.."RDM|RUN".."\\cr",	["Warlock Leader"]			= cs..dynamis_nm_icon.."RDM|RUN".."\\cr",
+		["Magician Commander"]		= cs..dynamis_nm_icon.."RDM|RUN".."\\cr",	["Magician Leader"]			= cs..dynamis_nm_icon.."RDM|RUN".."\\cr",
+		["Shaman Commander"]		= cs..dynamis_nm_icon.."RDM|RUN".."\\cr",	["Shaman Leader"]			= cs..dynamis_nm_icon.."RDM|RUN".."\\cr",
+		["Prognosticator Commander"]= cs..dynamis_nm_icon.."RDM|RUN".."\\cr",	["Prognosticator Leader"]	= cs..dynamis_nm_icon.."RDM|RUN".."\\cr",
+		-- PLD|DRG
+		["Banneret Commander"]		= cs..dynamis_nm_icon.."PLD|DRG".."\\cr",	["Banneret Leader"]			= cs..dynamis_nm_icon.."PLD|DRG".."\\cr",
+		["Knight Commander"]		= cs..dynamis_nm_icon.."PLD|DRG".."\\cr",	["Knight Leader"]			= cs..dynamis_nm_icon.."PLD|DRG".."\\cr",
+		["Stalwart Commander"]		= cs..dynamis_nm_icon.."PLD|DRG".."\\cr",	["Stalwart Leader"]			= cs..dynamis_nm_icon.."PLD|DRG".."\\cr",
+		["Cavalier Commander"]		= cs..dynamis_nm_icon.."PLD|DRG".."\\cr",	["Cavalier Leader"]			= cs..dynamis_nm_icon.."PLD|DRG".."\\cr",
+		["Chevalier Commander"]		= cs..dynamis_nm_icon.."PLD|DRG".."\\cr",	["Chevalier Leader"]		= cs..dynamis_nm_icon.."PLD|DRG".."\\cr",
+		["Champion Commander"]		= cs..dynamis_nm_icon.."PLD|DRG".."\\cr",	["Champion Leader"]			= cs..dynamis_nm_icon.."PLD|DRG".."\\cr",
+		-- BST|RNG
+		["Animist Commander"]		= cs..dynamis_nm_icon.."BST|RNG".."\\cr",	["Animist Leader"]			= cs..dynamis_nm_icon.."BST|RNG".."\\cr",
+		["Tamer Commander"]			= cs..dynamis_nm_icon.."BST|RNG".."\\cr",	["Tamer Leader"]			= cs..dynamis_nm_icon.."BST|RNG".."\\cr",
+		["Hunter Commander"]		= cs..dynamis_nm_icon.."BST|RNG".."\\cr",	["Hunter Leader"]			= cs..dynamis_nm_icon.."BST|RNG".."\\cr",
+		["Harnesser Commander"]		= cs..dynamis_nm_icon.."BST|RNG".."\\cr",	["Harnesser Leader"]		= cs..dynamis_nm_icon.."BST|RNG".."\\cr",
+		["Domesticator Commander"]	= cs..dynamis_nm_icon.."BST|RNG".."\\cr",	["Domesticator Leader"]		= cs..dynamis_nm_icon.."BST|RNG".."\\cr",
+		["Empath Commander"]		= cs..dynamis_nm_icon.."BST|RNG".."\\cr",	["Empath Leader"]			= cs..dynamis_nm_icon.."BST|RNG".."\\cr",
+		-- WHM|SMN
+		["Vivifier Commander"]		= cs..dynamis_nm_icon.."WHM|SMN".."\\cr",	["Vivifier Leader"]			= cs..dynamis_nm_icon.."WHM|SMN".."\\cr",
+		["Medic Commander"]			= cs..dynamis_nm_icon.."WHM|SMN".."\\cr",	["Medic Leader"]			= cs..dynamis_nm_icon.."WHM|SMN".."\\cr",
+		["Priest Commander"]		= cs..dynamis_nm_icon.."WHM|SMN".."\\cr",	["Priest Leader"]			= cs..dynamis_nm_icon.."WHM|SMN".."\\cr",
+		["Mender Commander"]		= cs..dynamis_nm_icon.."WHM|SMN".."\\cr",	["Mender Leader"]			= cs..dynamis_nm_icon.."WHM|SMN".."\\cr",
+		["Healer Commander"]		= cs..dynamis_nm_icon.."WHM|SMN".."\\cr",	["Healer Leader"]			= cs..dynamis_nm_icon.."WHM|SMN".."\\cr",
+		["Orisha Commander"]		= cs..dynamis_nm_icon.."WHM|SMN".."\\cr",	["Orisha Leader"]			= cs..dynamis_nm_icon.."WHM|SMN".."\\cr",
+		-- BRD|SAM
+		["Flautist Commander"]		= cs..dynamis_nm_icon.."BRD|SAM".."\\cr",	["Flautist Leader"]			= cs..dynamis_nm_icon.."BRD|SAM".."\\cr",
+		["Troubador Commander"]		= cs..dynamis_nm_icon.."BRD|SAM".."\\cr",	["Troubador Leader"]		= cs..dynamis_nm_icon.."BRD|SAM".."\\cr",
+		["Minstrel Commander"]		= cs..dynamis_nm_icon.."BRD|SAM".."\\cr",	["Minstrel Leader"]			= cs..dynamis_nm_icon.."BRD|SAM".."\\cr",
+		["Balladeer Commander"]		= cs..dynamis_nm_icon.."BRD|SAM".."\\cr",	["Balladeer Leader"]		= cs..dynamis_nm_icon.."BRD|SAM".."\\cr",
+		["Joculator Commander"]		= cs..dynamis_nm_icon.."BRD|SAM".."\\cr",	["Joculator Leader"]		= cs..dynamis_nm_icon.."BRD|SAM".."\\cr",
+		["Minnesinger Commander"]	= cs..dynamis_nm_icon.."BRD|SAM".."\\cr",	["Minnesinger Leader"]		= cs..dynamis_nm_icon.."BRD|SAM".."\\cr",
+		-- NIN|BLU
+		["Operative Commander"]		= cs..dynamis_nm_icon.."NIN|BLU".."\\cr",	["Operative Leader"]		= cs..dynamis_nm_icon.."NIN|BLU".."\\cr",
+		["Shinobi Commander"]		= cs..dynamis_nm_icon.."NIN|BLU".."\\cr",	["Shinobi Leader"]			= cs..dynamis_nm_icon.."NIN|BLU".."\\cr",
+		["Kagemusha Commander"]		= cs..dynamis_nm_icon.."NIN|BLU".."\\cr",	["Kagemusha Leader"]		= cs..dynamis_nm_icon.."NIN|BLU".."\\cr",
+		["Shadowstalker Commander"]	= cs..dynamis_nm_icon.."NIN|BLU".."\\cr",	["Shadowstalker Leader"]	= cs..dynamis_nm_icon.."NIN|BLU".."\\cr",
+		["Assassin Commander"]		= cs..dynamis_nm_icon.."NIN|BLU".."\\cr",	["Assassin Leader"]			= cs..dynamis_nm_icon.."NIN|BLU".."\\cr",
+		["Spy Commander"]			= cs..dynamis_nm_icon.."NIN|BLU".."\\cr",	["Spy Leader"]				= cs..dynamis_nm_icon.."NIN|BLU".."\\cr",
+		-- COR|SCH
+		["Buccaneer Commander"]		= cs..dynamis_nm_icon.."COR|SCH".."\\cr",	["Buccaneer Leader"]		= cs..dynamis_nm_icon.."COR|SCH".."\\cr",
+		["Pirate Commander"]		= cs..dynamis_nm_icon.."COR|SCH".."\\cr",	["Pirate Leader"]			= cs..dynamis_nm_icon.."COR|SCH".."\\cr",
+		["Canoneer Commander"]		= cs..dynamis_nm_icon.."COR|SCH".."\\cr",	["Canoneer Leader"]			= cs..dynamis_nm_icon.."COR|SCH".."\\cr",
+		["Scallywag Commander"]		= cs..dynamis_nm_icon.."COR|SCH".."\\cr",	["Scallywag Leader"]		= cs..dynamis_nm_icon.."COR|SCH".."\\cr",
+		["Freebooter Commander"]	= cs..dynamis_nm_icon.."COR|SCH".."\\cr",	["Freebooter Leader"]		= cs..dynamis_nm_icon.."COR|SCH".."\\cr",
+		["Privateer Commander"]		= cs..dynamis_nm_icon.."COR|SCH".."\\cr",	["Privateer Leader"]		= cs..dynamis_nm_icon.."COR|SCH".."\\cr",
+
+		--ORB BCNM JOBS--
+
+		--Demolition Squad
+		["Nephiyl Moatfiller"]		= "BST",	["Nephiyl Keepcollapser"]	= "MNK",
+		["Nephiyl Pinnacletosser"]	= "RNG",	["Nephiyl Rampartbreacher"]	= "WAR",
+
+		--Brothers D'Aurphe
+		["Disfaurit B D'Aurphe"]	= "THF",	["Vaicoliaux B D'Aurphe"]	= "WAR",
+		["Jeumouque B D'Aurphe"]	= "RNG",	["Maldaramet B D'Aurphe"]	= "BLM",
+
+		--Legion XI Comitatensis
+		["Centurio XI-I"]			= "RNG",	["Hoplomachus XI-XXVI"]		= "PLD",
+		["Retiarius XI-XIX"]		= "BLM",	["Secutor XI-XXXII"]		= "WAR",
+
+		--Grimshell Shocktroopers
+		["Ku'Tya Hotblood"]			= "PLD",	["Ka'Nha Jabbertongue"]		= "BLM",
+		["Yo'Bhu Hideousmask"]		= "WAR",	["Bi'Fho Jestergrin"]		= "THF",
+		["Ea'Tho Cruelheart"]		= "DRK",	["Zo'Dha Legslicer"]		= "WHM",
+
+		--Divine Punishers
+		["Aa Nawu the Thunderblade"]= "SAM",	["Cuu Doko the Blizzard"]	= "WHM",
+		["Yoo Mihi the Haze"]		= "NIN",	["Voo Tolu the Ghostfist"]	= "MNK",
+		["Gii Jaha the Racous"]		= "BRD",	["Zuu Xowu the Darksmoke"]	= "BLM",
+
+		--Dismemberment Brigade
+		["Armsmaster Dekbuk"]		= "WAR",	["Invulnerable Mazzgozz"]	= "PLD",
+		["Keeneyed Aufwuf"]			= "BLM",	["Longarmed Gottditt"]		= "MNK",
+		["Mind's-eyed Klugwug"]		= "RNG",	["Undefeatable Sappdapp"]	= "DRK",
+
+		--Amphibian Assault
+		["Hyohh the Conchblower"]	= "BRD",	["Pevv the Riverleaper"]	= "DRG",
+		["Qull the Fallstopper"]	= "MNK",	["Rauu the Whaleswooner"]	= "WHM",
+
+		--Jungle Boogymen
+		["Cyaneous-toed Yallberry"]	= "NIN",	["Virid-faced Shanberry"]	= "THF",
+		["Vermillion-eared Noberry"]= "SMN",	["Sable-tongued Gonberry"]	= "BLM",
+
+		--Kindred Spirits
+		["Count Andromalius"]		= "DRK",	["Duke Amduscias"]			= "BLM",
+		["Duke Dantalian"]			= "SMN",	["Grand Marquis Chomiel"]	= "WAR",
+
+		--MASTER TRIALS--
+
+		--Black and White
+		["Helmwige"]	= "RDM|RUN",	["Ortlinde"]	= "RDM|RUN",
+		["Schwetleite"]	= "RDM|RUN",	["Rossweisse"]	= "WAR|PLD",
+		["Siegrune"]	= "WAR|PLD",	["Gerhilde"]	= "WAR|PLD",
+		["Brunhilde"]	= "WAR|PLD",	["Waltraute"]	= "BRD|WHM",
+		["Grimgerde"]	= "BRD|WHM",
+
+		--Unafraid of the Dark
+		["Tzee Xicu the Manifest"]	= "SMN|SCH",	["Bloodcrown Brradhod"] = "PLD|SAM",
+		["Za'Dha Adamantking"]		= "WAR|WHM",
+
+		--Heroines' Combat II
+		["Iroha"]		= "SAM|WHM",	["Lion"] = "THF|WAR",
+		["Prishe"]		= "MNK|WHM",	["Nashmeira"] = "PUP",
+		["Lilisette"]	= "DNC",		["Arciela"] = "RDM",
+
+		--Crystal Paradise
+		["Eald'narche"]		= "BLM",		["Kam'lanaut"]		= "RDM|WAR",
+		["Ark Angel HM"]	= "WAR|NIN",	["Ark Angel EV"]	= "PLD|WHM",
+		["Ark Angel TT"]	= "BLM|DRK",	["Ark Angel MR"]	= "BST|THF",
+		["Ark Angel GK"]	= "SAM|DRG",
+
+		--SINISTER REIGN--
+
+		["Ingrid"]			= "WHM",		["Teodor"]			= "BLM|DRK",
+		["Rosulatia"]		= "BLM",
+
+		-- [""] = "",
+
 	}
 
-	--Squadron, Regiment, Leader, and Commander: Pattern-matching
-	local job_designators = {
-		["WAR|DRK"] = {"Berserker", "Skullcrusher", "Ravager", "Weaponmaster", "Fighter", "Hoplite"},
-		["MNK|PUP"] = {"Fistfighter", "Pugilist", "Mendicant", "Combatant", "Brother", "Ascetic"},
-		["THF|DNC"] = {"Vandal", "Fleetfoot", "Cutpurse", "Trickster", "Pickpocket", "Ruffian"},
-		["BLM|GEO"] = {"Arcanomancer", "Evoker", "Invoker", "Magister", "Magus", "Magian"},
-		["RDM|RUN"] = {"Defiler", "Enchanter", "Warlock", "Magician", "Shaman", "Prognosticator"},
-		["PLD|DRG"] = {"Banneret", "Knight", "Stalwart", "Cavalier", "Chevalier", "Champion"},
-		["BST|RNG"] = {"Animist", "Tamer", "Hunter", "Harnesser", "Domesticator", "Empath"},
-		["WHM|SMN"] = {"Vivifier", "Medic", "Priest", "Mender", "Healer", "Orisha"},
-		["BRD|SAM"] = {"Flautist", "Troubador", "Minstrel", "Balladeer", "Joculator", "Minnesinger"},
-		["NIN|BLU"] = {"Operative", "Shinobi", "Kagemusha", "Shadowstalker", "Assassin", "Spy"},
-		["COR|SCH"] = {"Buccaneer", "Pirate", "Canoneer", "Scallywag", "Freebooter", "Privateer"}
-	}
-
-	--First, check for an exact match for Volte NMs
-	if volte_nms[mob_name] then
-		return volte_nms[mob_name]
-	end
-
-	--Next, use pattern matching for the job designators
-	for job, designators in pairs(job_designators) do
-		for _, designator in ipairs(designators) do
-			if string.find(mob_name, designator) and mob_name ~= "Volte Dark Knight" then --Make sure we don't count the Volte Dark KNIGHT as a "PLD|DRG"
-				return job
-			end
-		end
-	end
-
-	--Not in Dyna, or no matches
-	return false
-
+	return mobs[mob_name] or false
 end
 
 --Apply Range coloring to Distance number (most of the distance calculations come from DistancePlus)
@@ -3517,11 +5297,11 @@ function colorizeDistance(text, distance, target)
 		local range_type = range and range.id and res.items[range.id] and res.items[range.id].range_type or nil
 
 		--NPC or object
-		if  spawn_type == 2 or spawn_type == 14 or spawn_type == 34 then
+		if spawn_type == 2 or spawn_type == 14 or spawn_type == 34 then
 			local max_distance = 6
 			if distance < max_distance then
 				local c = color.range.in_range
-				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+				return '\\cs('..formatRGB(c.r)..','..formatRGB(c.g)..','..formatRGB(c.b)..')'..text..'\\cr'
 			end
 
 		--Magic
@@ -3539,14 +5319,14 @@ function colorizeDistance(text, distance, target)
 				max_distance = 20.0666
 			end
 			
-			local target_distance = max_distance + target.model_size + player.model_size
-			local outer_blue_distance = outer_blue_max + target.model_size + player.model_size
-			local inner_blue_distance = inner_blue_max + target.model_size + player.model_size
+			local target_distance = max_distance + (target and target.model_size or 0) + (player and player.model_size or 0)
+			local outer_blue_distance = outer_blue_max + (target and target.model_size or 0) + (player and player.model_size or 0)
+			local inner_blue_distance = inner_blue_max + (target and target.model_size or 0) + (player and player.model_size or 0)
 
 			--In Range (Song AOE), party members only
 			if job == 'brd' and target.in_party and distance < song_aoe_max then
 				local c = color.range.song_aoe
-				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+				return '\\cs('..formatRGB(c.r)..','..formatRGB(c.g)..','..formatRGB(c.b)..')'..text..'\\cr'
 
 			--In Range (Inner Blue Magic), only apply if monster or charmed player
 			elseif (job == 'blu' or sub_job == 'blu') and distance < inner_blue_distance
@@ -3558,7 +5338,7 @@ function colorizeDistance(text, distance, target)
 				)
 			) then
 				local c = color.range.inner_blue_magic
-				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+				return '\\cs('..formatRGB(c.r)..','..formatRGB(c.g)..','..formatRGB(c.b)..')'..text..'\\cr'
 
 			--In Range (Outer Blue Magic), only apply if monster or charmed player, or party member within diffusion range
 			elseif (job == 'blu' or sub_job == 'blu')
@@ -3573,17 +5353,17 @@ function colorizeDistance(text, distance, target)
 				)
 			) then
 				local c = color.range.outer_blue_magic
-				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+				return '\\cs('..formatRGB(c.r)..','..formatRGB(c.g)..','..formatRGB(c.b)..')'..text..'\\cr'
 
 			--In Range
 			elseif distance < target_distance then
 				local c = color.range.in_range
-				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+				return '\\cs('..formatRGB(c.r)..','..formatRGB(c.g)..','..formatRGB(c.b)..')'..text..'\\cr'
 
 			--Out of Range
 			else
 				local c = color.range.out_of_range
-				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+				return '\\cs('..formatRGB(c.r)..','..formatRGB(c.g)..','..formatRGB(c.b)..')'..text..'\\cr'
 			end
 
 		--Ranged, only apply color if ranged weapon is equipped and target is monster or charmed player
@@ -3596,10 +5376,10 @@ function colorizeDistance(text, distance, target)
 
 			local max_distance = 25
 			local range_skill = range and range.id and res.items[range.id] and res.items[range.id].skill or nil
-			local square_max = player.model_size + target.model_size + (target.model_size > 1.6 and 0.1 or 0)
-			local true_max = player.model_size + target.model_size + (target.model_size > 1.6 and 0.1 or 0)
-			local true_min = player.model_size + target.model_size + (target.model_size > 1.6 and 0.1 or 0)
-			local square_min = player.model_size + target.model_size + (target.model_size > 1.6 and 0.1 or 0)
+			local square_max = (target and target.model_size or 0) + (player and player.model_size or 0) + (target.model_size > 1.6 and 0.1 or 0)
+			local true_max = (target and target.model_size or 0) + (player and player.model_size or 0) + (target.model_size > 1.6 and 0.1 or 0)
+			local true_min = (target and target.model_size or 0) + (player and player.model_size or 0) + (target.model_size > 1.6 and 0.1 or 0)
+			local square_min = (target and target.model_size or 0) + (player and player.model_size or 0) + (target.model_size > 1.6 and 0.1 or 0)
 
 			--Bow
 			if range_type == "Bow" then
@@ -3646,22 +5426,22 @@ function colorizeDistance(text, distance, target)
 			--In range, no boost
 			if distance < max_distance and (distance > square_max or distance < square_min) then
 				local c = color.range.in_range
-				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+				return '\\cs('..formatRGB(c.r)..','..formatRGB(c.g)..','..formatRGB(c.b)..')'..text..'\\cr'
 
 			--Hits Squarely
 			elseif (distance <= square_max and distance > true_max) or (distance < true_min and distance >= square_min) then
 				local c = color.range.hits_squarely
-				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+				return '\\cs('..formatRGB(c.r)..','..formatRGB(c.g)..','..formatRGB(c.b)..')'..text..'\\cr'
 
 			--Strikes True
 			elseif (distance <= true_max and distance >= true_min) then
 				local c = color.range.strikes_true
-				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+				return '\\cs('..formatRGB(c.r)..','..formatRGB(c.g)..','..formatRGB(c.b)..')'..text..'\\cr'
 
 			--Out of range
 			else
 				local c = color.range.out_of_range
-				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+				return '\\cs('..formatRGB(c.r)..','..formatRGB(c.g)..','..formatRGB(c.b)..')'..text..'\\cr'
 			end
 
 		--Ninjutsu, only apply color if target is monster or charmed player
@@ -3679,17 +5459,17 @@ function colorizeDistance(text, distance, target)
 				max_distance = 16.2
 			end
 
-			local target_distance = max_distance + target.model_size + player.model_size
+			local target_distance = max_distance + (target and target.model_size or 0) + (player and player.model_size or 0)
 
 			--In range
 			if distance < target_distance then
 				local c = color.range.in_range
-				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+				return '\\cs('..formatRGB(c.r)..','..formatRGB(c.g)..','..formatRGB(c.b)..')'..text..'\\cr'
 
 			--Out of Range
 			else
 				local c = color.range.out_of_range
-				return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+				return '\\cs('..formatRGB(c.r)..','..formatRGB(c.g)..','..formatRGB(c.b)..')'..text..'\\cr'
 			end
 
 		end		
@@ -3697,7 +5477,7 @@ function colorizeDistance(text, distance, target)
 
 	--Jobs without a distance type, or if disabled
 	local c = color.range.out_of_range
-	return '\\cs('..c.r..','..c.g..','..c.b..')'..text..'\\cr'
+	return '\\cs('..formatRGB(c.r)..','..formatRGB(c.g)..','..c.b..')'..text..'\\cr'
 
 end
 
@@ -3706,7 +5486,9 @@ function formatTimer(num, flip_coloring)
 	local colors = settings.colors.debuffs
 	local formatted_num = ''
 	local c = flip_coloring and colors.critical_low or colors.normal
-	if num > 3600 then
+	if not num then
+		formatted_num = ''
+	elseif num > 3600 then
 		local hr = math.floor(num / 3600)
 		formatted_num = hr..'h'
 	elseif num > 60 then
@@ -3731,18 +5513,20 @@ end
 function getIconFile(spell_name, debuff_id)
 
 	local icon_path_base = windower_path..'addons/Bars/data/icons/'
-	local roman_numerals = {[" II"] = "ii", [" III"] = "iii", [" IV"] = "iv", [" V"] = "v", [" VI"] = "vi", [" VII"] = "vii"}
+	local roman_numerals = {[" II"] = "ii", [" III"] = "iii", [" IV"] = "iv", [" V"] = "v", [" VI"] = "vi", [" VII"] = "vii", [" VIII"] = "viii", [" IX"] = "ix", [" X"] = "x", [" XI"] = "xi", [" XII"] = "xii", [" XIII"] = "xiii", [" XIV"] = "xiv"}
 	local custom_names = {
 		'pyrohelix', 'cryohelix', 'anemohelix', 'geohelix',
 		'ionohelix', 'hydrohelix', 'luminohelix', 'noctohelix',
 		'fire threnody', 'ice threnody', 'wind threnody', 'earth threnody',
 		'ltng. threnody', 'water threnody', 'light threnody', 'dark threnody',
 		'comet', 'firaja', 'blizzaja', 'aeroja', 'stoneja', 'thundaja', 'waterja',
-		'carnage elegy', 'impact',
+		'carnage elegy', 'impact', 'treasure hunter',
+		'lethargic daze', 'sluggish daze', 'weakened daze', 'bewildered daze'
 	}
 	local shot_boosted_names = {
 		'boosted dia', 'boosted bio', 'boosted shock', 'boosted rasp',
 		'boosted choke', 'boosted frost', 'boosted burn', 'boosted drown',
+		'boosted blind', 'boosted blind ii', 'boosted slow', 'boosted slow ii', 'boosted paralyze', 'boosted paralyze ii'
 	}
 
 	spell_name = spell_name:lower()
@@ -3825,14 +5609,171 @@ function formatTargetingName(player, targeting)
 
 end
 
+--Retrieve the zone name
+function getZone()
+
+	local zone = res.zones[get_info().zone].en
+	return zone
+
+end
+
+function inSignetZone()
+
+	local zone = current_zone or getZone()
+	local signet_zones = {
+		["North Gustaberg"] = true,
+		["South Gustaberg"] = true,
+		["Zeruhn Mines"] = true,
+		["Dangruf Wadi"] = true,
+		["Palborough Mines"] = true,
+		["Waughroon Shrine"] = true,
+		["East Ronfaure"] = true,
+		["West Ronfaure"] = true,
+		["Bostaunieux Oubliette"] = true,
+		["King Ranperre's Tomb"] = true,
+		["Ghelsba Outpost"] = true,
+		["Yughott Grotto"] = true,
+		["Fort Ghelsba"] = true,
+		["Horlais Peak"] = true,
+		["East Sarutabaruta"] = true,
+		["West Sarutabaruta"] = true,
+		["Toraimarai Canal"] = true,
+		["Outer Horutoto Ruins"] = true,
+		["Inner Horutoto Ruins"] = true,
+		["Giddeus"] = true,
+		["Balga's Dais"] = true,
+		["Konschtat Highlands"] = true,
+		["Gusgen Mines"] = true,
+		["La Theine Plateau"] = true,
+		["Ordelle's Caves"] = true,
+		["Valkurm Dunes"] = true,
+		["Tahrongi Canyon"] = true,
+		["Maze of Shakhrami"] = true,
+		["Buburimu Peninsula"] = true,
+		["Pashhow Marshlands"] = true,
+		["Beadeaux"] = true,
+		["Qulun Dome"] = true,
+		["Rolanberry Fields"] = true,
+		["Crawlers' Nest"] = true,
+		["Jugner Forest"] = true,
+		["Davoi"] = true,
+		["Monastic Cavern"] = true,
+		["Batallia Downs"] = true,
+		["The Eldieme Necropolis"] = true,
+		["Meriphataud Mountains"] = true,
+		["Castle Oztroja"] = true,
+		["Altar Room"] = true,
+		["Sauromugue Champaign"] = true,
+		["Garlaige Citadel"] = true,
+		["Qufim Island"] = true,
+		["Lower Delkfutt's Tower"] = true,
+		["Middle Delkfutt's Tower"] = true,
+		["Upper Delkfutt's Tower"] = true,
+		["Behemoth's Dominion"] = true,
+		["Ranguemont Pass"] = true,
+		["Beaucedine Glacier"] = true,
+		["Fei'Yin"] = true,
+		["Qu'Bia Arena"] = true,
+		["Xarcabard"] = true,
+		["Castle Zvahl Baileys"] = true,
+		["Castle Zvahl Keep"] = true,
+		["Throne Room"] = true,
+		["San d'Oria-Jeuno Airship"] = true,
+		["Bastok-Jeuno Airship"] = true,
+		["Windurst-Jeuno Airship"] = true,
+		["Kazham-Jeuno Airship"] = true,
+		["Ship bound for Selbina"] = true,
+		["Ship bound for Mhaura"] = true,
+		["The Boyahda Tree"] = true,
+		["Cape Teriggan"] = true,
+		["Celestial Nexus"] = true,
+		["Chamber of Oracles"] = true,
+		["Cloister of Flames"] = true,
+		["Cloister of Frost"] = true,
+		["Cloister of Gales"] = true,
+		["Cloister of Storms"] = true,
+		["Cloister of Tides"] = true,
+		["Cloister of Tremors"] = true,
+		["Den of Rancor"] = true,
+		["Dragon's Aery"] = true,
+		["Eastern Altepa Desert"] = true,
+		["Full Moon Fountain"] = true,
+		["Gustav Tunnel"] = true,
+		["Ifrit's Cauldron"] = true,
+		["Korroloka Tunnel"] = true,
+		["Kuftal Tunnel"] = true,
+		["Labyrinth of Onzozo"] = true,
+		["La'Loff Amphitheater"] = true,
+		["Quicksand Caves"] = true,
+		["Ro'Maeve"] = true,
+		["Ru'Aun Gardens"] = true,
+		["Sacrificial Chamber"] = true,
+		["The Sanctuary of Zi'Tah"] = true,
+		["Sea Serpent Grotto"] = true,
+		["The Shrine of Ru'Avitau"] = true,
+		["Stellar Fulcrum"] = true,
+		["Temple of Uggalepih"] = true,
+		["Valley of Sorrows"] = true,
+		["Ve'Lugannon Palace"] = true,
+		["Western Altepa Desert"] = true,
+		["Yhoator Jungle"] = true,
+		["Yuhtunga Jungle"] = true,
+		["Al'Taieu"] = true,
+		["Attohwa Chasm"] = true,
+		["Bibiki Bay"] = true,
+		["Carpenters' Landing"] = true,
+		["Grand Palace of Hu'Xzoi"] = true,
+		["Lufaise Meadows"] = true,
+		["Misareaux Coast"] = true,
+		["Newton Movalpolos"] = true,
+		["Oldton Movalpolos"] = true,
+		["Phanauet Channel"] = true,
+		["Phomiuna Aqueducts"] = true,
+		["Pso'Xja"] = true,
+		["Riverne - Site A01"] = true,
+		["Riverne - Site B01"] = true,
+		["Sacrarium"] = true,
+		["Sealion's Den"] = true,
+		["The Garden of Ru'Hmet"] = true,
+		["Uleguerand Range"] = true,
+		["Manaclipper"] = true,
+	}
+
+	return signet_zones[zone]
+
+end
+
 --Update the Aggro List
-function updateAggroList(player, t)
+function updateAggroList(player, t, st)
+
+	--Fake list for the Screen Test
+	local screen_test_aggro_list = {
+		['1'] = {},
+		['2'] = {},
+		['3'] = {},
+		['4'] = {},
+		['5'] = {},
+		['6'] = {},
+		['7'] = {},
+		['8'] = {},
+		['9'] = {},
+		['10'] = {},
+		['11'] = {},
+		['12'] = {},
+		['13'] = {},
+		['14'] = {},
+		['15'] = {},
+	}
 
 	--If the Aggro List is turned off, hide it
-	if not show_aggro_list and not Screen_Test then
+	if not show_aggro_list then
 		if aggro_list_box:visible() then
 			aggro_list_box:hide()
 		end
+	end
+
+	--Skip entirely if neither the Aggro List or the show_battle_target_by_default option are enabled
+	if not (show_aggro_list or show_battle_target_by_default) then
 		return
 	end
 
@@ -3841,25 +5782,48 @@ function updateAggroList(player, t)
 	local plus_num_more = 0
 	local text = ""
 
-	for actor_id, data in pairs(current_aggro_list) do
+	for actor_id, data in pairs(Screen_Test and screen_test_aggro_list or current_aggro_list) do
 
-		local actor = get_mob_by_id(actor_id)
+		local actor
+		if Screen_Test then
+			actor = {
+				id = tonumber(actor_id),
+				name = "Test Enemy " .. actor_id,
+				valid_target = true,
+				hpp = 100 - (tonumber(actor_id - 1) * 6)
+			}
+		else
+			actor = get_mob_by_id(actor_id)
+		end
+
 		local cursor_target = show_cursor_target and t and t.id == actor_id
+		local cursor_sub_target = show_cursor_target and st and st.id == actor_id
+
+		--Update Battle Target with the first mob on the list
+		if show_battle_target_by_default and num == 0 and actor and actor.valid_target and actor.hpp ~= 0 then
+			battle_target = actor
+		end
 
 		if actor and actor.valid_target and not aggro_list_ignore:contains(actor.name) and actor.hpp ~= 0 then
 
 			num = num + 1
 
+			--Break the loop if the Aggro List is off since we don't need to process anything past the first entry (for the `show_battle_target_by_default` option)
+			if not show_aggro_list then break end
+
 			if num <= max_monsters_listed then
 				local actor_name = truncateName(actor.name)
-				actor_name = actor_name and (cursor_target and uppercase(actor_name) or actor_name)
-				local target = data.target_id and get_mob_by_id(data.target_id)
-				local target_name = target and target.name and truncateMonsterTarget(target.name)
-				target_name = target_name and (cursor_target and uppercase(target_name) or target_name)
-				local target_icon = os.time() >= data.timestamp and ' ?' or (data.icon and ' '..data.icon or ' ?')
-				local hpp_raw =actor.hpp or 0
+				actor_name = actor_name and ((cursor_target or cursor_sub_target) and uppercase(actor_name) or actor_name)
+
+				local target = Screen_Test and player or (data.target_id and get_mob_by_id(data.target_id))
+				local target_name = Screen_Test and player.name or target and target.name and truncateMonsterTarget(target.name)
+				target_name = target_name and ((cursor_target or cursor_sub_target) and uppercase(target_name) or target_name)
+
+				local target_icon = Screen_Test and settings.icons.monster_target or os.time() >= data.timestamp and ' ?' or (data.icon and ' '..data.icon or ' ?')
+				local hpp_raw = actor.hpp or 0
 				local hpp = string.format("%3s", hpp_raw)..'%' or ''
-				local asleep = current_debuffs[actor_id] and (current_debuffs[actor_id][2] or current_debuffs[actor_id][19]) and (cursor_target and "ZZZ" or "zzz") or ""
+				local sp_active = current_sp_actions[actor_id]
+				local info = current_debuffs[actor_id] and (current_debuffs[actor_id][2] or current_debuffs[actor_id][19]) and ((cursor_target or cursor_sub_target) and "ZZZ" or "zzz") or (sp_active and "SP" or "")
 
 				--Colorize the actor name
 				local ca = targetColor(player, actor)
@@ -3874,7 +5838,7 @@ function updateAggroList(player, t)
 				local ct_b = formatRGB(ct.b)
 
 				local padding = ""
-				local padding_spaces = width - (#hpp + math.min(#actor_name, max_name_length) + 2 + #asleep + (target_name and max_monster_target_length or 0))
+				local padding_spaces = width - (#hpp + math.min(#actor_name, max_name_length) + 2 + #info + (target_name and max_monster_target_length or 0))
 				while string.len(padding) < padding_spaces do
 					if padding == "" then
 						padding = padding..' '
@@ -3882,23 +5846,34 @@ function updateAggroList(player, t)
 						padding = padding..'.'
 					end
 				end
-				local targeted = cursor_target and "●" or " "
+				local targeted = cursor_sub_target and aggro_st_icon or (cursor_target and aggro_t_icon or " ")
 				actor_name = "\\cs("..ca_r..","..ca_g..","..ca_b..")"..(actor_name and actor_name or "").."\\cr" --add color start and reset to name
-				local pc = cursor_target and text_color or {r = 100, g = 100, b = 100}
+				local pc = (cursor_target or cursor_sub_target) and text_color or {r = 100, g = 100, b = 100}
 				padding = "\\cs("..pc.r..","..pc.g..","..pc.b..")"..padding.."\\cr"
 				target_name = "\\cs("..ct_r..","..ct_g..","..ct_b..")"..(target_name and target_name or "").."\\cr" --add color start and reset to name
-				text = text..hpp..targeted..actor_name..padding..asleep..(target_name and target_icon..target_name).."\n"
+				hpp = sp_active and "\\cs("..sp_active_glow.r..","..sp_active_glow.g..","..sp_active_glow.b..")"..hpp.."\\cr" or hpp
+				targeted = sp_active and "\\cs("..sp_active_glow.r..","..sp_active_glow.g..","..sp_active_glow.b..")"..targeted.."\\cr" or targeted
+				info = Screen_Test and " " or (sp_active and "\\cs("..sp_active_glow.r..","..sp_active_glow.g..","..sp_active_glow.b..")"..info.."\\cr" or info)
+				target_icon = sp_active and "\\cs("..sp_active_glow.r..","..sp_active_glow.g..","..sp_active_glow.b..")"..target_icon.."\\cr" or target_icon
+				text = text..hpp..targeted..actor_name..padding..info..(target_name and target_icon..target_name).."\n"
 			else
 				plus_num_more = plus_num_more + 1
 			end
 
 		else
 			--Remove monster from the Aggro List when it's no longer a valid target or dies
-			--(Prevents monsters from getting stuck on the list in certain circumstances, mostly high lag areas)
-			current_aggro_list[actor_id] = nil
+			if not Screen_Test then
+				current_aggro_list[actor_id] = nil
+			end
 		end
 
 	end
+
+	--Clear the Battle Target from the Focus Target bar once the Aggro List is empty
+	if num == 0 and battle_target then
+		battle_target = nil
+	end
+
 	local padding = ""
 	local plus_text = max_monsters_listed > 0 and plus_num_more > 0 and "+"..plus_num_more.." more" or ((num == 0 or max_monsters_listed == 0) and "Aggro List" or "")
 	local total_text = "Total: "..num
@@ -3913,23 +5888,110 @@ function updateAggroList(player, t)
 	--If in a cutscene or less aggro than we have set to show, hide the entire list
 	if aggro_list_box:visible() and (in_cutscene or num < min_monsters_to_show) and not Screen_Test then
 		aggro_list_box:hide()
-	elseif not aggro_list_box:visible() and num >= min_monsters_to_show and not in_cutscene then
+	elseif show_aggro_list and not aggro_list_box:visible() and num >= min_monsters_to_show and not in_cutscene then
 		aggro_list_box:show()
 	end
 
 end
 
+--Get angle of target relative to player facing
+function getAngleToTarget(target)
+
+	local player = get_mob_by_target('me')
+	if not player or not target then return nil end
+
+	local dx = target.x - player.x
+	local dy = target.y - player.y
+
+	--Angle to target in degrees
+	local target_angle = math.deg(math.atan2(dy, dx))
+
+	--Convert FFXI facing to atan2-compatible degrees
+	local player_facing_angle = -math.deg(player.facing)
+
+	--Relative angle
+	local relative_angle = target_angle - player_facing_angle
+
+	--Normalize to -180 .. 180
+	relative_angle = (relative_angle + 180) % 360 - 180
+
+	return math.floor(relative_angle)
+
+end
+
+--Get angle of player relative to target facing
+function getAngleToPlayer(target)
+
+	local player = get_mob_by_target('me')
+	if not player or not target then return nil end
+
+	local dx = player.x - target.x
+	local dy = player.y - target.y
+
+	--Angle to player in degrees
+	local player_angle = math.deg(math.atan2(dy, dx))
+
+	--Convert target facing to atan2-compatible degrees
+	local target_facing_angle = -math.deg(target.facing)
+
+	--Relative angle
+	local relative_angle = player_angle - target_facing_angle
+
+	--Normalize to -180 .. 180
+	relative_angle = (relative_angle + 180) % 360 - 180
+
+	return math.floor(relative_angle)
+
+end
+
+function getAngleIcon(angle)
+
+	if angle == nil then return "" end
+
+	local icon = settings.icons.angle_down_arrow
+
+	if angle >= -45 and angle <= 45 then
+		icon = settings.icons.angle_up_arrow
+	elseif angle > 45 and angle < 135 then
+		icon = settings.icons.angle_left_arrow
+	elseif angle < -45 and angle > -135 then
+		icon = settings.icons.angle_right_arrow
+	end
+
+	return icon
+
+end
+
+function getAngleColor(angle)
+
+	local color = settings.colors.angle.sides
+
+	if angle == nil then return color end
+
+	local abs_angle = math.abs(angle)
+
+	if abs_angle <= 45 then
+		color = settings.colors.angle.front
+	elseif abs_angle >= 135 then
+		color = settings.colors.angle.rear
+	end
+
+	return color
+
+end
+
 --Update the Focus Target bar
 function updateFocusTargetBar(player, target, clock)
-
-	if calculating_dimensions then return end --skip all this while we're calculating dimensions off screen
+	--Skip all this while we're calculating dimensions off screen or if the Focus Target Bar is turned off
+	if calculating_dimensions or not show_focus_target_bar then return end
 
 	local ft_settings = settings.sections.focus_target
 	local icon_set = debuff_icons.focus_target
 	local timer_set = debuff_timers.focus_target
 
-	--Hide the Focus Target bar if there is no Focus Target to display, or the Focus Target is targeted
-	if not (focus_target_override or focus_target)
+	--Hide the Focus Target bar if there is nothing to display, or the Focus Target is targeted
+	if not (focus_target_override or focus_target or battle_target)
+	or (battle_target and target and not show_focus_target_when_targeted and target.id == battle_target.id)
 	or (focus_target_override and target and not show_focus_target_when_targeted and target.id == focus_target_override.id) then
 		if focus_target_bar_bg:visible() then
 			focus_target_bar_meter:hide()
@@ -3953,27 +6015,31 @@ function updateFocusTargetBar(player, target, clock)
 		return
 	end
 
-	local ft = focus_target_override and focus_target_override or focus_target
+	local ft = focus_target_override and focus_target_override or (battle_target and battle_target or focus_target)
 	local hpp_raw = ft and ft.hpp or 0
 	local sp_active = ft and hpp_raw ~= 0 and current_sp_actions[ft.id]
 	local sp_timestamp = sp_active and clock and math.floor(math.max(current_sp_actions[ft.id].timestamp - clock, 0))
 	local sp_timer = sp_active and string.format("%d:%02d", math.floor(sp_timestamp / 60), sp_timestamp % 60) or ''
 	local sp_name = sp_active and current_sp_actions[ft.id].sp_name
+	local cor_roll = sp_active and current_sp_actions[ft.id].cor_roll and "|"..current_sp_actions[ft.id].cor_roll or ""
 	local ft_name = ft and ft.name or ''
 	if sp_active then
 		if condense_focus_target_name_and_sp_name then
-			ft_name = sp_timer..' '..(sp_timestamp % 2 == 0 and sp_name or ft.name)
+			ft_name = sp_timer..' '..(sp_timestamp % 2 == 0 and sp_name..cor_roll or ft.name)
 		else
-			ft_name = ft.name..' '..sp_timer..' '..sp_shorter_names[sp_name]
+			ft_name = ft.name..' '..sp_timer..' '..sp_shorter_names[sp_name]..cor_roll
 		end
 	end
-	ft_name = ft_spaces..ft_name
-	local dyna_job_raw = ft and show_dyna_jobs and in_dyna and dynaJob(ft.name) or false
-	local dyna_job = ft and dyna_job_raw and ft_spaces..dyna_job_raw or ''
+	local mob_job_raw = ft and ft_settings.show_monster_job and mobJob(ft.name) or false
+	local mob_job = ft and mob_job_raw and ft_spaces..mob_job_raw or ''
 	local index_hex = ft and (show_target_index or show_target_hex) and ft_spaces..'('..(show_target_hex and string.format("%03X", ft.index) or ft.index)..')' or ''
-	local dist_raw = ft and math.floor(ft.distance:sqrt()*100)/100
-	local dist = ft and show_target_distance and ft_spaces..(string.format("%5.2f", dist_raw)) or ''
-	local level = ft and ft_settings.show_monster_level and not (show_dyna_jobs and in_dyna) and isMonster(ft.id) and (current_levels[ft.index] and ft_spaces..'Lv '..current_levels[ft.index] or '') or ''
+	local dist_raw = ft and ft.distance and math.floor(ft.distance:sqrt()*100)/100
+	local dist = ft and ft.distance and show_target_distance and ft_spaces..(string.format("%5.2f", dist_raw)) or ''
+	local ft_angle = ft and not Screen_Test and ft_settings.show_target_angle_from_player_facing and getAngleToTarget(ft) or nil
+	local ft_angle_icon = ft_angle and getAngleIcon(ft_angle) or ''
+	local p_angle = ft and not Screen_Test and ft_settings.show_player_angle_from_target_facing and getAngleToPlayer(ft) or nil
+	local p_angle_icon = p_angle and getAngleIcon(p_angle) or ''
+	local level = ft and ft_settings.show_monster_level and not mob_job_raw and isMonster(ft.id) and (current_levels[ft.index] and ft_spaces..'Lv '..current_levels[ft.index] or '') or ''
 	local meter = ''
 	local spaces = hpp_raw and math.floor((focus_target_bar_width * 10) * (hpp_raw / 100)) or 0
 	local cm = ft and (Fade and text_color or targetColor(player, ft)) or color.target.pc_other
@@ -3986,8 +6052,8 @@ function updateFocusTargetBar(player, target, clock)
 		or (current_actions[ft.id] and current_actions[ft.id].icon and ' '..current_actions[ft.id].icon or ' ?')
 	local targeting = m_targeting and target_icon..formatTargetingName(player, m_targeting) or (ft_targeting_id and target_icon..formatTargetingName(player, get_mob_by_id(ft_targeting_id)) or '')
 	local targeting_shdw = m_targeting and target_icon..truncateMonsterTarget(m_targeting.name) or (ft_targeting_id and target_icon..truncateMonsterTarget(get_mob_by_id(ft_targeting_id).name) or '')
-	local text = hpp..colorizeDistance(dist, dist_raw, ft)..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..truncateName(ft_name)..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting or '')
-	local text_shdw = hpp..'\\cs(000,000,000)'..dist..'\\cr'..'\\cs(000,000,000)'..truncateName(ft_name)..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting_shdw or '')
+	local text = hpp..colorizeDistance(dist, dist_raw, ft)..ft_spaces.."\\cs("..formatRGB(getAngleColor(ft_angle).r)..","..formatRGB(getAngleColor(ft_angle).g)..","..formatRGB(getAngleColor(ft_angle).b)..")"..ft_angle_icon.."\\cr\\cs("..formatRGB(getAngleColor(p_angle).r)..","..formatRGB(getAngleColor(p_angle).g)..","..formatRGB(getAngleColor(p_angle).b)..")"..p_angle_icon.."\\cr\\cs("..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..truncateName(ft_name)..'\\cr'..index_hex..mob_job..level..(hpp_raw ~= 0 and targeting or '')
+	local text_shdw = hpp..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..dist..'\\cr'..ft_spaces..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..ft_angle_icon..'\\cr\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..p_angle_icon..'\\cr\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..truncateName(ft_name)..'\\cr'..index_hex..mob_job..level..(hpp_raw ~= 0 and targeting_shdw or '')
 	local status = show_action_status_indicators and ft and current_actions[ft.id] and current_actions[ft.id].status or ''
 	local status_shdw = show_action_status_indicators and ft and current_actions[ft.id] and current_actions[ft.id].status_shdw or ''
 	local action = Screen_Test and screen_test_focus_target.action or (ft and current_actions[ft.id] and current_actions[ft.id].action or '')
@@ -4002,9 +6068,7 @@ function updateFocusTargetBar(player, target, clock)
 	else
 		focus_target_bar_meter:show()
 		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-		if spaces < 13 and hpp_raw > 0 then
-			spaces = 13
-		end
+		spaces = math.max(spaces, 13)
 		while string.len(meter) < spaces do
 			meter = meter..' '
 		end
@@ -4069,7 +6133,7 @@ function updateFocusTargetBar(player, target, clock)
 			local custom_spell = custom_spells[spell_data.id]
 			local spell = res.spells[spell_data.id]
 			local name = custom_spell and custom_spell or (spell and spell.name or "???")
-			local time_remaining = spell_data.timer and math.max(0, spell_data.timer - os.clock()) or 0
+			local time_remaining = spell_data.timer and math.max(0, spell_data.timer - clock)
 
 			--Determine whether to show debuff icon/timer
 			local show_debuff = false
@@ -4098,14 +6162,21 @@ function updateFocusTargetBar(player, target, clock)
 			end
 		end
 
-		--Clear Sleep, Petrify, Bind debuffs if the mob has moved
-		local moved = false
-		--Check for movement greater than 3 yalms (account for target moving when initially slept/petrified/bound)
-		if debuff_list.pos and (math.abs(debuff_list.pos.x - ft.x) > 3 or math.abs(debuff_list.pos.y - ft.y) > 3) then
-			moved = true
-		end
+		--Check for movement greater than 2 yalms
+		local moved = debuff_list.pos and debuff_list.pos.clear_delay < clock and (math.abs(debuff_list.pos.x - ft.x) > 2 or math.abs(debuff_list.pos.y - ft.y) > 2)
+		--Clear Sleep, Petrify, Stun, Bind debuffs if the mob has moved
 		if moved then
-			local watch_effects = {2, 7, 11, 19}
+			local watch_effects = {2, 7, 10, 11, 19}
+			for _, effect_id in ipairs(watch_effects) do
+				debuff_list[effect_id] = nil
+			end
+		end
+
+		--Check for spinning in place more than 10 degrees
+		local spun = debuff_list.pos and debuff_list.pos.clear_delay < clock and (math.abs(debuff_list.pos.facing - math.floor((ft.facing * 180 / math.pi) + 0.5)) > 10)
+		--Clear Sleep or Petrfy debuffs if the mob has spun in place
+		if spun then
+			local watch_effects = {2, 7, 19}
 			for _, effect_id in ipairs(watch_effects) do
 				debuff_list[effect_id] = nil
 			end
@@ -4141,8 +6212,11 @@ end
 
 function updateFocusTargetBarAnimations(player, target)
 
-	if not (focus_target_override or focus_target)
+	if not show_focus_target_bar
+	or not (focus_target_override or focus_target or battle_target)
+	or (battle_target and target and not show_focus_target_when_targeted and target.id == battle_target.id)
 	or (focus_target_override and target and not show_focus_target_when_targeted and target.id == focus_target_override.id) then
+		focus_target_bar_drain_meter:hide()
 		return
 	end
 
@@ -4177,7 +6251,7 @@ function updateFocusTargetBarAnimations(player, target)
 
 	if drain_target_bars then
 
-		local ft = focus_target_override and focus_target_override or focus_target
+		local ft = focus_target_override and focus_target_override or (battle_target and battle_target or focus_target)
 		local hpp_raw = ft and ft.hpp or 0
 		local hpp_diff = drain_ft_hpp - hpp_raw
 		local current_decay = math.min(hpp_diff * 0.1, drain_decay * 3)
@@ -4190,9 +6264,7 @@ function updateFocusTargetBarAnimations(player, target)
 			focus_target_bar_drain_meter:hide()
 		elseif not Fade then
 			--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-			if drain_spaces < 13 and drain_ft_hpp > 0 then
-				drain_spaces = 13
-			end
+			drain_spaces = math.max(drain_spaces, 13)
 			while string.len(drain_meter) < drain_spaces do
 				drain_meter = drain_meter..' '
 			end
@@ -4206,8 +6278,9 @@ end
 
 --Update the Sub Target bar
 function updateSubTargetBar(player, st, target, clock)
-	
-	if calculating_dimensions then return end --skip all this while we're calculating dimensions off screen
+
+	--Skip all this while we're calculating dimensions off screen or if the Sub Target Bar is turned off
+	if calculating_dimensions or not show_sub_target_bar then return end
 
 	local st_settings = settings.sections.sub_target
 	local icon_set = debuff_icons.sub_target
@@ -4244,21 +6317,25 @@ function updateSubTargetBar(player, st, target, clock)
 	local sp_timestamp = sp_active and clock and math.floor(math.max(current_sp_actions[st.id].timestamp - clock, 0))
 	local sp_timer = sp_active and string.format("%d:%02d", math.floor(sp_timestamp / 60), sp_timestamp % 60) or ''
 	local sp_name = sp_active and current_sp_actions[st.id].sp_name
+	local cor_roll = sp_active and current_sp_actions[st.id].cor_roll and "|"..current_sp_actions[st.id].cor_roll or ""
 	local st_name = st and st.name or ''
 	if sp_active then
 		if condense_sub_target_name_and_sp_name then
-			st_name = sp_timer..' '..(sp_timestamp % 2 == 0 and sp_name or st.name)
+			st_name = sp_timer..' '..(sp_timestamp % 2 == 0 and sp_name..cor_roll or st.name)
 		else
-			st_name = st.name..' '..sp_timer..' '..sp_shorter_names[sp_name]
+			st_name = st.name..' '..sp_timer..' '..sp_shorter_names[sp_name]..cor_roll
 		end
 	end
-	st_name = st_spaces..st_name
-	local dyna_job_raw = st and show_dyna_jobs and in_dyna and dynaJob(st.name) or false
-	local dyna_job = st and dyna_job_raw and st_spaces..dyna_job_raw or ''
+	local mob_job_raw = st and st_settings.show_monster_job and mobJob(st.name) or false
+	local mob_job = st and mob_job_raw and st_spaces..mob_job_raw or ''
 	local index_hex = st and (show_target_index or show_target_hex) and st_spaces..'('..(show_target_hex and string.format("%03X", st.index) or st.index)..')' or ''
-	local dist_raw = st and math.floor(st.distance:sqrt()*100)/100
-	local dist = st and show_target_distance and st_spaces..(string.format("%5.2f", dist_raw)) or ''
-	local level = st and st_settings.show_monster_level and not (show_dyna_jobs and in_dyna) and isMonster(st.id) and (current_levels[st.index] and st_spaces..'Lv '..current_levels[st.index] or '') or ''
+	local dist_raw = st and st.distance and math.floor(st.distance:sqrt()*100)/100
+	local dist = st and st.distance and show_target_distance and st_spaces..(string.format("%5.2f", dist_raw)) or ''
+	local st_angle = st and not Screen_Test and st_settings.show_target_angle_from_player_facing and getAngleToTarget(st) or nil
+	local st_angle_icon = st_angle and getAngleIcon(st_angle) or ''
+	local p_angle = st and not Screen_Test and st_settings.show_player_angle_from_target_facing and getAngleToPlayer(st) or nil
+	local p_angle_icon = p_angle and getAngleIcon(p_angle) or ''
+	local level = st and st_settings.show_monster_level and not mob_job_raw and isMonster(st.id) and (current_levels[st.index] and st_spaces..'Lv '..current_levels[st.index] or '') or ''
 	local meter = ''
 	local spaces = hpp_raw and math.floor((sub_target_bar_width * 10) * (hpp_raw / 100)) or 0
 	local cm = st and (Fade and text_color or targetColor(player, st)) or color.target.pc_other
@@ -4271,8 +6348,8 @@ function updateSubTargetBar(player, st, target, clock)
 		or (current_actions[st.id] and current_actions[st.id].icon and ' '..current_actions[st.id].icon or ' ?')
 	local targeting = m_targeting and target_icon..formatTargetingName(player, m_targeting) or (st_targeting_id and target_icon..formatTargetingName(player, get_mob_by_id(st_targeting_id)) or '')
 	local targeting_shdw = m_targeting and target_icon..truncateMonsterTarget(m_targeting.name) or (st_targeting_id and target_icon..truncateMonsterTarget(get_mob_by_id(st_targeting_id).name) or '')
-	local text = hpp..colorizeDistance(dist, dist_raw, st)..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..truncateName(st_name)..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting or '')
-	local text_shdw = hpp..'\\cs(000,000,000)'..dist..'\\cr'..'\\cs(000,000,000)'..truncateName(st_name)..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting_shdw or '')
+	local text = hpp..colorizeDistance(dist, dist_raw, st)..st_spaces.."\\cs("..formatRGB(getAngleColor(st_angle).r)..","..formatRGB(getAngleColor(st_angle).g)..","..formatRGB(getAngleColor(st_angle).b)..")"..st_angle_icon.."\\cr\\cs("..formatRGB(getAngleColor(p_angle).r)..","..formatRGB(getAngleColor(p_angle).g)..","..formatRGB(getAngleColor(p_angle).b)..")"..p_angle_icon.."\\cr\\cs("..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..truncateName(st_name)..'\\cr'..index_hex..mob_job..level..(hpp_raw ~= 0 and targeting or '')
+	local text_shdw = hpp..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..dist..'\\cr'..st_spaces..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..st_angle_icon..'\\cr\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..p_angle_icon..'\\cr\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..truncateName(st_name)..'\\cr'..index_hex..mob_job..level..(hpp_raw ~= 0 and targeting_shdw or '')
 	local status = show_action_status_indicators and st and current_actions[st.id] and current_actions[st.id].status or ''
 	local status_shdw = show_action_status_indicators and st and current_actions[st.id] and current_actions[st.id].status_shdw or ''
 	local action = Screen_Test and screen_test_sub_target.action or (st and current_actions[st.id] and current_actions[st.id].action or '')
@@ -4287,9 +6364,7 @@ function updateSubTargetBar(player, st, target, clock)
 	else
 		sub_target_bar_meter:show()
 		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-		if spaces < 13 and hpp_raw > 0 then
-			spaces = 13
-		end
+		spaces = math.max(spaces, 13)
 		while string.len(meter) < spaces do
 			meter = meter..' '
 		end
@@ -4354,7 +6429,7 @@ function updateSubTargetBar(player, st, target, clock)
 			local custom_spell = custom_spells[spell_data.id]
 			local spell = res.spells[spell_data.id]
 			local name = custom_spell and custom_spell or (spell and spell.name or "???")
-			local time_remaining = spell_data.timer and math.max(0, spell_data.timer - os.clock()) or 0
+			local time_remaining = spell_data.timer and math.max(0, spell_data.timer - clock)
 
 			--Determine whether to show debuff icon/timer
 			local show_debuff = false
@@ -4383,14 +6458,21 @@ function updateSubTargetBar(player, st, target, clock)
 			end
 		end
 
-		--Clear Sleep, Petrify, Bind debuffs if the mob has moved
-		local moved = false
-		--Check for movement greater than 3 yalms (account for target moving when initially slept/petrified/bound)
-		if debuff_list.pos and (math.abs(debuff_list.pos.x - st.x) > 3 or math.abs(debuff_list.pos.y - st.y) > 3) then
-			moved = true
-		end
+		--Check for movement greater than 2 yalms
+		local moved = debuff_list.pos and debuff_list.pos.clear_delay < clock and (math.abs(debuff_list.pos.x - st.x) > 2 or math.abs(debuff_list.pos.y - st.y) > 2)
+		--Clear Sleep, Petrify, Stun, Bind debuffs if the mob has moved
 		if moved then
-			local watch_effects = {2, 7, 11, 19}
+			local watch_effects = {2, 7, 10, 11, 19}
+			for _, effect_id in ipairs(watch_effects) do
+				debuff_list[effect_id] = nil
+			end
+		end
+
+		--Check for spinning in place more than 10 degrees
+		local spun = debuff_list.pos and debuff_list.pos.clear_delay < clock and (math.abs(debuff_list.pos.facing - math.floor((st.facing * 180 / math.pi) + 0.5)) > 10)
+		--Clear Sleep or Petrfy debuffs if the mob has spun in place
+		if spun then
+			local watch_effects = {2, 7, 19}
 			for _, effect_id in ipairs(watch_effects) do
 				debuff_list[effect_id] = nil
 			end
@@ -4425,6 +6507,10 @@ function updateSubTargetBar(player, st, target, clock)
 end
 
 function updateSubTargetBarAnimations(player, st)
+
+	if not show_sub_target_bar then
+		return
+	end
 
 	--Pulse the Sub Target bar (but not when the bar is fading/faded)
 	if (Pulse_Sub_Target_Bar or Pulse_Sub_Target_Name) and sub_target_bar_bg:visible() and not (Fade or Screen_Test) then
@@ -4469,9 +6555,7 @@ function updateSubTargetBarAnimations(player, st)
 			sub_target_bar_drain_meter:hide()
 		elseif drain_target_bars then
 			--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-			if drain_spaces < 13 and drain_st_hpp > 0 then
-				drain_spaces = 13
-			end
+			drain_spaces = math.max(drain_spaces, 13)
 			while string.len(drain_meter) < drain_spaces do
 				drain_meter = drain_meter..' '
 			end
@@ -4521,21 +6605,25 @@ function updateTargetBar(player, t, clock)
 	local sp_timestamp = sp_active and clock and math.floor(math.max(current_sp_actions[t.id].timestamp - clock, 0))
 	local sp_timer = sp_active and string.format("%d:%02d", math.floor(sp_timestamp / 60), sp_timestamp % 60) or ''
 	local sp_name = sp_active and current_sp_actions[t.id].sp_name
+	local cor_roll = sp_active and current_sp_actions[t.id].cor_roll and "|"..current_sp_actions[t.id].cor_roll or ""
 	local t_name = t and t.name or ''
 	if sp_active then
 		if condense_target_name_and_sp_name then
-			t_name = sp_timer..' '..(sp_timestamp % 2 == 0 and sp_name or t.name)
+			t_name = sp_timer..' '..(sp_timestamp % 2 == 0 and sp_name..cor_roll or t.name)
 		else
-			t_name = t.name..' '..sp_timer..' '..sp_shorter_names[sp_name]
+			t_name = t.name..' '..sp_timer..' '..sp_shorter_names[sp_name]..cor_roll
 		end
 	end
-	t_name = t_spaces..t_name
-	local dyna_job_raw = t and show_dyna_jobs and in_dyna and dynaJob(t.name) or false
-	local dyna_job = t and dyna_job_raw and t_spaces..dyna_job_raw or ''
+	local mob_job_raw = t and t_settings.show_monster_job and mobJob(t.name) or false
+	local mob_job = t and mob_job_raw and t_spaces..mob_job_raw or ''
 	local index_hex = t and (show_target_index or show_target_hex) and t_spaces..'('..(show_target_hex and string.format("%03X", t.index) or t.index)..')' or ''
-	local dist_raw = t and math.floor(t.distance:sqrt()*100)/100
-	local dist = t and show_target_distance and t_spaces..(string.format("%5.2f", dist_raw)) or ''
-	local level = t and t_settings.show_monster_level and not (show_dyna_jobs and in_dyna) and isMonster(t.id) and (current_levels[t.index] and t_spaces..'Lv '..current_levels[t.index] or '') or ''
+	local dist_raw = t and t.distance and math.floor(t.distance:sqrt()*100)/100
+	local dist = t and t.distance and show_target_distance and t_spaces..(string.format("%5.2f", dist_raw)) or ''
+	local t_angle = t and not Screen_Test and t_settings.show_target_angle_from_player_facing and getAngleToTarget(t) or nil
+	local t_angle_icon = t_angle and getAngleIcon(t_angle) or ''
+	local p_angle = t and not Screen_Test and t_settings.show_player_angle_from_target_facing and getAngleToPlayer(t) or nil
+	local p_angle_icon = p_angle and getAngleIcon(p_angle) or ''
+	local level = t and t_settings.show_monster_level and not mob_job_raw and isMonster(t.id) and (current_levels[t.index] and t_spaces..'Lv '..current_levels[t.index] or '') or ''
 	local meter = ''
 	local spaces = hpp_raw and math.floor((target_bar_width * 10) * (hpp_raw / 100)) or 0
 	local cm = t and (Fade and text_color or targetColor(player, t)) or color.t.pc_other
@@ -4548,8 +6636,8 @@ function updateTargetBar(player, t, clock)
 		or (current_actions[t.id] and current_actions[t.id].icon and ' '..current_actions[t.id].icon or ' ?')
 	local targeting = m_targeting and target_icon..formatTargetingName(player, m_targeting) or (t_targeting_id and target_icon..formatTargetingName(player, get_mob_by_id(t_targeting_id)) or '')
 	local targeting_shdw = m_targeting and target_icon..truncateMonsterTarget(m_targeting.name) or (t_targeting_id and target_icon..truncateMonsterTarget(get_mob_by_id(t_targeting_id).name) or '')
-	local text = hpp..colorizeDistance(dist, dist_raw, t)..'\\cs('..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..t_name..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting or '')
-	local text_shdw = hpp..'\\cs(000,000,000)'..dist..'\\cr'..'\\cs(000,000,000)'..t_name..'\\cr'..index_hex..dyna_job..level..(hpp_raw ~= 0 and targeting_shdw or '')
+	local text = hpp..colorizeDistance(dist, dist_raw, t)..t_spaces.."\\cs("..formatRGB(getAngleColor(t_angle).r)..","..formatRGB(getAngleColor(t_angle).g)..","..formatRGB(getAngleColor(t_angle).b)..")"..t_angle_icon.."\\cr\\cs("..formatRGB(getAngleColor(p_angle).r)..","..formatRGB(getAngleColor(p_angle).g)..","..formatRGB(getAngleColor(p_angle).b)..")"..p_angle_icon.."\\cr\\cs("..formatRGB(cm.r)..','..formatRGB(cm.g)..','..formatRGB(cm.b)..')'..t_name..'\\cr'..index_hex..mob_job..level..(hpp_raw ~= 0 and targeting or '')
+	local text_shdw = hpp..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..dist..t_spaces..'\\cr\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..t_angle_icon..'\\cr\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..p_angle_icon..'\\cr\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..t_name..'\\cr'..index_hex..mob_job:text_strip_format()..level..(hpp_raw ~= 0 and targeting_shdw or '')
 	local status = show_action_status_indicators and t and current_actions[t.id] and current_actions[t.id].status or ''
 	local status_shdw = show_action_status_indicators and t and current_actions[t.id] and current_actions[t.id].status_shdw or ''
 	local action = Screen_Test and screen_test_target.action or (t and current_actions[t.id] and current_actions[t.id].action or '')
@@ -4570,9 +6658,7 @@ function updateTargetBar(player, t, clock)
 	else
 		target_bar_meter:show()
 		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-		if spaces < 13 and hpp_raw > 0 then
-			spaces = 13
-		end
+		spaces = math.max(spaces, 13)
 		while string.len(meter) < spaces do
 			meter = meter..' '
 		end
@@ -4652,7 +6738,7 @@ function updateTargetBar(player, t, clock)
 			local custom_spell = custom_spells[spell_data.id]
 			local spell = res.spells[spell_data.id]
 			local name = custom_spell and custom_spell or (spell and spell.name or "???")
-			local time_remaining = spell_data.timer and math.max(0, spell_data.timer - os.clock()) or 0
+			local time_remaining = spell_data.timer and math.max(0, spell_data.timer - clock)
 
 			--Determine whether to show debuff icon/timer
 			local show_debuff = false
@@ -4681,14 +6767,21 @@ function updateTargetBar(player, t, clock)
 			end
 		end
 
-		--Clear Sleep, Petrify, Bind debuffs if the mob has moved
-		local moved = false
-		--Check for movement greater than 3 yalms (account for target moving when initially slept/petrified/bound)
-		if debuff_list.pos and (math.abs(debuff_list.pos.x - t.x) > 3 or math.abs(debuff_list.pos.y - t.y) > 3) then
-			moved = true
-		end
+		--Check for movement greater than 2 yalms
+		local moved = debuff_list.pos and debuff_list.pos.clear_delay < clock and (math.abs(debuff_list.pos.x - t.x) > 2 or math.abs(debuff_list.pos.y - t.y) > 2)
+		--Clear Sleep, Petrify, Stun, Bind debuffs if the mob has moved
 		if moved then
-			local watch_effects = {2, 7, 11, 19}
+			local watch_effects = {2, 7, 10, 11, 19}
+			for _, effect_id in ipairs(watch_effects) do
+				debuff_list[effect_id] = nil
+			end
+		end
+
+		--Check for spinning in place more than 10 degrees
+		local spun = debuff_list.pos and debuff_list.pos.clear_delay < clock and (math.abs(debuff_list.pos.facing - math.floor((t.facing * 180 / math.pi) + 0.5)) > 10)
+		--Clear Sleep or Petrfy debuffs if the mob has spun in place
+		if spun then
+			local watch_effects = {2, 7, 19}
 			for _, effect_id in ipairs(watch_effects) do
 				debuff_list[effect_id] = nil
 			end
@@ -4768,9 +6861,7 @@ function updateTargetBarAnimations(player, t)
 			target_bar_drain_meter:hide()
 		elseif not (not show_self_when_targeted and t.id == player.id) and not Fade then
 			--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-			if drain_spaces < 13 and drain_t_hpp > 0 then
-				drain_spaces = 13
-			end
+			drain_spaces = math.max(drain_spaces, 13)
 			while string.len(drain_meter) < drain_spaces do
 				drain_meter = drain_meter..' '
 			end
@@ -4785,6 +6876,8 @@ end
 --Update the Self Action text
 function updateSelfAction(player)
 
+	if not show_self_action then return end
+
 	local self_status = show_action_status_indicators and current_actions[player.id] and current_actions[player.id].status or ''
 
 	--Hide the Self Action bar disabled, we are in a cutscene, or no actions
@@ -4792,6 +6885,7 @@ function updateSelfAction(player)
 	or self_status == '' then
 		if self_action_bar_bg:visible() and not calculating_dimensions then
 			self_action_bar_meter:hide()
+			self_action_bar_cast_meter:hide()
 			self_action_bar_bg:hide()
 			self_action_text:hide()
 			self_action_text_shadow:hide()
@@ -4837,23 +6931,43 @@ function completeSelfMeter()
 
 	local self_meter = ''
 
+	--Set the bar to full length
 	while string.len(self_meter) < self_action_bar_width * 10 do
 		self_meter = self_meter..' '
 	end
+
 	self_action_bar_meter:text('\n\n\n\n\n\n\n'..self_meter)
 	self_action_bar_meter:show()
+	
+end
+
+function completeCastMeter(spaces)
+
+	if not show_self_action_cast_bar then return end
+
+	local cast_meter = ''
+
+	--Set the cast bar length
+	while string.len(cast_meter) < spaces do
+		cast_meter = cast_meter..' '
+	end
+
+	self_action_bar_cast_meter:text('\n\n\n\n\n\n\n'..cast_meter)
+	self_action_bar_cast_meter:show()
 
 end
 
 --Update the Self bar
-function updateSelfBar(player, cast_time, index)
+function updateSelfBar(player, cast_time, index, display_cast_meter)
 
 	if not show_self_action or not show_self_action_bar then return end
+
+	self_action_bar_cast_meter:hide()
 
 	cast_time = cast_time ~= 0 and cast_time or 1
 	local self_meter = ''
 	local spaces = 0
-	local multiplier = 0.02 --Bar length gets updated 50 times per second
+	local multiplier = 0.02 --Bar length gets updated 50 times per second - Smooth!
 	local divisor = cast_time / multiplier
 	local increment = (self_action_bar_width * 10) / divisor
 
@@ -4865,7 +6979,10 @@ function updateSelfBar(player, cast_time, index)
 		--Cancel if a spell has finished early
 		local status = current_actions[player.id] and current_actions[player.id].status
 		if (status and (status:find(completed_icon, 1, true) or status:find(cancelled_icon, 1, true)) and not Screen_Test)
-			or curr_index and index ~= curr_index.index then
+		or curr_index and index ~= curr_index.index then
+			if display_cast_meter then
+				completeCastMeter(spaces)
+			end
 			break
 		end
 
@@ -4904,6 +7021,9 @@ function updateHPBar(player)
 
 	local hp = player and player.vitals.hp or 0
 	local max_hp = player and player.vitals.max_hp or 0
+	if max_hp < hp then
+		max_hp = hp
+	end
 	local hpp = player and player.vitals.hpp or 0
 	local hp_meter = ''
 	local spaces = math.floor((player_stats_bar_width * 10) * (hpp / 100))
@@ -4914,11 +7034,9 @@ function updateHPBar(player)
 	if spaces == 0 then
 		player_stats_hp_bar_meter:bg_alpha(0)
 	else
-		player_stats_hp_bar_meter:bg_alpha(not Fade and (drain_hp_bar and meter_bg_alpha or bg_alpha))
+		player_stats_hp_bar_meter:bg_alpha(not Fade and player_stats_meter_bg_alpha)
 		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-		if spaces < 13 and hp > 0 then
-			spaces = 13
-		end
+		spaces = math.max(spaces, 13)
 		while string.len(hp_meter) < spaces do
 			hp_meter = hp_meter..' '
 		end
@@ -4937,12 +7055,12 @@ function updateHPBar(player)
 	end
 
 	--Set the color for the text based on HP percentage
-	if hpp <= 75 then
-		ct = color.hp.quarter_3
+	if hpp <= 25 then
+		ct = color.hp.quarter_1
 	elseif hpp <= 50 then
 		ct = color.hp.quarter_2
-	elseif hpp <= 25 then
-		ct = color.hp.quarter_1
+	elseif hpp <= 75 then
+		ct = color.hp.quarter_3
 	end
 
 	--Pulse HP when its critically low (and not dead)
@@ -4987,7 +7105,7 @@ function updateHPBarAnimations(player)
 	end
 
 	--HP Bar Drain animation
-	if drain_hp_bar then
+	if drain_player_stats_bars then
 
 		local hpp = player and player.vitals.hpp or 0
 		local hp_diff = drain_ps_hpp - hpp
@@ -5001,14 +7119,12 @@ function updateHPBarAnimations(player)
 			player_stats_hp_bar_drain_meter:bg_alpha(0)
 		elseif not Fade then
 			--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-			if drain_spaces < 13 and drain_ps_hpp > 0 then
-				drain_spaces = 13
-			end
+			drain_spaces = math.max(drain_spaces, 13)
 			while string.len(drain_meter) < drain_spaces do
 				drain_meter = drain_meter..' '
 			end
 			player_stats_hp_bar_drain_meter:text('\n\n\n\n\n\n\n'..drain_meter)
-			player_stats_hp_bar_drain_meter:bg_alpha(drain_bg_alpha)
+			player_stats_hp_bar_drain_meter:bg_alpha(player_stats_drain_bg_alpha)
 		end
 
 	end
@@ -5020,6 +7136,9 @@ function updateMPBar(player)
 
 	local mp = player and player.vitals.mp or 0
 	local max_mp = player and player.vitals.max_mp or 0
+	if max_mp < mp then
+		max_mp = mp
+	end
 	local mpp = player and player.vitals.mpp or 0
 	local hpp = player and player.vitals.hpp or 0
 	local mp_meter = ''
@@ -5031,23 +7150,21 @@ function updateMPBar(player)
 	if spaces == 0 then
 		player_stats_mp_bar_meter:bg_alpha(0)
 	else
-		player_stats_mp_bar_meter:bg_alpha(not Fade and (drain_mp_bar and meter_bg_alpha or bg_alpha))
+		player_stats_mp_bar_meter:bg_alpha(not Fade and player_stats_meter_bg_alpha)
 		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-		if spaces < 13 and mp >= 0 then
-			spaces = 13
-		end
+		spaces = math.max(spaces, 13)
 		while string.len(mp_meter) < spaces do
 			mp_meter = mp_meter..' '
 		end
 	end
 
 	--Set the color for the text based on MP percentage
-	if mpp <= 75 then
-		ct = color.mp.quarter_3
+	if mpp <= 25 then
+		ct = color.mp.quarter_1
 	elseif mpp <= 50 then
 		ct = color.mp.quarter_2
-	elseif mpp <= 25 then
-		ct = color.mp.quarter_1
+	elseif mpp <= 75 then
+		ct = color.mp.quarter_3
 	end
 
 	--Add the max mp to the right-side of the bar
@@ -5098,13 +7215,13 @@ function updateMPBarAnimations(player)
 			player_stats_mp_bar_pulse:bg_alpha(pulse_mp_alpha_num)
 		elseif not pulse_mp_direction_up and pulse_mp_alpha_num <= 10 then
 			pulse_mp_alpha_num = 10
-			player_stats_mp_bar_pulse:bg_alpha(pulse_mp_alpha_num)
 			pulse_mp_direction_up = true
+			player_stats_mp_bar_pulse:bg_alpha(pulse_mp_alpha_num)
 		end
 	end
 
 	--MP Bar Drain animation
-	if drain_mp_bar then
+	if drain_player_stats_bars then
 
 		local mpp = player and player.vitals.mpp or 0
 		local mp_diff = drain_ps_mpp - mpp
@@ -5118,14 +7235,12 @@ function updateMPBarAnimations(player)
 			player_stats_mp_bar_drain_meter:bg_alpha(0)
 		elseif not Fade then
 			--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-			if drain_spaces < 13 and drain_ps_mpp > 0 then
-				drain_spaces = 13
-			end
+			drain_spaces = math.max(drain_spaces, 13)
 			while string.len(drain_meter) < drain_spaces do
 				drain_meter = drain_meter..' '
 			end
 			player_stats_mp_bar_drain_meter:text('\n\n\n\n\n\n\n'..drain_meter)
-			player_stats_mp_bar_drain_meter:bg_alpha(drain_bg_alpha)
+			player_stats_mp_bar_drain_meter:bg_alpha(player_stats_drain_bg_alpha)
 		end
 
 	end
@@ -5152,16 +7267,10 @@ function updateTPBar(player)
 		player_stats_tp_bar_meter:bg_alpha(0)
 	else
 		if not Fade then
-			if drain_tp_bar then
-				player_stats_tp_bar_meter:bg_alpha(meter_bg_alpha)
-			else
-				player_stats_tp_bar_meter:bg_alpha(bg_alpha)
-			end
+			player_stats_tp_bar_meter:bg_alpha(player_stats_meter_bg_alpha)
 		end
 		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-		if spaces < 13 and tp > 0 then
-			spaces = 13
-		end
+		spaces = math.max(spaces, 13)
 		while string.len(tp_meter) < spaces do
 			tp_meter = tp_meter..' '
 		end
@@ -5225,7 +7334,7 @@ function updateTPBarAnimations(player)
 	end
 
 	--TP Bar Drain animation
-	if drain_tp_bar then
+	if drain_player_stats_bars then
 
 		local tp = player and player.vitals.tp or 0
 		local tp_diff = drain_ps_tp - tp
@@ -5239,14 +7348,12 @@ function updateTPBarAnimations(player)
 			player_stats_tp_bar_drain_meter:bg_alpha(0)
 		elseif not Fade then
 			--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-			if drain_spaces < 13 and drain_ps_tp > 0 then
-				drain_spaces = 13
-			end
+			drain_spaces = math.max(drain_spaces, 13)
 			while string.len(drain_meter) < drain_spaces do
 				drain_meter = drain_meter..' '
 			end
 			player_stats_tp_bar_drain_meter:text('\n\n\n\n\n\n\n'..drain_meter)
-			player_stats_tp_bar_drain_meter:bg_alpha(drain_bg_alpha)
+			player_stats_tp_bar_drain_meter:bg_alpha(player_stats_drain_bg_alpha)
 		end
 
 	end
@@ -5259,6 +7366,7 @@ function updatePetBar(pet)
 	local hpp = pet and pet.hpp or 0
 	local status = job ~= 'geo' and pet and show_pet_status and ' ('..res.statuses[pet.status].en..')' or ''
 	local distance = pet and show_pet_distance and (string.format("%5.2f", math.floor(pet.distance:sqrt()*100)/100))..' ' or ''
+	local mp = job == 'pup' and pet and show_automaton_mp and ' MP: '..pet_mp or ''
 	local tp = job ~= 'geo' and pet and show_pet_tp and ' TP: '..pet_tp or ''
 	local pet_meter = ''
 	local spaces = math.floor((player_stats_bar_width * 10) * (hpp / 100))
@@ -5292,11 +7400,9 @@ function updatePetBar(pet)
 	if spaces == 0 then
 		player_stats_pet_bar_meter:bg_alpha(0)
 	else
-		player_stats_pet_bar_meter:bg_alpha(not Fade and (drain_pet_bar and meter_bg_alpha or bg_alpha))
+		player_stats_pet_bar_meter:bg_alpha(not Fade and player_stats_meter_bg_alpha)
 		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-		if spaces == 0 and hpp > 0 then
-			spaces = 13
-		end
+		spaces = math.max(spaces, 13)
 		while string.len(pet_meter) < spaces and string.len(pet_meter) < (player_stats_bar_width * 10) do
 			pet_meter = pet_meter..' '
 		end
@@ -5346,8 +7452,8 @@ function updatePetBar(pet)
 
 	--Format the text output
 	hpp = string.format("%3s", hpp)..'% '
-	local text = (pet and '\\cs('..ct.r..','..ct.g..','..ct.b..')'..hpp..'\\cr' or '')..distance..pet_name..status..tp
-	local text_shdw = (pet and '\\cs(000,000,000)'..hpp..'\\cr' or '')..distance..pet_name..status..tp
+	local text = (pet and '\\cs('..ct.r..','..ct.g..','..ct.b..')'..hpp..'\\cr' or '')..distance..pet_name..status..tp..mp
+	local text_shdw = (pet and '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..hpp..'\\cr' or '')..distance..pet_name..status..tp..mp
 	player_stats_pet_bar_meter:text('\n\n\n\n\n\n\n'..pet_meter)
 	player_stats_pet_bar_meter:bg_color(cm.r,cm.g,cm.b)
 	player_stats_pet_bar_drain_meter:bg_color(cm.r,cm.g,cm.b)
@@ -5378,7 +7484,7 @@ function updatePetBarAnimations(pet)
 	end
 
 	--Pet Bar Drain animation
-	if drain_pet_bar then
+	if drain_player_stats_bars then
 
 		local hpp = pet and pet.hpp or 0
 		local pet_diff = drain_ps_pet - hpp
@@ -5390,19 +7496,310 @@ function updatePetBarAnimations(pet)
 		--Fix the pad issue
 		if drain_spaces <= 6 then
 			player_stats_pet_bar_drain_meter:bg_alpha(0)
-		elseif drain_pet_bar and not Fade then
+		elseif drain_player_stats_bars and not Fade then
 			--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
-			if drain_spaces < 13 and drain_ps_pet > 0 then
-				drain_spaces = 13
-			end
+			drain_spaces = math.max(drain_spaces, 13)
 			while string.len(drain_meter) < drain_spaces do
 				drain_meter = drain_meter..' '
 			end
 			player_stats_pet_bar_drain_meter:text('\n\n\n\n\n\n\n'..drain_meter)
-			player_stats_pet_bar_drain_meter:bg_alpha(drain_bg_alpha)
+			player_stats_pet_bar_drain_meter:bg_alpha(player_stats_drain_bg_alpha)
 		end
 
 	end
+
+end
+
+function updateXPBar(player, time)
+
+	if not player or not show_xp_bar then return end
+
+	if not time then
+		time = os.time()
+	end
+
+	local cm = text_color
+
+	local function calculatePointsPerHour(tbl)
+		if not tbl or #tbl == 0 then
+			return 0
+		end
+		if legacy_per_hour_calculation then
+			--Legacy Pointwatch-style calculation
+			local running_total = 0
+			local maximum_timestamp = 29
+			for i = #tbl, 1, -1 do
+				local entry = tbl[i]
+				local time_diff = time - entry.timestamp
+				running_total = running_total + entry.points
+				if time_diff > maximum_timestamp then
+					maximum_timestamp = time_diff
+				end
+			end
+			local points_per_hour
+			if maximum_timestamp == 29 then
+				points_per_hour = 0
+			else
+				points_per_hour = math.floor((running_total / maximum_timestamp) * 3600)
+			end
+			return points_per_hour
+		else
+			--Hybrid Scaling/Rolling Window calculation
+			if #tbl < 2 then
+				return 0
+			end
+			local total_points = 0
+			local oldest = tbl[1].timestamp
+			for _, entry in ipairs(tbl) do
+				total_points = total_points + entry.points
+				if entry.timestamp < oldest then
+					oldest = entry.timestamp
+				end
+			end
+			local diff_seconds = time - oldest
+			if diff_seconds <= 0 then
+				return 0
+			end
+			local window_minutes = math.ceil(diff_seconds / 60) --keep the window at a minimum of 1 minute
+			local points_per_hour = total_points * (60 / window_minutes)
+			return points_per_hour
+		end
+	end
+
+	local function calculateKillsPerHour(tbl)
+		if not tbl or #tbl < 2 then
+			return 0
+		end
+		local total_kills = 0
+		local oldest = tbl[1].timestamp
+		for _, entry in ipairs(tbl) do
+			total_kills = total_kills + 1
+			if entry.timestamp < oldest then
+				oldest = entry.timestamp
+			end
+		end
+		local diff_seconds = time - oldest
+		if diff_seconds <= 0 then
+			return 0
+		end
+		local window_minutes = math.ceil(diff_seconds / 60) --keep the window at a minimum of 1 minute
+		local kills_per_hour = math.floor(total_kills * (60 / window_minutes))
+		return kills_per_hour
+	end
+
+	local function calculateAverageKillTime(tbl)
+		if not tbl or #tbl < 2 then
+			return nil
+		end
+		local total_kills = 0
+		local oldest = tbl[1].timestamp
+		local newest = tbl[1].timestamp
+		for _, entry in ipairs(tbl) do
+			total_kills = total_kills + 1
+			if entry.timestamp < oldest then
+				oldest = entry.timestamp
+			end
+			if entry.timestamp > newest then
+				newest = entry.timestamp
+			end
+		end
+		local diff_seconds = newest - oldest
+		if diff_seconds <= 0 then
+			return nil
+		end
+		local average = string.format("%.1f", math.floor((diff_seconds / total_kills) * 10) / 10)
+		return average
+
+	end
+
+	local function getXPBarInfo(player)
+		local percent = 0
+		local formatted_percent = 0
+		local spaces = 0
+		local text = ''
+		local text_shdw = ''
+		local pad = ""
+		local job = show_job_levels and " "..player.main_job..player.main_job_level..'/'..(player.sub_job and player.sub_job..player.sub_job_level or '-----') or ''
+		local job_points_spent = player.main_job ~= "MON" and player.job_points[string.lower(player.main_job)].jp_spent or nil
+		if player.main_job_level < 99 then --XP
+			if not current_xp or not required_xp then
+				return 0, 0, " Waiting for data...", " Waiting for data..."
+			end
+			percent = current_xp / required_xp
+			formatted_percent = show_percent and " "..(math.floor(percent * 10000) / 100).."%" or ""
+			spaces = math.max(math.floor((xp_bar_width * 10) * percent), 8)
+			local cmp = current_mp == max_merit_points and color.xp.capped or text_color
+			local cmp_r = formatRGB(cmp.r)
+			local cmp_g = formatRGB(cmp.g)
+			local cmp_b = formatRGB(cmp.b)
+			local merit_points = show_merits and player.main_job_level >=75 and max_merit_points and (condensed_merits and current_mp or current_mp.."/"..max_merit_points) or nil
+			local colorized_merit_points = merit_points and " [\\cs("..cmp_r..","..cmp_g..","..cmp_b..")"..merit_points.."\\cr"..(condensed_merits and "M]" or " Merits]") or ""
+			local colorized_merit_points_shdw = merit_points and " [\\cs(000,000,000)"..merit_points.."\\cr"..(condensed_merits and "M]" or " Merits]") or ""
+			local xp_per_hour = calculatePointsPerHour(xp_table)
+			local formatted_xp_per_hour = xp_per_hour > 0 and " "..string.format("%.1f", math.floor(xp_per_hour / 100) / 10).."/h" or ""
+			local kills_per_hour = show_kills_per_hour and calculateKillsPerHour(xp_table) or 0
+			local formatted_kills_per_hour = kills_per_hour > 0 and " "..kills_per_hour..":KPH" or ""
+			local points_per_kill = show_points_per_kill and xp_per_hour / kills_per_hour or 0
+			local formatted_points_per_kill = points_per_kill > 0 and " "..addCommas(math.floor(points_per_kill))..":PPK" or ""
+			local seconds_per_kill = show_seconds_per_kill and calculateAverageKillTime(xp_table) or nil
+			local formatted_seconds_per_kill = seconds_per_kill and " "..seconds_per_kill..":SPK" or ""
+			local conq_pt_per_hour = show_base_conq_pt_per_hour and signet_active and in_signet_zone and calculatePointsPerHour(xp_table) or 0
+			local formatted_conq_pt_per_hour = conq_pt_per_hour > 0 and " "..math.floor(conq_pt_per_hour / 10000).."k:CQPH" or ""
+			local c = xp_capped and color.xp.capped or text_color
+			local c_r = formatRGB(c.r)
+			local c_g = formatRGB(c.g)
+			local c_b = formatRGB(c.b)
+			local formatted_current_xp = addCommas(current_xp)
+			local formatted_required_xp = addCommas(required_xp)
+			local colorized_xp = " XP: \\cs("..c_r..","..c_g..","..c_b..")"..formatted_current_xp.."/"..formatted_required_xp.."\\cr"
+			local colorized_xp_shdw = " XP: \\cs(000,000,000)"..formatted_current_xp.."/"..formatted_required_xp.."\\cr"
+			local tnl = math.max(required_xp - current_xp, 0)
+			local total_seconds_tnl = points_per_kill > 0 and (tnl / xp_per_hour) * 3600 or 0
+			local hours_tnl = total_seconds_tnl > 0 and math.floor(total_seconds_tnl / 3600) or 0
+			local minutes_tnl = total_seconds_tnl > 0 and math.floor((total_seconds_tnl % 3600) / 60) or 0
+			local seconds_tnl = total_seconds_tnl > 0 and math.floor(total_seconds_tnl % 60)
+			local formatted_time_tnl = total_seconds_tnl > 0 and (total_seconds_tnl < 60 and string.format("%02ds", seconds_tnl) or string.format("%dh:%02dm", hours_tnl, minutes_tnl)) or ""
+			local formatted_tnl = (show_tnl or show_time_tnl) and " ("..(show_tnl and addCommas(tnl) or "")..(show_time_tnl and (show_tnl and total_seconds_tnl > 0 and "/" or "")..formatted_time_tnl or "").." TNL)" or ""
+			text = job..colorized_merit_points..colorized_xp..formatted_percent..formatted_tnl..formatted_xp_per_hour..formatted_kills_per_hour..formatted_points_per_kill..formatted_seconds_per_kill..formatted_conq_pt_per_hour
+			text_shdw = job..colorized_merit_points_shdw..colorized_xp_shdw..formatted_percent..formatted_tnl..formatted_xp_per_hour..formatted_kills_per_hour..formatted_points_per_kill..formatted_seconds_per_kill..formatted_conq_pt_per_hour
+			cm = Fade and not exclude_from_fade and text_color or color.xp.xp_meter
+		elseif job_points_spent and job_points_spent < 2100 then --CP/JP
+			local total_cp = (((job_points_spent + (job_points_stored and job_points_stored or 0)) * 30000) + (current_cp and current_cp or 0))
+			percent = math.min(total_cp / 63000000, 1)
+			formatted_percent = show_percent and " "..(math.floor(percent * 10000) / 100).."%" or ""
+			spaces = math.max(math.floor((xp_bar_width * 10) * percent), 8)
+			local tnl = math.max(63000000 - total_cp, 0)
+			local cmp = current_mp == max_merit_points and color.xp.capped or text_color
+			local cmp_r = formatRGB(cmp.r)
+			local cmp_g = formatRGB(cmp.g)
+			local cmp_b = formatRGB(cmp.b)
+			local merit_points = show_merits and max_merit_points and (condensed_merits and current_mp or current_mp.."/"..max_merit_points) or nil
+			local colorized_merit_points = merit_points and " [\\cs("..cmp_r..","..cmp_g..","..cmp_b..")"..merit_points.."\\cr"..(condensed_merits and "M]" or " Merits]") or ""
+			local colorized_merit_points_shdw = merit_points and " [\\cs(000,000,000)"..merit_points.."\\cr"..(condensed_merits and "M]" or " Merits]") or ""
+			local cjp = tnl == 0 and color.xp.capped or text_color
+			local cjp_r = formatRGB(cjp.r)
+			local cjp_g = formatRGB(cjp.g)
+			local cjp_b = formatRGB(cjp.b)
+			local jp_stored = job_points_stored and (condensed_job_points and job_points_stored or job_points_stored.."/500") or ''
+			local colorized_jp_stored = job_points_stored and " JP: [\\cs("..cjp_r..","..cjp_g..","..cjp_b..")"..jp_stored.."\\cr] " or " JP: "
+			local colorized_jp_stored_shdw = job_points_stored and " JP: [\\cs(000,000,000)"..jp_stored.."\\cr] " or " JP: "
+			local formatted_jp_spent = addCommas(job_points_spent).."/2100"
+			local cp_per_hour = calculatePointsPerHour(cp_table)
+			local formatted_cp_per_hour = ""
+			if cp_per_hour > 1000000 then
+				formatted_cp_per_hour = " "..string.format("%.2f", math.floor(cp_per_hour / 10000) / 100).."m/h"
+			elseif cp_per_hour > 1000 then
+				formatted_cp_per_hour = " "..string.format("%.1f", math.floor(cp_per_hour / 100) / 10).."k/h"
+			elseif cp_per_hour > 0 then
+				formatted_cp_per_hour = " "..math.floor(cp_per_hour).."/h"
+			end
+			local kills_per_hour = show_kills_per_hour and calculateKillsPerHour(xp_table) or 0
+			local formatted_kills_per_hour = kills_per_hour > 0 and " "..kills_per_hour..":KPH" or ""
+			local points_per_kill = show_points_per_kill and cp_per_hour / kills_per_hour or 0
+			local formatted_points_per_kill = points_per_kill > 0 and " "..addCommas(math.floor(points_per_kill))..":PPK" or ""
+			local seconds_per_kill = show_seconds_per_kill and calculateAverageKillTime(xp_table) or nil
+			local formatted_seconds_per_kill = seconds_per_kill and " "..seconds_per_kill..":SPK" or ""
+			local conq_pt_per_hour = show_base_conq_pt_per_hour and signet_active and in_signet_zone and calculatePointsPerHour(xp_table) or 0
+			local formatted_conq_pt_per_hour = conq_pt_per_hour > 0 and " "..math.floor(conq_pt_per_hour / 10000).."k:CQPH" or ""
+			local total_seconds_tnl = points_per_kill > 0 and (tnl / cp_per_hour) * 3600 or 0
+			local hours_tnl = total_seconds_tnl > 0 and math.floor(total_seconds_tnl / 3600) or 0
+			local minutes_tnl = total_seconds_tnl > 0 and math.floor((total_seconds_tnl % 3600) / 60) or 0
+			local seconds_tnl = total_seconds_tnl > 0 and math.floor(total_seconds_tnl % 60)
+			local formatted_time_tnl = total_seconds_tnl > 0 and (total_seconds_tnl < 60 and string.format("%02ds", seconds_tnl) or string.format("%dh:%02dm", hours_tnl, minutes_tnl)) or ""
+			local formatted_tnl = (show_tnl or show_time_tnl) and " ("..(show_tnl and addCommas(tnl) or "")..(show_time_tnl and (show_tnl and total_seconds_tnl > 0 and "/" or "")..formatted_time_tnl or "").." TM)" or ""
+			text = job..colorized_merit_points..colorized_jp_stored..formatted_jp_spent..formatted_percent..formatted_tnl..formatted_cp_per_hour..formatted_kills_per_hour..formatted_points_per_kill..formatted_seconds_per_kill..formatted_conq_pt_per_hour
+			text_shdw = job..colorized_merit_points_shdw..colorized_jp_stored_shdw..formatted_jp_spent..formatted_percent..formatted_tnl..formatted_cp_per_hour..formatted_kills_per_hour..formatted_points_per_kill..formatted_seconds_per_kill..formatted_conq_pt_per_hour
+			cm = Fade and not exclude_from_fade and text_color or color.xp.jp_meter
+		elseif not job_points_spent then
+			return 0, 0, " Waiting for data...", " Waiting for data..."
+		else --EP
+			if not current_ep or not required_ep then
+				return 0, 0, " Waiting for data...", " Waiting for data..."
+			end
+			percent = current_ep / required_ep
+			formatted_percent = show_percent and " "..(math.floor(percent * 10000) / 100).."%" or ""
+			spaces = math.max(math.floor((xp_bar_width * 10) * percent), 8)
+			local ep_per_hour = calculatePointsPerHour(ep_table)
+			local formatted_ep_per_hour = ep_per_hour > 0 and " "..string.format("%.1f", math.floor(ep_per_hour / 100) / 10).."k/h" or ""
+			local kills_per_hour = show_kills_per_hour and calculateKillsPerHour(xp_table) or 0
+			local formatted_kills_per_hour = kills_per_hour > 0 and " "..kills_per_hour..":KPH" or ""
+			local points_per_kill = show_points_per_kill and ep_per_hour / kills_per_hour or 0
+			local formatted_points_per_kill = points_per_kill > 0 and " "..addCommas(math.floor(points_per_kill))..":PPK" or ""
+			local seconds_per_kill = show_seconds_per_kill and calculateAverageKillTime(xp_table) or nil
+			local formatted_seconds_per_kill = seconds_per_kill and " "..seconds_per_kill..":SPK" or ""
+			local conq_pt_per_hour = show_base_conq_pt_per_hour and signet_active and in_signet_zone and calculatePointsPerHour(xp_table) or 0
+			local formatted_conq_pt_per_hour = conq_pt_per_hour > 0 and " "..math.floor(conq_pt_per_hour / 10000).."k:CQPH" or ""
+			local mlvl = show_job_levels and (master_level or '--') or ""
+			local smlvl = show_job_levels and synced_master_level ~= master_level and synced_master_level.."|" or ""
+			local formatted_mlvl = show_job_levels and "("..smlvl..mlvl..")" or ""
+			local cmp = current_mp == max_merit_points and color.xp.capped or text_color
+			local cmp_r = formatRGB(cmp.r)
+			local cmp_g = formatRGB(cmp.g)
+			local cmp_b = formatRGB(cmp.b)
+			local merit_points = show_merits and max_merit_points and (condensed_merits and current_mp or current_mp.."/"..max_merit_points) or nil
+			local colorized_merit_points = merit_points and " [\\cs("..cmp_r..","..cmp_g..","..cmp_b..")"..merit_points.."\\cr"..(condensed_merits and "M]" or " Merits]") or ""
+			local colorized_merit_points_shdw = merit_points and " [\\cs(000,000,000)"..merit_points.."\\cr"..(condensed_merits and "M]" or " Merits]") or ""
+			local cjp = job_points_stored and job_points_stored == 500 and color.xp.capped or text_color
+			local cjp_r = formatRGB(cjp.r)
+			local cjp_g = formatRGB(cjp.g)
+			local cjp_b = formatRGB(cjp.b)
+			local jp_stored = show_job_points_stored_after_master and job_points_stored and (condensed_job_points and job_points_stored or job_points_stored.."/500") or nil
+			local colorized_jp_stored = jp_stored and " [\\cs("..cjp_r..","..cjp_g..","..cjp_b..")"..jp_stored.."\\cr"..(condensed_job_points and "JP]" or " JP]") or ""
+			local colorized_jp_stored_shdw = jp_stored and " [\\cs(000,000,000)"..jp_stored.."\\cr"..(condensed_job_points and "JP]" or " JP]") or ""
+			local cep = current_ep == 3817560 and color.xp.capped or text_color
+			local cep_r = formatRGB(cep.r)
+			local cep_g = formatRGB(cep.g)
+			local cep_b = formatRGB(cep.b)
+			local formatted_current_ep = addCommas(current_ep)
+			local formatted_required_ep = addCommas(required_ep)
+			local colorized_ep = " EP: \\cs("..cep_r..","..cep_g..","..cep_b..")"..formatted_current_ep.."/"..formatted_required_ep.."\\cr"
+			local colorized_ep_shdw = " EP: \\cs(000,000,000)"..formatted_current_ep.."/"..formatted_required_ep.."\\cr"
+			local tnl = math.max(required_ep - current_ep, 0)
+			local total_seconds_tnl = points_per_kill > 0 and (tnl / ep_per_hour) * 3600 or 0
+			local hours_tnl = total_seconds_tnl > 0 and math.floor(total_seconds_tnl / 3600) or 0
+			local minutes_tnl = total_seconds_tnl > 0 and math.floor((total_seconds_tnl % 3600) / 60) or 0
+			local seconds_tnl = total_seconds_tnl > 0 and math.floor(total_seconds_tnl % 60)
+			local formatted_time_tnl = total_seconds_tnl > 0 and (total_seconds_tnl < 60 and string.format("%02ds", seconds_tnl) or string.format("%dh:%02dm", hours_tnl, minutes_tnl)) or ""
+			local formatted_tnl = (show_tnl or show_time_tnl) and " ("..(show_tnl and addCommas(tnl) or "")..(show_time_tnl and (show_tnl and total_seconds_tnl > 0 and "/" or "")..formatted_time_tnl or "").." TNML)" or ""
+			text = job..formatted_mlvl..colorized_merit_points..colorized_jp_stored..colorized_ep..formatted_percent..formatted_tnl..formatted_ep_per_hour..formatted_kills_per_hour..formatted_points_per_kill..formatted_seconds_per_kill..formatted_conq_pt_per_hour
+			text_shdw = job..formatted_mlvl..colorized_merit_points_shdw..colorized_jp_stored_shdw..colorized_ep_shdw..formatted_percent..formatted_tnl..formatted_ep_per_hour..formatted_kills_per_hour..formatted_points_per_kill..formatted_seconds_per_kill..formatted_conq_pt_per_hour
+			cm = Fade and not exclude_from_fade and text_color or color.xp.ep_meter
+		end
+		return percent, spaces, text, text_shdw
+	end
+
+	local percent, spaces, text, text_shdw = getXPBarInfo(player)
+	local xp_meter = ''
+
+	--Fix the pad issue when 0
+	if spaces == 0 then
+		xp_bar_meter:bg_alpha(0)
+	else
+		xp_bar_meter:bg_alpha((not Fade or exclude_from_fade) and xp_meter_alpha)
+		--fix for the math flooring this to 0 when its not exactly 0 (13 is because of padding issue though)
+		spaces = math.max(spaces, 13)
+		while string.len(xp_meter) < spaces and string.len(xp_meter) < (xp_bar_width * 10) do
+			xp_meter = xp_meter..' '
+		end
+	end
+
+	xp_bar_meter:text('\n\n\n\n\n\n\n'..xp_meter)
+	xp_bar_meter:bg_color(cm.r,cm.g,cm.b)
+	xp_text:text(Fade and not exclude_from_fade and text:text_strip_format() or text)
+	xp_text_shadow:text(Fade and not exclude_from_fade and text_shdw:text_strip_format() or text_shdw)
+
+	--Clear old xp/cp(jp)/ep entries
+	local function prune_table(tbl)
+		local cutoff = (legacy_per_hour_calculation and 10 or per_hour_rolling_window_in_minutes) * 60
+		for i = #tbl, 1, -1 do
+			if time - tbl[i].timestamp > cutoff then
+				table.remove(tbl, i)
+			end
+		end
+	end
+	prune_table(xp_table)
+	prune_table(cp_table)
+	prune_table(ep_table)
 
 end
 
@@ -5611,9 +8008,6 @@ function checkForFocusTarget(target)
 	--Update focus_target if its new, will remove/nil if nothing in the auto_focus_targets_data
 	if focus_target ~= nearby then
 		focus_target = nearby
-		if not nearby then
-			focus_target_bar_drain_meter:hide()
-		end
 	end
 
 end
@@ -5641,7 +8035,6 @@ function checkForFocusTargetOverride(target)
 	else
 		add_to_chat(8,('[Bars] '):color(220)..('Focus Target Override Removed: '):color(36)..(focus_target_override.name):color(1))
 		focus_target_override = nil
-		focus_target_bar_drain_meter:hide()
 	end
 
 end
@@ -5690,6 +8083,12 @@ function setTextFade(num)
 	player_stats_pet_text:stroke_alpha(num)
 	player_stats_pet_text_shadow:alpha(num)
 
+	if not exclude_from_fade then
+		xp_text:alpha(num)
+		xp_text:stroke_alpha(num)
+		xp_text_shadow:alpha(num)
+	end
+
 	self_action_text:alpha(num)
 	self_action_text:stroke_alpha(num)
 	self_action_text_shadow:alpha(num)
@@ -5697,47 +8096,82 @@ function setTextFade(num)
 end
 
 --Fade the bars (bg_alpha)
-function setBarFade(num, player, pet)
+function setBarFade(player, pet)
 
-	focus_target_bar_meter:bg_alpha(num)
+	if fade_focus_target_bg_num > fade_down_to_alpha then
+		fade_focus_target_bg_num = fade_focus_target_bg_num - fade_speed
+	elseif fade_focus_target_bg_num <= fade_down_to_alpha then
+		fade_focus_target_bg_num = fade_down_to_alpha
+	end
+	focus_target_bar_meter:bg_alpha(fade_focus_target_bg_num)
 	focus_target_bar_drain_meter:bg_alpha(0)
-	focus_target_bar_bg:bg_alpha(num)
+	focus_target_bar_bg:bg_alpha(fade_focus_target_bg_num)
 
-	sub_target_bar_meter:bg_alpha(num)
+	if fade_sub_target_bg_num > fade_down_to_alpha then
+		fade_sub_target_bg_num = fade_sub_target_bg_num - fade_speed
+	elseif fade_sub_target_bg_num <= fade_down_to_alpha then
+		fade_sub_target_bg_num = fade_down_to_alpha
+	end
+	sub_target_bar_meter:bg_alpha(fade_sub_target_bg_num)
 	sub_target_bar_drain_meter:bg_alpha(0)
-	sub_target_bar_bg:bg_alpha(num)
+	sub_target_bar_bg:bg_alpha(fade_sub_target_bg_num)
 
-	target_bar_meter:bg_alpha(num)
+	if fade_target_bg_num > fade_down_to_alpha then
+		fade_target_bg_num = fade_target_bg_num - fade_speed
+	elseif fade_target_bg_num <= fade_down_to_alpha then
+		fade_target_bg_num = fade_down_to_alpha
+	end
+	target_bar_meter:bg_alpha(fade_target_bg_num)
 	target_bar_drain_meter:bg_alpha(0)
-	target_bar_bg:bg_alpha(num)
-	target_bar_lock_underline:bg_alpha(num)
+	target_bar_bg:bg_alpha(fade_target_bg_num)
+	target_bar_lock_underline:bg_alpha(fade_target_bg_num)
 
-	self_action_bar_meter:bg_alpha(num)
-	self_action_bar_bg:bg_alpha(num)
+	if fade_self_action_bg_num > fade_down_to_alpha then
+		fade_self_action_bg_num = fade_self_action_bg_num - fade_speed
+	elseif fade_self_action_bg_num <= fade_down_to_alpha then
+		fade_self_action_bg_num = fade_down_to_alpha
+	end
+	self_action_bar_meter:bg_alpha(fade_self_action_bg_num)
+	self_action_bar_bg:bg_alpha(fade_self_action_bg_num)
 
+	if not exclude_from_fade then
+		if fade_xp_bg_num > fade_down_to_alpha then
+			fade_xp_bg_num = fade_xp_bg_num - fade_speed
+		elseif fade_xp_bg_num <= fade_down_to_alpha then
+			fade_xp_bg_num = fade_down_to_alpha
+		end
+		xp_bar_meter:bg_alpha(fade_xp_bg_num)
+		xp_bar_bg:bg_alpha(fade_xp_bg_num)
+	end
+
+	if fade_player_stats_bg_num > fade_down_to_alpha then
+		fade_player_stats_bg_num = fade_player_stats_bg_num - fade_speed
+	elseif fade_player_stats_bg_num <= fade_down_to_alpha then
+		fade_player_stats_bg_num = fade_down_to_alpha
+	end
 	if player and player.vitals.hp > 0 then
-		player_stats_hp_bar_meter:bg_alpha(num)
+		player_stats_hp_bar_meter:bg_alpha(fade_player_stats_bg_num)
 		player_stats_hp_bar_drain_meter:bg_alpha(0)
 	end
-	player_stats_hp_bar_bg:bg_alpha(num)
+	player_stats_hp_bar_bg:bg_alpha(fade_player_stats_bg_num)
 
 	if player and player.vitals.mp > 0 then
-		player_stats_mp_bar_meter:bg_alpha(num)
+		player_stats_mp_bar_meter:bg_alpha(fade_player_stats_bg_num)
 		player_stats_mp_bar_drain_meter:bg_alpha(0)
 	end
-	player_stats_mp_bar_bg:bg_alpha(num)
+	player_stats_mp_bar_bg:bg_alpha(fade_player_stats_bg_num)
 
 	if player and player.vitals.tp > 0 then
-		player_stats_tp_bar_meter:bg_alpha(num)
+		player_stats_tp_bar_meter:bg_alpha(fade_player_stats_bg_num)
 		player_stats_tp_bar_drain_meter:bg_alpha(0)
 	end
-	player_stats_tp_bar_bg:bg_alpha(num)
+	player_stats_tp_bar_bg:bg_alpha(fade_player_stats_bg_num)
 
 	if pet and pet.hpp > 0 then
-		player_stats_pet_bar_meter:bg_alpha(num)
+		player_stats_pet_bar_meter:bg_alpha(fade_player_stats_bg_num)
 		player_stats_pet_bar_drain_meter:bg_alpha(0)
 	end
-	player_stats_pet_bar_bg:bg_alpha(num)
+	player_stats_pet_bar_bg:bg_alpha(fade_player_stats_bg_num)
 
 end
 
@@ -5782,9 +8216,9 @@ function unFade()
 	local player = get_player()
 	local pet = get_mob_by_target('pet')
 
-	focus_target_bar_meter:bg_alpha(drain_target_bars and meter_bg_alpha or bg_alpha)
-	focus_target_bar_drain_meter:bg_alpha(drain_bg_alpha)
-	focus_target_bar_bg:bg_alpha(bg_alpha)
+	focus_target_bar_meter:bg_alpha(focus_target_meter_bg_alpha)
+	focus_target_bar_drain_meter:bg_alpha(focus_target_drain_bg_alpha)
+	focus_target_bar_bg:bg_alpha(focus_target_bg_alpha)
 	focus_target_text:alpha(text_alpha)
 	focus_target_text:stroke_alpha(ft_text_stroke.a)
 	focus_target_text_shadow:alpha(text_alpha)
@@ -5792,9 +8226,9 @@ function unFade()
 	focus_target_action_text:stroke_alpha(ft_text_stroke.a)
 	focus_target_action_text_shadow:alpha(text_alpha)
 
-	sub_target_bar_meter:bg_alpha(drain_target_bars and meter_bg_alpha or bg_alpha)
-	sub_target_bar_drain_meter:bg_alpha(drain_bg_alpha)
-	sub_target_bar_bg:bg_alpha(bg_alpha)
+	sub_target_bar_meter:bg_alpha(sub_target_meter_bg_alpha)
+	sub_target_bar_drain_meter:bg_alpha(sub_target_drain_bg_alpha)
+	sub_target_bar_bg:bg_alpha(sub_target_bg_alpha)
 	sub_target_text:alpha(text_alpha)
 	sub_target_text:stroke_alpha(st_text_stroke.a)
 	sub_target_text_shadow:alpha(text_alpha)
@@ -5802,12 +8236,12 @@ function unFade()
 	sub_target_action_text:stroke_alpha(st_text_stroke.a)
 	sub_target_action_text_shadow:alpha(text_alpha)
 
-	target_bar_meter:bg_alpha(drain_target_bars and meter_bg_alpha or bg_alpha)
-	target_bar_drain_meter:bg_alpha(drain_bg_alpha)
-	target_bar_bg:bg_alpha(bg_alpha)
+	target_bar_meter:bg_alpha(target_meter_bg_alpha)
+	target_bar_drain_meter:bg_alpha(target_drain_bg_alpha)
+	target_bar_bg:bg_alpha(target_bg_alpha)
 	target_bar_lock_left:alpha(text_alpha)
 	target_bar_lock_right:alpha(text_alpha)
-	target_bar_lock_underline:bg_alpha(bg_alpha)
+	target_bar_lock_underline:bg_alpha(target_bg_alpha)
 	target_text:alpha(text_alpha)
 	target_text:stroke_alpha(t_text_stroke.a)
 	target_text_shadow:alpha(text_alpha)
@@ -5816,51 +8250,57 @@ function unFade()
 	target_action_text_shadow:alpha(text_alpha)
 
 	if player and player.vitals.hp > 0 then
-		player_stats_hp_bar_meter:bg_alpha(drain_hp_bar and meter_bg_alpha or bg_alpha)
-		player_stats_hp_bar_drain_meter:bg_alpha(drain_bg_alpha)
+		player_stats_hp_bar_meter:bg_alpha(player_stats_meter_bg_alpha)
+		player_stats_hp_bar_drain_meter:bg_alpha(player_stats_drain_bg_alpha)
 	end
 	player_stats_hp_bar_meter:bg_color(color.hp.bar.r,color.hp.bar.g,color.hp.bar.b)
-	player_stats_hp_bar_bg:bg_alpha(bg_alpha)
+	player_stats_hp_bar_bg:bg_alpha(player_stats_bg_alpha)
 	player_stats_hp_marker:alpha(text_alpha)
 	player_stats_hp_text:alpha(text_alpha)
 	player_stats_hp_text:stroke_alpha(ps_text_stroke.a)
 	player_stats_hp_text_shadow:alpha(text_alpha)
 
 	if player and player.vitals.mp > 0 then
-		player_stats_mp_bar_meter:bg_alpha(drain_mp_bar and meter_bg_alpha or bg_alpha)
-		player_stats_mp_bar_drain_meter:bg_alpha(drain_bg_alpha)
+		player_stats_mp_bar_meter:bg_alpha(player_stats_meter_bg_alpha)
+		player_stats_mp_bar_drain_meter:bg_alpha(player_stats_drain_bg_alpha)
 	end
 	player_stats_mp_bar_meter:bg_color(color.mp.bar.r,color.mp.bar.g,color.mp.bar.b)
-	player_stats_mp_bar_bg:bg_alpha(bg_alpha)
+	player_stats_mp_bar_bg:bg_alpha(player_stats_bg_alpha)
 	player_stats_mp_text:alpha(text_alpha)
 	player_stats_mp_text:stroke_alpha(ps_text_stroke.a)
 	player_stats_mp_text_shadow:alpha(text_alpha)
 
 	if player and player.vitals.tp > 0 then
-		player_stats_tp_bar_meter:bg_alpha(drain_tp_bar and meter_bg_alpha or bg_alpha)
-		player_stats_tp_bar_drain_meter:bg_alpha(drain_bg_alpha)
+		player_stats_tp_bar_meter:bg_alpha(player_stats_meter_bg_alpha)
+		player_stats_tp_bar_drain_meter:bg_alpha(player_stats_drain_bg_alpha)
 	end
-	player_stats_tp_bar_bg:bg_alpha(bg_alpha)
+	player_stats_tp_bar_bg:bg_alpha(player_stats_bg_alpha)
 	player_stats_tp_marker:alpha(text_alpha)
 	player_stats_tp_text:alpha(text_alpha)
 	player_stats_tp_text:stroke_alpha(ps_text_stroke.a)
 	player_stats_tp_text_shadow:alpha(text_alpha)
 
 	if pet and pet.hpp > 0 then
-		player_stats_pet_bar_meter:bg_alpha(drain_pet_bar and meter_bg_alpha or bg_alpha)
-		player_stats_pet_bar_drain_meter:bg_alpha(drain_bg_alpha)
+		player_stats_pet_bar_meter:bg_alpha(player_stats_meter_bg_alpha)
+		player_stats_pet_bar_drain_meter:bg_alpha(player_stats_drain_bg_alpha)
 	end
 	player_stats_pet_bar_meter:bg_color(color.pet.bar.r,color.pet.bar.g,color.pet.bar.b)
-	player_stats_pet_bar_bg:bg_alpha(bg_alpha)
+	player_stats_pet_bar_bg:bg_alpha(player_stats_bg_alpha)
 	player_stats_pet_text:alpha(text_alpha)
 	player_stats_pet_text:stroke_alpha(ps_text_stroke.a)
 	player_stats_pet_text_shadow:alpha(text_alpha)
 
-	self_action_bar_meter:bg_alpha(bg_alpha)
-	self_action_bar_bg:bg_alpha(bg_alpha)
+	self_action_bar_meter:bg_alpha(self_action_meter_alpha)
+	self_action_bar_bg:bg_alpha(self_action_bg_alpha)
 	self_action_text:alpha(text_alpha)
 	self_action_text:stroke_alpha(sa_text_stroke.a)
 	self_action_text_shadow:alpha(text_alpha)
+
+	xp_bar_meter:bg_alpha(xp_meter_alpha)
+	xp_bar_bg:bg_alpha(xp_bg_alpha)
+	xp_text:alpha(text_alpha)
+	xp_text:stroke_alpha(xp_text_stroke.a)
+	xp_text_shadow:alpha(text_alpha)
 
 	for section, _ in pairs(debuff_icons) do
 
@@ -5893,6 +8333,7 @@ function unFade()
 	updateHPBar(player)
 	updateMPBar(player)
 	updateTPBar(player)
+	updateXPBar(player) --and the xp bar so it gets re-colorized right away
 
 end
 
@@ -5901,22 +8342,17 @@ function resetFadeDelay()
 	fade_delay = settings.options.animations.fade_delay
 	if Fade then
 		Fade = false
-		fade_bg_num = settings.bg.alpha
+		fade_focus_target_bg_num = settings.sections.focus_target.bg_alpha
+		fade_sub_target_bg_num = settings.sections.sub_target.bg_alpha
+		fade_target_bg_num = settings.sections.target.bg_alpha
+		fade_self_action_bg_num = settings.sections.self_action.bg_alpha
+		fade_xp_bg_num = settings.sections.xp.bg_alpha
+		fade_player_stats_bg_num = settings.sections.player_stats.bg_alpha
 		fade_text_num = settings.text.alpha
 		fade_icon_num = 255
 		fade_bg_ui_num = settings.sections.focus_target.ui_bg_alpha
 		unFade()
 	end
-end
-
---Check a table if it contains a specific message number
-function checkForMessage(tbl, msg)
-	for _, v in ipairs(tbl) do
-		if v == msg then
-			return true
-		end
-	end
-	return false
 end
 
 --Show the Target, Sub Target, and Focus Target bars to test the screen layout
@@ -5956,10 +8392,10 @@ function screenTest()
 	local ct_g = formatRGB(ct.g)
 	local ct_b = formatRGB(ct.b)
 
-	local target_action = ' \\cs('..c_r..','..c_g..','..c_b..')Screen Test '..targeting_icon..'\\cr \\cs('..ct_r..','..ct_g..','..ct_b..')'..get_player().name..'\\cr'
-	local target_action_shdw = ' \\cs(000,000,000)Screen Test '..targeting_icon..'\\cr \\cs(000,000,000)'..get_player().name..'\\cr'
+	local target_action = ' \\cs('..c_r..','..c_g..','..c_b..')Self Action '..targeting_icon..'\\cr \\cs('..ct_r..','..ct_g..','..ct_b..')'..get_player().name..'\\cr'
+	local target_action_shdw = ' \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')Self Action '..targeting_icon..'\\cr \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..get_player().name..'\\cr'
 	local target_action_status = '\\cs(245,164,066)'..casting_icon..'\\cr'
-	local target_action_status_shdw = '\\cs(000,000,000)'..casting_icon..'\\cr'
+	local target_action_status_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..casting_icon..'\\cr'
 	local target_action_result = ''
 	local target_action_result_shdw = ''
 	local action_target_name = ''
@@ -5974,7 +8410,9 @@ function screenTest()
 		focus_target_override = screen_test_focus_target
 	end
 
-	self_action_bar_bg:show()
+	if show_self_action then
+		self_action_bar_bg:show()
+	end
 
 	if show_aggro_list then
 		aggro_list_box:show()
@@ -5985,6 +8423,7 @@ end
 --Run Wide Scan
 function runWideScan()
 
+	local zone_name = current_zone or getZone()
 	local in_town = wide_scan_exclude_zones:contains(zone_name)
 	local in_mh = get_info().mog_house
 
@@ -5999,33 +8438,62 @@ function runWideScan()
 		return
 	end
 
-	local zone_name = res.zones[get_info().zone].name
 	local packet = packets.new('outgoing', 0xF4, {
-        ['Flags'] = 1,
-        ['_unknown1'] = 0,
-        ['_unknown2'] = 0,
-    })
+		['Flags'] = 1,
+		['_unknown1'] = 0,
+		['_unknown2'] = 0,
+	})
 
 	--Send the Wide Scan request
 	packets.inject(packet)
 
-    --Schedule the next Wide Scan attempt for 30 to 60 seconds from now
-    next_wide_scan_time = os.time() + math.random(30, 60)
+	--Schedule the next Wide Scan attempt for 30 to 60 seconds from now
+	next_wide_scan_time = os.time() + math.random(30, 60)
 
 	--Lock Wide Scan again
 	wide_scan_locked = true
 
 end
 
+--Wipe Debuffs (but save TH)
+function wipeDebuffs(target_id)
+	local saved_th = false
+
+	--If the target has any debuffs, check if Treasure Hunter is present
+	if current_debuffs[target_id] then
+		for effect_id, spell in pairs(current_debuffs[target_id]) do
+			if T{9902,9903,9904,9905,9906,9907,9908,9909,9910,9911,9912,9913,9914}:contains(effect_id) then
+				saved_th = effect_id
+				break
+			end
+		end
+	end
+
+	--Wipe all debuffs
+	current_debuffs[target_id] = nil
+
+	--If Treasure Hunter was present, reapply it
+	if saved_th then
+		current_debuffs[target_id] = {}
+		current_debuffs[target_id][saved_th] = {
+			id = saved_th,
+			timer = nil,
+			index = assignIndex()
+		}
+	end
+end
+
 --Job Changing
 register_event('job change', function()
 
 	local target = get_mob_by_target('t')
+	local player = get_player()
 
 	hideBars()
-	setJob()
+	setJob(player)
 	setPositions()
 	showBars(target)
+	updateTPBar(player)
 	resetFadeDelay()
 
 end)
@@ -6068,7 +8536,7 @@ register_event('target change', function()
 		showBars(target)
 	end
 
-	updateAggroList(player, target)
+	updateAggroList(player, target, sub_target)
 
 end)
 
@@ -6130,7 +8598,6 @@ register_event('mpp change', mpChange)
 
 --TP Changing
 register_event('tp change', function(new_tp,old_tp)
-
 	if in_cutscene or zoning then return end
 
 	if job and job_specific[job].tp then
@@ -6155,9 +8622,14 @@ function greeting()
 
 	if settings.first_run then
 		add_to_chat(8,('[Bars] '):color(220)..('Welcome to Bars '.._addon.version.."!"):color(36))
-		add_to_chat(8,('[Bars] '):color(220)..('Type '):color(8)..('//bars ui '):color(1)..('to unlock and drag the UI sections around.'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('Type '):color(8)..('//bars help '):color(1)..('for a list of other commands.'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('More detailed settings can be found in the '):color(8)..('Bars/data/settings.xml '):color(1)..('file.'):color(8))
+		coroutine.sleep(0.5)
+		add_to_chat(8,('Type '):color(8)..('//bars ui '):color(1)..('to unlock and drag the UI sections around.'):color(8))
+		coroutine.sleep(0.5)
+		add_to_chat(8,('Type '):color(8)..('//bars help '):color(1)..('for a list of other commands.'):color(8))
+		coroutine.sleep(0.5)
+		add_to_chat(8,('More detailed settings can be found in the '):color(8)..('Bars/data/settings.xml '):color(1)..('file.'):color(8))
+		coroutine.sleep(0.5)
+		add_to_chat(8,('NOTE: Monster Debuff timers are generally close enough but NOT 100% accurate.'):color(8))
 		settings.first_run = false
 		settings:save('all')
 	end
@@ -6171,8 +8643,7 @@ function initialize()
 	local target = get_mob_by_target('t')
 	local sub_target = get_mob_by_target('st')
 
-	greeting()
-	setJob()
+	setJob(player)
 	setPositions()
 	setWidth()
 	updateTargetBar(player, target)
@@ -6180,8 +8651,10 @@ function initialize()
 	updateHPBar(player)
 	updateMPBar(player)
 	updateTPBar(player)
+	updateXPBar(player)
 	runWideScan()
-
+	hideBars()
+	
 	--Wait 2 sec then repeat since values are 0 when first logging into a character
 	coroutine.schedule(function()
 		player = get_player()
@@ -6192,7 +8665,33 @@ function initialize()
 		showBars(target)
 		logged_in = true
 		server = res.servers[get_info().server].name
+		checkCustomSettings(player)
 	end, 2)
+
+	--Give a little room for the system and ls messages to display first
+	coroutine.schedule(function()
+		greeting()
+	end, 5)
+
+end
+
+function signetActive()
+
+	local player = windower.ffxi.get_player()
+
+	if not player or not player.buffs then
+		signet_active = false
+	end
+
+	for index, buff_id in ipairs(player.buffs) do
+
+		if buff_id == 253 then
+			signet_active = true
+			return
+		end
+	end
+
+	signet_active = false
 
 end
 
@@ -6200,7 +8699,34 @@ end
 register_event('load', function()
 
 	if get_info().logged_in then
+
+		logged_in = true
+
 		initialize()
+		checkLastPackets()
+		signetActive()
+
+		--Update Zone Stuff
+		current_zone = getZone()
+		in_signet_zone = inSignetZone()
+
+	end
+
+	if show_chat_bar then
+
+		initializeChatUIGrid()
+		calculateDynamicChatMinWidth()
+
+		coroutine.schedule(function()
+
+			rebuildWrappedHistory()
+
+			if logged_in then
+				refreshChatUI()
+			end
+
+		end, 2)
+
 	end
 
 end)
@@ -6208,19 +8734,42 @@ end)
 --Login
 register_event('login', function()
 
+	logged_in = true
+
 	initialize()
 	resetFadeDelay()
-	logged_in = true
+
+	coroutine.schedule(function()
+
+		if show_chat_bar then
+			rebuildWrappedHistory()
+			refreshChatUI()
+		end
+
+		signetActive()
+
+		--Update Zone Stuff
+		current_zone = getZone()
+		in_signet_zone = inSignetZone()
+
+	end, 2)
 
 end)
 
 --Logout
 register_event('logout', function()
 
+	logged_in = false
+
 	hideBars()
 	resetFadeDelay()
 	clearTables()
-	logged_in = false
+	hideChatBar()
+
+	--Clear XP tables
+	xp_table = {}
+	cp_table = {}
+	ep_table = {}
 
 end)
 
@@ -6230,15 +8779,48 @@ register_event('status change', function(status)
 	if status == 4 and not in_cutscene then
 		in_cutscene = true
 		hideBars()
+		hideChatBar()
 
 	--Out of cutscene: Show the bars
 	elseif status ~= 4 and in_cutscene then
 		in_cutscene = false
 		local target = get_mob_by_target('t')
 		showBars(target)
+		showChatBar()
 
 	end
+
 	resetFadeDelay()
+
+end)
+
+register_event('zone change', function()
+
+	--Update Zone Stuff
+	current_zone = getZone()
+	in_signet_zone = inSignetZone()
+
+	--Clear XP tables
+	xp_table = {}
+	cp_table = {}
+	ep_table = {}
+
+end)
+
+register_event('gain buff', function(buff_id)
+
+	if buff_id == 253 then --Signet
+		signet_active = true
+	end
+
+end)
+
+register_event('lose buff', function(buff_id)
+
+	if buff_id == 253 then --Signet
+		signet_active = false
+	end
+
 end)
 
 register_event('prerender', function()
@@ -6250,6 +8832,7 @@ register_event('prerender', function()
 	local sub_target = get_mob_by_target('st')
 	local pet = get_mob_by_target('pet')
 	local clock = os.clock()
+	local time = os.time()
 
 	if sub_target and not condense_target_and_subtarget_bars then
 		updateSubTargetBarAnimations(player, sub_target)
@@ -6274,13 +8857,30 @@ register_event('prerender', function()
 		updatePetBarAnimations(pet)
 	end
 
+	if new_tell_pulse then
+		if new_tell_pulse_direction then
+			if new_tell_pulse_alpha < 255 then
+				new_tell_pulse_alpha = new_tell_pulse_alpha + 5
+			else
+				new_tell_pulse_direction = false
+			end
+		else
+			if new_tell_pulse_alpha > 0 then
+				new_tell_pulse_alpha = new_tell_pulse_alpha - 5
+			else
+				new_tell_pulse_direction = true
+			end
+		end
+		chat_ui.tabs.Tell:bg_alpha(new_tell_pulse_alpha)
+	end
+
 	if clock - last_party_actions_update >= party_actions_update_interval then
 		updatePartyActions()
 		last_party_actions_update = clock
 	end
 
 	if clock - last_aggro_list_update >= aggro_list_update_interval then
-		updateAggroList(player, target)
+		updateAggroList(player, target, sub_target)
 		last_aggro_list_update = clock
 	end
 
@@ -6347,13 +8947,13 @@ register_event('prerender', function()
 
 		Heartbeat = os.time()
 
-		--Determine if we are in Dynamis-D
-		inDyna()		
-
 		--Run Wide Scan after next time has passed
 		if Heartbeat >= next_wide_scan_time then
 			runWideScan()
 		end
+
+		--Update the XP bar
+		updateXPBar(player, time)
 
 		--Check for expired SP Abilities
 		checkSPTimers(clock)
@@ -6406,7 +9006,7 @@ register_event('prerender', function()
 		
 		--Adjust Party Action positioning if the party/alliance changes
 		if Screen_Test then
-			updatePartyActionsPos(6,6,6)
+			-- updatePartyActionsPos(6,6,6)
 
 		elseif not Screen_Test
 		or num_party1_members ~= party_info.party1_count
@@ -6424,13 +9024,7 @@ register_event('prerender', function()
 
 	--Fade away (but not if the Screen Test is active)
 	if Fade and not Screen_Test then
-		if fade_bg_num > fade_down_to_alpha then
-			fade_bg_num = fade_bg_num - fade_speed
-			setBarFade(fade_bg_num, player, pet)
-		elseif fade_bg_num <= fade_down_to_alpha then
-			fade_bg_num = fade_down_to_alpha
-			setBarFade(fade_bg_num, player, pet)
-		end
+		setBarFade(player, pet)
 		if fade_text_num > (fade_down_to_alpha + fade_speed) then
 			fade_text_num = fade_text_num - fade_speed
 			setTextFade(fade_text_num)
@@ -6459,11 +9053,20 @@ end)
 register_event('action', function (act)
 	local msg = act.targets[1].actions[1].message
 	local aoe_main_target_messages = {
-		2,7,14,67,75,83,85,102,103,110,116,127,131,134,141,148,150,156,185,186,187,188,189,194,197,
-		224,225,226,227,228,230,231,236,237,238,242,243,252,268,271,274,275,306,317,318,319,320,321,322,323,324,
-		341,342,362,373,375,379,408,412,413,435,441,570,645,658
+		[2] = true, [7] = true, [14] = true, [67] = true, [75] = true, [83] = true, [85] = true,
+		[102] = true, [103] = true, [110] = true, [116] = true, [127] = true, [131] = true,
+		[134] = true, [141] = true, [148] = true, [150] = true, [156] = true, [185] = true,
+		[186] = true, [187] = true, [188] = true, [189] = true, [194] = true, [197] = true,
+		[224] = true, [225] = true, [226] = true, [227] = true, [228] = true, [230] = true,
+		[231] = true, [236] = true, [237] = true, [238] = true, [242] = true, [243] = true,
+		[252] = true, [268] = true, [271] = true, [274] = true, [275] = true, [306] = true,
+		[317] = true, [318] = true, [319] = true, [320] = true, [321] = true, [322] = true,
+		[323] = true, [324] = true, [341] = true, [342] = true, [362] = true, [373] = true,
+		[375] = true, [379] = true, [408] = true, [412] = true, [413] = true, [435] = true,
+		[441] = true, [570] = true, [645] = true, [658] = true
 	}
 	local player = get_player()
+	local get_player = get_mob_by_id(player.id)
 	local actor = get_mob_by_id(act.actor_id)
 	local target_count = act.target_count
 	local action_id = act.targets[1].actions[1].param
@@ -6473,7 +9076,7 @@ register_event('action', function (act)
 		local main_target_found = false
 		for i = 1, target_count do
 			local message = act.targets[i].actions[1].message
-			if checkForMessage(aoe_main_target_messages,message) then
+			if aoe_main_target_messages[message] then
 				action_target_id = act.targets[i].id
 				main_target_found = true
 				break
@@ -6508,7 +9111,7 @@ register_event('action', function (act)
 	local ct_b = formatRGB(ct.b)
 	local truncated_name = action_target and truncateName(action_target.name) or ''
 	local action_target_name = ' '..targeting_icon..' \\cs('..ct_r..','..ct_g..','..ct_b..')'..truncated_name..'\\cr' or ''
-	local action_target_name_shdw = ' '..targeting_icon..' \\cs(000,000,000)'..truncated_name..'\\cr' or ''
+	local action_target_name_shdw = ' '..targeting_icon..' \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..truncated_name..'\\cr' or ''
 	local target_action = ''
 	local target_action_shdw = ''
 	local target_action_result = ''
@@ -6602,18 +9205,17 @@ register_event('action', function (act)
 	end
 
 	--Debug Stuff
-	-- if (act.category == 4 or act.category == 8) and actor.name ~= player.name then
-	-- if actor.name == player.name and act.category ~= 1 then
-	-- 	print(get_mob_by_id(act.actor_id).name.." - category: "..act.category.." a.param: "..act.param.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(action_target_id).name.." add_eff_param: "..act.targets[1].actions[1].add_effect_param)
-	-- 	add_to_chat(1, get_mob_by_id(act.actor_id).name.." - category: "..act.category.." a.param: "..act.param.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(action_target_id).name.." add_eff_param: "..act.targets[1].actions[1].add_effect_param)
-	-- end
+	if actor.name == player.name and act.category ~=1 then
+		-- print(actor.name.." - category: "..act.category.." a.param: "..act.param.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(action_target_id).name.." add_eff_param: "..act.targets[1].actions[1].add_effect_param.." animation: "..act.targets[1].actions[1].animation.." reaction: "..act.targets[1].actions[1].reaction.." effect: "..act.targets[1].actions[1].effect)
+		-- add_to_chat(1, actor.name.." - category: "..act.category.." a.param: "..act.param.." a.t.a.param: "..act.targets[1].actions[1].param.." message: "..msg.." target: "..get_mob_by_id(action_target_id).name.." add_eff_param: "..act.targets[1].actions[1].add_effect_param.." animation: "..act.targets[1].actions[1].animation.." reaction: "..act.targets[1].actions[1].reaction.." effect: "..act.targets[1].actions[1].effect)
+	end
 
 	--Action failed/interrupted
 	if (act.param == 28787 or msg == 78) and not (not isPlayer(actor.id) and nm_auto_tp) and not ((act.category == 7 or act.category == 9) and msg == 0) then
 
 		local trackingIndex = assignIndex()
 		local target_action_status = '\\cs(255,050,050)'..cancelled_icon..'\\cr'
-		local target_action_status_shdw = '\\cs(000,000,000)'..cancelled_icon..'\\cr'
+		local target_action_status_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..cancelled_icon..'\\cr'
 
 		if msg == 78 then
 			target_action_result = ' (Too Far!)'
@@ -6639,7 +9241,7 @@ register_event('action', function (act)
 	if action_id and (act.category == 7 or act.category == 8 or act.category == 9) then
 
 		local target_action_status = '\\cs(245,164,066)'..casting_icon..'\\cr'
-		local target_action_status_shdw = '\\cs(000,000,000)'..casting_icon..'\\cr'
+		local target_action_status_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..casting_icon..'\\cr'
 
 		--Weapon skill or TP move
 		if act.category == 7 then
@@ -6649,7 +9251,7 @@ register_event('action', function (act)
 			local g = formatRGB(c.g)
 			local b = formatRGB(c.b)
 			action_target_name = action_target and action_target_id ~= act.actor_id and ' '..targeting_icon..' \\cs('..r..','..g..','..b..')'..truncateName(action_target.name)..'\\cr' or ''
-			action_target_name_shdw = action_target and action_target_id ~= act.actor_id and ' '..targeting_icon..' \\cs(000,000,000)'..truncateName(action_target.name)..'\\cr' or ''
+			action_target_name_shdw = action_target and action_target_id ~= act.actor_id and ' '..targeting_icon..' \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..truncateName(action_target.name)..'\\cr' or ''
 
 			--Players
 			if isPlayer(actor.id) then
@@ -6662,7 +9264,6 @@ register_event('action', function (act)
 
 			--Pets (& Synergy Furnaces)
 			elseif actor and actor.spawn_type == 2 then
-			-- elseif get_mob_by_id(actor.id) and get_mob_by_id(actor.id).spawn_type == 2 then
 				action_name = job_abil[action_id] and ' '..truncateAction(job_abil[action_id].name) or (monster_abil[action_id] and ' '..truncateAction(monster_abil[action_id].name) or ' [REDACTED]')
 				action_name_shdw = job_abil[action_id] and ' '..truncateAction(job_abil[action_id].name) or (monster_abil[action_id] and ' '..truncateAction(monster_abil[action_id].name) or ' [REDACTED]')
 
@@ -6682,7 +9283,7 @@ register_event('action', function (act)
 			local g = formatRGB(c.g)
 			local b = formatRGB(c.b)
 			action_name = spell[action_id] and ' \\cs('..r..','..g..','..b..')'..truncateAction(spell[action_id].name)..'\\cr' or ' [REDACTED]'
-			action_name_shdw = spell[action_id] and ' \\cs(000,000,000)'..truncateAction(spell[action_id].name)..'\\cr' or ' [REDACTED]'
+			action_name_shdw = spell[action_id] and ' \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..truncateAction(spell[action_id].name)..'\\cr' or ' [REDACTED]'
 			cast_time = spell[action_id].cast_time
 			--If a target starts casting, remove Silence debuff
 			if current_debuffs[act.actor_id] and act.param ~= 28787 then
@@ -6713,7 +9314,8 @@ register_event('action', function (act)
 
 			if player.id == act.actor_id then
 				self_action_bar_meter:bg_color(color.self.bar.r,color.self.bar.g,color.self.bar.b)
-				updateSelfBar(player, cast_time,trackingIndex)
+				local display_cast_meter = act.category ~= 7
+				updateSelfBar(player, cast_time, trackingIndex, display_cast_meter)
 				resetFadeDelay()
 			end
 
@@ -6734,10 +9336,11 @@ register_event('action', function (act)
 	)
 	or act.category == 6 or act.category == 14 or act.category == 15 then
 
+		local is_a_self_roll = false
 		local target_action = ''
 		local target_action_shdw = ''
 		local target_action_status = '\\cs(050,255,050)'..completed_icon..'\\cr'
-		local target_action_status_shdw = '\\cs(000,000,000)'..completed_icon..'\\cr'
+		local target_action_status_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..completed_icon..'\\cr'
 		local abil_id = act.param
 		local abil_name = ''
 		if act.category == 6 and actor.spawn_type == 16 then
@@ -6756,12 +9359,12 @@ register_event('action', function (act)
 			if msg == 102 or msg == 306 or msg == 318 or msg == 122 then
 				local lunge_mb = act.targets[1].actions[1].unknown == 4 and true or false
 				target_action_result = ' ('..(lunge_mb and 'Magic Burst! ' or '')..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr)'
-				target_action_result_shdw = ' ('..(lunge_mb and 'Magic Burst! ' or '')..'\\cs(000,000,000)'..amount..'\\cr)'
+				target_action_result_shdw = ' ('..(lunge_mb and 'Magic Burst! ' or '')..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr)'
 			--Lunge/Swipes
 			elseif msg == 110 then
 				local lunge_mb = act.targets[1].actions[1].unknown == 4 and true or false
 				target_action_result = ' ('..(lunge_mb and 'Magic Burst! ' or '')..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr)'
-				target_action_result_shdw = ' ('..(lunge_mb and 'Magic Burst! ' or '')..'\\cs(000,000,000)'..amount..'\\cr)'
+				target_action_result_shdw = ' ('..(lunge_mb and 'Magic Burst! ' or '')..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr)'
 			--Buff/Debuff
 			elseif msg == 319 or msg == 320 or msg == 668 or msg == 670 or msg == 671 or msg == 672 then
 				local landed = calculateInfo(act).landed
@@ -6774,31 +9377,32 @@ register_event('action', function (act)
 		--Absorbed - job abilities
 		elseif (act.category == 3 or act.category == 6 or act.category == 14) and (msg == 102 or msg == 122 or msg == 306 or msg == 318) then
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr)'
 		--Most direct damage abilities
 		elseif act.category == 3 and msg == 110 then
+			amount = addCommas(act.targets[1].actions[1].param + act.targets[1].actions[1].add_effect_param)
 			target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr)'
 		--No Effect
 		elseif act.category == 3 and (msg == 156 or msg == 323) then
-			target_action_result = ' ('..count..'No Effect)'
-			target_action_result_shdw = ' ('..count..'No Effect)'
+			target_action_result = ' (No Effect)'
+			target_action_result_shdw = ' (No Effect)'
 		--Anticipated
 		elseif act.category == 3 and msg == 30 then
-			target_action_result = ' ('..count..'Anticipated)'
-			target_action_result_shdw = ' ('..count..'Anticipated)'
+			target_action_result = ' (Anticipated)'
+			target_action_result_shdw = ' (Anticipated)'
 		--Blinked
 		elseif act.category == 3 and msg == 31 then
-			target_action_result = ' ('..count..'Blinked)'
-			target_action_result_shdw = ' ('..count..'Blinked)'
+			target_action_result = ' (Blinked)'
+			target_action_result_shdw = ' (Blinked)'
 		--Dodged
 		elseif act.category == 3 and msg == 32 then
-			target_action_result = ' ('..count..'Dodged)'
-			target_action_result_shdw = ' ('..count..'Dodged)'
+			target_action_result = ' (Dodged)'
+			target_action_result_shdw = ' (Dodged)'
 		--Missed
 		elseif act.category == 3 and (msg == 158 or msg == 324 or msg == 658) then
-			target_action_result = ' ('..count..'Missed)'
-			target_action_result_shdw = ' ('..count..'Missed)'
+			target_action_result = ' (Missed)'
+			target_action_result_shdw = ' (Missed)'
 		--Buff/Debuff
 		elseif msg == 127 or msg == 141 or msg == 645 or msg == 319 or msg == 320 or msg == 441 or msg == 602 then
 			local landed = calculateInfo(act).landed
@@ -6806,16 +9410,15 @@ register_event('action', function (act)
 			local buff_name = (action_id == 0 or action_id == 232) and job_abil[act.param] and capitalize(job_abil[act.param].name) or buff[act.targets[1].actions[1].param] and capitalize(buff[act.targets[1].actions[1].param].name)
 			target_action_result = ' ('..count..buff_name..')'
 			target_action_result_shdw = ' ('..count..buff_name..')'
-
 		--Mug Success + HP
 		elseif msg == 129 and act.targets[1].actions[1].has_add_effect then
 			local hp_drain = act.targets[1].actions[1].add_effect_param
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr Gil + \\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..hp_drain..'\\cr HP)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr Gil + \\cs(000,000,000)'..hp_drain..'\\cr HP)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr Gil + \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..hp_drain..'\\cr HP)'
 		--Mug Success
 		elseif msg == 129 then
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr Gil)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr Gil)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr Gil)'
 		--Mug Fail
 		elseif msg == 244 then
 			target_action_result = ' (Failed)'
@@ -6823,12 +9426,12 @@ register_event('action', function (act)
 		--Mug Fail + HP Drain
 		elseif msg == 736 then
 			target_action_result = ' (Failed + \\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr HP)'
-			target_action_result_shdw = ' (Failed + \\cs(000,000,000)'..amount..'\\cr HP)'
+			target_action_result_shdw = ' (Failed + \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr HP)'
 		--Steal Success
 		elseif msg == 125 then
 			local item = item[action_id].name
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..item..'\\cr)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..item..'\\cr)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..item..'\\cr)'
 		--Aura Steal Absorb
 		elseif msg == 453 then
 			local aura = buff[action_id].name
@@ -6837,7 +9440,7 @@ register_event('action', function (act)
 				removeFromSPTable(act.targets[1].id)
 			end
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..aura..'\\cr)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..aura..'\\cr)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..aura..'\\cr)'
 		--Aura Steal Dispel
 		elseif msg == 321 or msg == 322 then
 			local aura = buff[action_id].name
@@ -6847,37 +9450,37 @@ register_event('action', function (act)
 		elseif msg == 593 then
 			local item = item[action_id].name
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..item..'\\cr + Att Down)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..item..'\\cr + Att Down)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..item..'\\cr + Att Down)'
 		--Despoil Success + Defense Down
 		elseif msg == 594 then
 			local item = item[action_id].name
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..item..'\\cr + Def Down)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..item..'\\cr + Def Down)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..item..'\\cr + Def Down)'
 		--Despoil Success + Magic Attack Down
 		elseif msg == 595 then
 			local item = item[action_id].name
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..item..'\\cr + MAtt Down)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..item..'\\cr + MAtt Down)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..item..'\\cr + MAtt Down)'
 		--Despoil Success + Magic Defense Down
 		elseif msg == 596 then
 			local item = item[action_id].name
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..item..'\\cr + MDef Down)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..item..'\\cr + MDef Down)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..item..'\\cr + MDef Down)'
 		--Despoil Success + Evasion Down
 		elseif msg == 597 then
 			local item = item[action_id].name
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..item..'\\cr + Eva Down)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..item..'\\cr + Eva Down)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..item..'\\cr + Eva Down)'
 		--Despoil Success + Accuracy Down
 		elseif msg == 598 then
 			local item = item[action_id].name
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..item..'\\cr + Acc Down)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..item..'\\cr + Acc Down)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..item..'\\cr + Acc Down)'
 		--Despoil Success + Slow
 		elseif msg == 599 then
 			local item = item[action_id].name
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..item..'\\cr + Slow)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..item..'\\cr + Slow)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..item..'\\cr + Slow)'
 		--Steal/Despoil Fail
 		elseif msg == 153 then
 			target_action_result = ' (Failed)'
@@ -6885,7 +9488,7 @@ register_event('action', function (act)
 		--Bounty Shot Success
 		elseif msg == 608 then
 			target_action_result = ' (TH: \\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr)'
-			target_action_result_shdw = ' (TH: \\cs(000,000,000)'..amount..'\\cr)'
+			target_action_result_shdw = ' (TH: \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr)'
 		--Evaded/No Effect/Resisted/Immunobreak/Anticipated/Blinked/Dodged/Missed
 		elseif msg == 282 or msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 114 or msg == 85 or msg == 284 or msg == 653 or msg == 654 or msg == 655 or msg == 656 or msg == 30 or msg == 31 or msg == 32 or msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
 			local info = calculateInfo(act)
@@ -6902,7 +9505,7 @@ register_event('action', function (act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr '..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr '..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr '..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			else
 				--Evaded
 				if msg == 282 then
@@ -6913,52 +9516,58 @@ register_event('action', function (act)
 					target_action_result = ' ('..count..'No Effect)'
 					target_action_result_shdw = ' ('..count..'No Effect)'
 				--Resisted
-				elseif msg == 85 or msg == 284 or msg == 655 or msg == 656 then
+				elseif msg == 85 or msg == 284 then
 					target_action_result = ' ('..count..'Resisted)'
 					target_action_result_shdw = ' ('..count..'Resisted)'
+				--Completely Resisted
+				elseif msg == 655 or msg == 656 then
+					target_action_result = ' ('..count..'Completely Resisted)'
+					target_action_result_shdw = ' ('..count..'Completely Resisted)'
 				--Immunobreak
 				elseif msg == 653 or msg == 654 then
 					target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')Immunobreak!\\cr)'
-					target_action_result_shdw = ' (\\cs(000,000,000)Immunobreak!\\cr)'
+					target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')Immunobreak!\\cr)'
 				--Anticipated
 				elseif msg == 30 then
-					target_action_result = ' ('..count..'Anticipated)'
-					target_action_result_shdw = ' ('..count..'Anticipated)'
+					target_action_result = ' (Anticipated)'
+					target_action_result_shdw = ' (Anticipated)'
 				--Blinked
 				elseif msg == 31 then
-					target_action_result = ' ('..count..'Blinked)'
-					target_action_result_shdw = ' ('..count..'Blinked)'
+					target_action_result = ' (Blinked)'
+					target_action_result_shdw = ' (Blinked)'
 				--Dodged
 				elseif msg == 32 then
-					target_action_result = ' ('..count..'Dodged)'
-					target_action_result_shdw = ' ('..count..'Dodged)'
+					target_action_result = ' (Dodged)'
+					target_action_result_shdw = ' (Dodged)'
 				--Missed
 				elseif msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
-					target_action_result = ' ('..count..'Missed)'
-					target_action_result_shdw = ' ('..count..'Missed)'
+					target_action_result = ' (Missed)'
+					target_action_result_shdw = ' (Missed)'
 				end
 			end
 		--Most job abilities
 		elseif act.category == 6 then
+			local cor_roll = nil
 			--Erase
 			if msg == 123 then
 				local buff_name = capitalize(buff[act.targets[1].actions[1].param].name)
 				target_action_result = ' ('..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..buff_name..'\\cr)'
-				target_action_result_shdw = ' ('..count..'\\cs(000,000,000)'..buff_name..'\\cr)'
+				target_action_result_shdw = ' ('..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..buff_name..'\\cr)'
 			--Monberaux healing? idr
 			elseif msg == 103 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr HP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr HP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr HP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			--Plain Damage
 			elseif msg == 110 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
+				amount = addCommas(act.targets[1].actions[1].param + act.targets[1].actions[1].add_effect_param)
 				count = count == '' and '' or ' '..count
-				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr '..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr '..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			--Evaded/No Effect/Resisted/Immunobreak/Anticipated/Blinked/Dodged/Missed
 			elseif msg == 282 or msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 114 or msg == 85 or msg == 284 or msg == 653 or msg == 654 or msg == 655 or msg == 656 or msg == 30 or msg == 31 or msg == 32 or msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
 				local info = calculateInfo(act)
@@ -6975,7 +9584,7 @@ register_event('action', function (act)
 					local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 					count = count == '' and '' or ' '..count
 					target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr '..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-					target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr '..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+					target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr '..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 				else
 					--Evaded
 					if msg == 282 then
@@ -6986,29 +9595,33 @@ register_event('action', function (act)
 						target_action_result = ' ('..count..'No Effect)'
 						target_action_result_shdw = ' ('..count..'No Effect)'
 					--Resisted
-					elseif msg == 85 or msg == 284 or msg == 655 or msg == 656 then
+					elseif msg == 85 or msg == 284 then
 						target_action_result = ' ('..count..'Resisted)'
 						target_action_result_shdw = ' ('..count..'Resisted)'
+					--Completely Resisted
+					elseif msg == 655 or msg == 656 then
+						target_action_result = ' ('..count..'Completely Resisted)'
+						target_action_result_shdw = ' ('..count..'Completely Resisted)'
 					--Immunobreak
 					elseif msg == 653 or msg == 654 then
 						target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')Immunobreak!\\cr)'
-						target_action_result_shdw = ' (\\cs(000,000,000)Immunobreak!\\cr)'
+						target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')Immunobreak!\\cr)'
 					--Anticipated
 					elseif msg == 30 then
-						target_action_result = ' ('..count..'Anticipated)'
-						target_action_result_shdw = ' ('..count..'Anticipated)'
+						target_action_result = ' (Anticipated)'
+						target_action_result_shdw = ' (Anticipated)'
 					--Blinked
 					elseif msg == 31 then
-						target_action_result = ' ('..count..'Blinked)'
-						target_action_result_shdw = ' ('..count..'Blinked)'
+						target_action_result = ' (Blinked)'
+						target_action_result_shdw = ' (Blinked)'
 					--Dodged
 					elseif msg == 32 then
-						target_action_result = ' ('..count..'Dodged)'
-						target_action_result_shdw = ' ('..count..'Dodged)'
+						target_action_result = ' (Dodged)'
+						target_action_result_shdw = ' (Dodged)'
 					--Missed
 					elseif msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
-						target_action_result = ' ('..count..'Missed)'
-						target_action_result_shdw = ' ('..count..'Missed)'
+						target_action_result = ' (Missed)'
+						target_action_result_shdw = ' (Missed)'
 					end
 				end
 			--Cover
@@ -7024,6 +9637,11 @@ register_event('action', function (act)
 				target_action_result_shdw = ' ('..count..buff_name..')'
 			--Phantom Roll/Double-Up
 			elseif msg == 420 or msg == 424 then
+				action_target_name = ""
+				action_target_name_shdw = ""
+				if actor.name == player.name then
+					is_a_self_roll = true
+				end
 				local rolls = {
 					[98] = {lucky = '5', unlucky = '9'},	-- Fighter's Roll
 					[99] = {lucky = '3', unlucky = '7'},	-- Monk's Roll
@@ -7089,27 +9707,27 @@ register_event('action', function (act)
 						local r_c11 = color.rolls.eleven
 
 						local r_1_t = '\\cs('..formatRGB(r_c1.r)..','..formatRGB(r_c1.g)..','..formatRGB(r_c1.b)..')'..r_1..'\\cr'
-						local r_1_t_shdw = '\\cs(000,000,000)'..r_1..'\\cr'
+						local r_1_t_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..r_1..'\\cr'
 						local r_2_t = '\\cs('..formatRGB(r_c2.r)..','..formatRGB(r_c2.g)..','..formatRGB(r_c2.b)..')'..r_2..'\\cr'
-						local r_2_t_shdw = '\\cs(000,000,000)'..r_2..'\\cr'
+						local r_2_t_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..r_2..'\\cr'
 						local r_3_t = '\\cs('..formatRGB(r_c3.r)..','..formatRGB(r_c3.g)..','..formatRGB(r_c3.b)..')'..r_3..'\\cr'
-						local r_3_t_shdw = '\\cs(000,000,000)'..r_3..'\\cr'
+						local r_3_t_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..r_3..'\\cr'
 						local r_4_t = '\\cs('..formatRGB(r_c4.r)..','..formatRGB(r_c4.g)..','..formatRGB(r_c4.b)..')'..r_4..'\\cr'
-						local r_4_t_shdw = '\\cs(000,000,000)'..r_4..'\\cr'
+						local r_4_t_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..r_4..'\\cr'
 						local r_5_t = '\\cs('..formatRGB(r_c5.r)..','..formatRGB(r_c5.g)..','..formatRGB(r_c5.b)..')'..r_5..'\\cr'
-						local r_5_t_shdw = '\\cs(000,000,000)'..r_5..'\\cr'
+						local r_5_t_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..r_5..'\\cr'
 						local r_6_t = '\\cs('..formatRGB(r_c6.r)..','..formatRGB(r_c6.g)..','..formatRGB(r_c6.b)..')'..r_6..'\\cr'
-						local r_6_t_shdw = '\\cs(000,000,000)'..r_6..'\\cr'
+						local r_6_t_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..r_6..'\\cr'
 						local r_7_t = '\\cs('..formatRGB(r_c7.r)..','..formatRGB(r_c7.g)..','..formatRGB(r_c7.b)..')'..r_7..'\\cr'
-						local r_7_t_shdw = '\\cs(000,000,000)'..r_7..'\\cr'
+						local r_7_t_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..r_7..'\\cr'
 						local r_8_t = '\\cs('..formatRGB(r_c8.r)..','..formatRGB(r_c8.g)..','..formatRGB(r_c8.b)..')'..r_8..'\\cr'
-						local r_8_t_shdw = '\\cs(000,000,000)'..r_8..'\\cr'
+						local r_8_t_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..r_8..'\\cr'
 						local r_9_t = '\\cs('..formatRGB(r_c9.r)..','..formatRGB(r_c9.g)..','..formatRGB(r_c9.b)..')'..r_9..'\\cr'
-						local r_9_t_shdw = '\\cs(000,000,000)'..r_9..'\\cr'
+						local r_9_t_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..r_9..'\\cr'
 						local r_10_t = '\\cs('..formatRGB(r_c10.r)..','..formatRGB(r_c10.g)..','..formatRGB(r_c10.b)..')'..r_10..'\\cr'
-						local r_10_t_shdw = '\\cs(000,000,000)'..r_10..'\\cr'
+						local r_10_t_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..r_10..'\\cr'
 						local r_11_t = '\\cs('..formatRGB(r_c11.r)..','..formatRGB(r_c11.g)..','..formatRGB(r_c11.b)..')'..r_11..'\\cr'
-						local r_11_t_shdw = '\\cs(000,000,000)'..r_11..'\\cr'
+						local r_11_t_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..r_11..'\\cr'
 
 						target_action_result = ' ('..count..r_1_t..r_2_t..r_3_t..r_4_t..r_5_t..r_6_t..r_7_t..r_8_t..r_9_t..r_10_t..r_11_t..')'
 						target_action_result_shdw = ' ('..count..r_1_t_shdw..r_2_t_shdw..r_3_t_shdw..r_4_t_shdw..r_5_t_shdw..r_6_t_shdw..r_7_t_shdw..r_8_t_shdw..r_9_t_shdw..r_10_t_shdw..r_11_t_shdw..')'
@@ -7129,7 +9747,7 @@ register_event('action', function (act)
 
 						count = count..' '
 						target_action_result = ' ('..count..'\\cs('..r..','..g..','..b..')L:'..rolls[r_id].lucky..' U:'..rolls[r_id].unlucky..' Total:'..r_tot..(r_tot == rolls[r_id].lucky and '!' or (r_tot == 11 and '!!' or ''))..'\\cr)'
-						target_action_result_shdw = ' ('..count..'\\cs(000,000,000)L:'..rolls[r_id].lucky..' U:'..rolls[r_id].unlucky..' Total:'..r_tot..(r_tot == rolls[r_id].lucky and '!' or (r_tot == 11 and '!!' or ''))..')\\cr)'
+						target_action_result_shdw = ' ('..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')L:'..rolls[r_id].lucky..' U:'..rolls[r_id].unlucky..' Total:'..r_tot..(r_tot == rolls[r_id].lucky and '!' or (r_tot == 11 and '!!' or ''))..')\\cr)'
 					end
 				else
 					count = count..' '
@@ -7139,34 +9757,108 @@ register_event('action', function (act)
 
 			--Bust
 			elseif msg == 426 then
+				action_target_name = ""
+				action_target_name_shdw = ""
 				target_action_result = ' ('..count..'Bust!)'
 				target_action_result_shdw = ' ('..count..'Bust!)'
-			--Wild Card 1-2
-			elseif msg == 435 then
-				target_action_result = ' ('..count..'JAs reset)'
-				target_action_result_shdw = ' ('..count..'JAs reset)'
-			--WIld Card 3-4
-			elseif msg == 437 then
-				target_action_result = ' ('..count..'TP, JAs reset)'
-				target_action_result_shdw = ' ('..count..'TP, JAs reset)'
-			--Wild Card 5-6
-			elseif msg == 439 then
-				target_action_result = ' ('..count..'SP, MP, TP, JAs reset)'
-				target_action_result_shdw = ' ('..count..'SP, MP, TP, JAs reset)'
+			--Wild Card 1
+			elseif act.targets[1].actions[1].animation == 132 then
+				action_target_name = ""
+				action_target_name_shdw = ""
+				target_action_result = ' ('..count..'JAs Reset|1)'
+				target_action_result_shdw = ' ('..count..'JAs Reset|1)'
+				cor_roll = 1
+			--Wild Card 2
+			elseif act.targets[1].actions[1].animation == 133 then
+				action_target_name = ""
+				action_target_name_shdw = ""
+				target_action_result = ' ('..count..'JAs Reset|2)'
+				target_action_result_shdw = ' ('..count..'JAs Reset|2)'
+				cor_roll = 2
+			--Wild Card 3
+			elseif act.targets[1].actions[1].animation == 134 then
+				action_target_name = ""
+				action_target_name_shdw = ""
+				target_action_result = ' ('..count..'TP, JAs Reset|3)'
+				target_action_result_shdw = ' ('..count..'TP, JAs Reset|3)'
+				cor_roll = 3
+			--Wild Card 4
+			elseif act.targets[1].actions[1].animation == 135 then
+				action_target_name = ""
+				action_target_name_shdw = ""
+				target_action_result = ' ('..count..'TP, JAs Reset|4)'
+				target_action_result_shdw = ' ('..count..'TP, JAs Reset|4)'
+				cor_roll = 4
+			--Wild Card 5
+			elseif act.targets[1].actions[1].animation == 136 then
+				action_target_name = ""
+				action_target_name_shdw = ""
+				target_action_result = ' ('..count..'SP, MP, TP, JAs Reset|5)'
+				target_action_result_shdw = ' ('..count..'SP, MP, TP, JAs Reset|5)'
+				cor_roll = 5
+			--Wild Card 6
+			elseif act.targets[1].actions[1].animation == 137 then
+				action_target_name = ""
+				action_target_name_shdw = ""
+				target_action_result = ' ('..count..'SP, MP, TP, JAs Reset|6)'
+				target_action_result_shdw = ' ('..count..'SP, MP, TP, JAs Reset|6)'
+				cor_roll = 6
+			--Cutting Cards 1
+			elseif act.targets[1].actions[1].animation == 321 then
+				action_target_name = ""
+				action_target_name_shdw = ""
+				target_action_result = ' ('..count..'5-25% SP Recast Reduction|1)'
+				target_action_result_shdw = ' ('..count..'5-25% SP Recast Reduction|1)'
+				cor_roll = 1
+			--Cutting Cards 2
+			elseif act.targets[1].actions[1].animation == 322 then
+				action_target_name = ""
+				action_target_name_shdw = ""
+				target_action_result = ' ('..count..'10-30% SP Recast Reduction|2)'
+				target_action_result_shdw = ' ('..count..'10-30% SP Recast Reduction|2)'
+				cor_roll = 2
+			--Cutting Cards 3
+			elseif act.targets[1].actions[1].animation == 323 then
+				action_target_name = ""
+				action_target_name_shdw = ""
+				target_action_result = ' ('..count..'20-40% SP Recast Reduction|3)'
+				target_action_result_shdw = ' ('..count..'20-40% SP Recast Reduction|3)'
+				cor_roll = 3
+			--Cutting Cards 4
+			elseif act.targets[1].actions[1].animation == 324 then
+				action_target_name = ""
+				action_target_name_shdw = ""
+				target_action_result = ' ('..count..'30-50% SP Recast Reduction|4)'
+				target_action_result_shdw = ' ('..count..'30-50% SP Recast Reduction|4)'
+				cor_roll = 4
+			--Cutting Cards 5
+			elseif act.targets[1].actions[1].animation == 325 then
+				action_target_name = ""
+				action_target_name_shdw = ""
+				target_action_result = ' ('..count..'40-60% SP Recast Reduction|5)'
+				target_action_result_shdw = ' ('..count..'40-60% SP Recast Reduction|5)'
+				cor_roll = 5
+			--Cutting Cards 6
+			elseif act.targets[1].actions[1].animation == 326 then
+				action_target_name = ""
+				action_target_name_shdw = ""
+				target_action_result = ' ('..count..'50-70% SP Recast Reduction|6)'
+				target_action_result_shdw = ' ('..count..'50-70% SP Recast Reduction|6)'
+				cor_roll = 6
 			--Regains MP
 			elseif msg == 451 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr MP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr MP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr MP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			--Regains TP
 			elseif msg == 452 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr TP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr TP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr TP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			--No Foot Rise
 			elseif msg == 560 then
 				local fin_moves = act.targets[1].actions[1].param
@@ -7182,12 +9874,13 @@ register_event('action', function (act)
 				--check if the ability used was an SP ability
 				local sp_abil = sp_abils[abil_name]
 				if sp_abil then
-					addToSPTable(act.actor_id, abil_name)
+					addToSPTable(act.actor_id, abil_name, cor_roll)
+				end
 
 				--If Benediction is used, remove all debuffs from all targets it hits
-				elseif abil_name == "Benediction" then
+				if abil_name == "Benediction" then
 					for i = 1, target_count do
-						current_debuffs[act.targets[i].id] = nil
+						wipeDebuffs(act.targets[i].id)
 					end
 				end
 			end
@@ -7200,7 +9893,12 @@ register_event('action', function (act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
+			--Healing Waltz
+			elseif msg == 123 then
+				local buff_name = capitalize(buff[act.targets[1].actions[1].param].name)
+				target_action_result = ' ('..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..buff_name..'\\cr)'
+				target_action_result_shdw = ' ('..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..buff_name..'\\cr)'
 			--Buff/Debuff
 			elseif msg == 127 then
 				local landed = calculateInfo(act).landed
@@ -7224,7 +9922,7 @@ register_event('action', function (act)
 					local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 					count = count == '' and '' or ' '..count
 					target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr '..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-					target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr '..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+					target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr '..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 				else
 					--Evaded
 					if msg == 282 then
@@ -7235,29 +9933,33 @@ register_event('action', function (act)
 						target_action_result = ' ('..count..'No Effect)'
 						target_action_result_shdw = ' ('..count..'No Effect)'
 					--Resisted
-					elseif msg == 85 or msg == 284 or msg == 655 or msg == 656 then
+					elseif msg == 85 or msg == 284 then
 						target_action_result = ' ('..count..'Resisted)'
 						target_action_result_shdw = ' ('..count..'Resisted)'
+					--Completely Resisted
+					elseif msg == 655 or msg == 656 then
+						target_action_result = ' ('..count..'Completely Resisted)'
+						target_action_result_shdw = ' ('..count..'Completely Resisted)'
 					--Immunobreak
 					elseif msg == 653 or msg == 654 then
 						target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')Immunobreak!\\cr)'
-						target_action_result_shdw = ' (\\cs(000,000,000)Immunobreak!\\cr)'
+						target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')Immunobreak!\\cr)'
 					--Anticipated
 					elseif msg == 30 then
-						target_action_result = ' ('..count..'Anticipated)'
-						target_action_result_shdw = ' ('..count..'Anticipated)'
+						target_action_result = ' (Anticipated)'
+						target_action_result_shdw = ' (Anticipated)'
 					--Blinked
 					elseif msg == 31 then
-						target_action_result = ' ('..count..'Blinked)'
-						target_action_result_shdw = ' ('..count..'Blinked)'
+						target_action_result = ' (Blinked)'
+						target_action_result_shdw = ' (Blinked)'
 					--Dodged
 					elseif msg == 32 then
-						target_action_result = ' ('..count..'Dodged)'
-						target_action_result_shdw = ' ('..count..'Dodged)'
+						target_action_result = ' (Dodged)'
+						target_action_result_shdw = ' (Dodged)'
 					--Missed
 					elseif msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
-						target_action_result = ' ('..count..'Missed)'
-						target_action_result_shdw = ' ('..count..'Missed)'
+						target_action_result = ' (Missed)'
+						target_action_result_shdw = ' (Missed)'
 					end
 				end
 			--Dazes
@@ -7283,21 +9985,25 @@ register_event('action', function (act)
 
 			if player.id == act.actor_id then
 				self_action_bar_meter:bg_color(050,255,050)
+				self_action_bar_cast_meter:hide()
 				completeSelfMeter()
 			end
 
 			coroutine.schedule(function()
 				removeFromActionsTable(act.actor_id, trackingIndex)
-			end, clear_action_delay)
+			end, is_a_self_roll and clear_action_delay_for_self_rolls or clear_action_delay)
 
 		end
 
-	--Finish weapon skill(3), spell(4), item(5), or Pet TP move(13)
-	elseif act.category == 3 or act.category == 5 or act.category == 13 or (act.category == 4 and not ((msg == 0 or msg == 29 or msg == 84 or msg == 106) and act.param == 0)) then
+	--Finish weapon skill(3), spell(4), item(5), or Pet TP move(13, 11)
+	elseif act.category == 3 or act.category == 5 or act.category == 13
+	or (act.category == 4 and not ((msg == 0 or msg == 29 or msg == 84 or msg == 106) and act.param == 0))
+	or (act.category == 11 and actor and get_player and actor.index == get_player.pet_index)
+	then
 
 		local trackingIndex = assignIndex()
 		local target_action_status = '\\cs(050,255,050)'..completed_icon..'\\cr'
-		local target_action_status_shdw = '\\cs(000,000,000)'..completed_icon..'\\cr'
+		local target_action_status_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..completed_icon..'\\cr'
 		local sc = {}
 		if short_skillchain_names then
 			sc = {} sc[1] = 'Lght' sc[2] = 'Drkn' sc[3] = 'Grvt' sc[4] = 'Frgm' sc[5] = 'Dstn' sc[6] = 'Fusn' sc[7] = 'Cmpr' sc[8] = 'Lqfn' sc[9] = 'Indr' sc[10] = 'Rvrb' sc[11] = 'Trns' sc[12] = 'Scsn' sc[13] = 'Detn' sc[14] = 'Impc' sc[15] = 'Rdnc' sc[16] = 'Umbr'
@@ -7306,9 +10012,12 @@ register_event('action', function (act)
 		end
 		local sc_amount = addCommas(act.targets[1].actions[1].add_effect_param)
 		local sc_name = sc[act.targets[1].actions[1].add_effect_animation]
-		local abs_msgs = {385,386,387,388,389,390,391,392,393,394,395,396,397,398}
+		local abs_msgs = {
+			[385] = true, [386] = true, [387] = true, [388] = true, [389] = true, [390] = true, [391] = true,
+			[392] = true, [393] = true, [394] = true, [395] = true, [396] = true, [397] = true, [398] = true
+		}
 		local ae_msg = act.targets[1].actions[1].add_effect_message
-		local sc_c = checkForMessage(abs_msgs,ae_msg) and color.result.heal or color.result.damage
+		local sc_c = abs_msgs[ae_msg] and color.result.heal or color.result.damage
 		local sc_c_r = formatRGB(sc_c.r)
 		local sc_c_g = formatRGB(sc_c.g)
 		local sc_c_b = formatRGB(sc_c.b)
@@ -7338,23 +10047,44 @@ register_event('action', function (act)
 			--Absorbed and creates a Skillchain
 			if msg == 103 and act.targets[1].actions[1].has_add_effect == true then
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr + \\cs('..sc_c_r..','..sc_c_g..','..sc_c_b..')'..sc_amount..'\\cr '..sc_name..')'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr + \\cs(000,000,000)'..sc_amount..'\\cr '..sc_name..')'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr + \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..sc_amount..'\\cr '..sc_name..')'
+				if player.id == act.actor_id and settings.sections.chat.tabs.dmg then
+					local target = action_target and truncateName(action_target.name) or 'Unknown'
+					local message = action_name..": "..amount.." Absorbed + ("..sc_amount.." "..sc_name..")"
+					addMessageToChatTab('DMG', target, message)
+				end
 			--Absorbed
-			elseif msg == 103 or msg == 318 then
+			elseif player.id == act.actor_id and (msg == 103 or msg == 318) then
 				target_action_result = ' ('..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr)'
-				target_action_result_shdw = ' ('..count..'\\cs(000,000,000)'..amount..'\\cr)'
+				target_action_result_shdw = ' ('..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr)'
+				if player.id == act.actor_id and settings.sections.chat.tabs.dmg and msg == 103 then
+					local target = action_target and truncateName(action_target.name) or 'Unknown'
+					local message = action_name..": "..count..amount.." absorbed"
+					addMessageToChatTab('DMG', target, message)
+				end
 			--Creates a Skillchain
 			elseif msg == 185 and act.targets[1].actions[1].has_add_effect == true then
 				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr + \\cs('..sc_c_r..','..sc_c_g..','..sc_c_b..')'..sc_amount..'\\cr '..sc_name..')'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr + \\cs(000,000,000)'..sc_amount..'\\cr '..sc_name..')'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr + \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..sc_amount..'\\cr '..sc_name..')'
+				if player.id == act.actor_id and settings.sections.chat.tabs.dmg then
+					local target = action_target and truncateName(action_target.name) or 'Unknown'
+					local message = action_name..": "..amount.." + ("..sc_amount.." "..sc_name..")"
+					addMessageToChatTab('DMG', target, message)
+				end
 			--Plain Damage
 			elseif msg == 185 or msg == 317 then
 				local info = calculateInfo(act)
 				local landed = info.landed
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
+				amount = msg == 317 and addCommas(act.targets[1].actions[1].param + act.targets[1].actions[1].add_effect_param) or amount
 				count = show_result_totals and target_count > 1 and ' '..landed..(landed < target_count and '/'..target_count or '')..num_hit_icon or ''
 				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
+				if player.id == act.actor_id and settings.sections.chat.tabs.dmg and msg == 185 then
+					local target = action_target and truncateName(action_target.name) or 'Unknown'
+					local message = action_name..": "..amount..count..amount_total
+					addMessageToChatTab('DMG', target, message)
+				end
 			--Evaded/No Effect/Resisted/Immunobreak/Anticipated/Blinked/Dodged/Missed
 			elseif msg == 282 or msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 114 or msg == 85 or msg == 284 or msg == 653 or msg == 654 or msg == 655 or msg == 656 or msg == 30 or msg == 31 or msg == 32 or msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
 				local info = calculateInfo(act)
@@ -7371,7 +10101,7 @@ register_event('action', function (act)
 					local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 					count = count == '' and '' or ' '..count
 					target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr '..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-					target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr '..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+					target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr '..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 				else
 					--Evaded
 					if msg == 282 then
@@ -7382,38 +10112,90 @@ register_event('action', function (act)
 						target_action_result = ' ('..count..'No Effect)'
 						target_action_result_shdw = ' ('..count..'No Effect)'
 					--Resisted
-					elseif msg == 85 or msg == 284 or msg == 655 or msg == 656 then
+					elseif msg == 85 or msg == 284 then
 						target_action_result = ' ('..count..'Resisted)'
 						target_action_result_shdw = ' ('..count..'Resisted)'
+					--Completely Resisted
+					elseif msg == 655 or msg == 656 then
+						target_action_result = ' ('..count..'Completely Resisted)'
+						target_action_result_shdw = ' ('..count..'Completely Resisted)'
 					--Immunobreak
 					elseif msg == 653 or msg == 654 then
 						target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')Immunobreak!\\cr)'
-						target_action_result_shdw = ' (\\cs(000,000,000)Immunobreak!\\cr)'
+						target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')Immunobreak!\\cr)'
 					--Anticipated
 					elseif msg == 30 then
-						target_action_result = ' ('..count..'Anticipated)'
-						target_action_result_shdw = ' ('..count..'Anticipated)'
+						target_action_result = ' (Anticipated)'
+						target_action_result_shdw = ' (Anticipated)'
+						if player.id == act.actor_id and settings.sections.chat.tabs.dmg then
+							local target = action_target and truncateName(action_target.name) or 'Unknown'
+							local message = action_name..": "..count.."Anticipated"
+							addMessageToChatTab('DMG', target, message)
+						end
 					--Blinked
 					elseif msg == 31 then
-						target_action_result = ' ('..count..'Blinked)'
-						target_action_result_shdw = ' ('..count..'Blinked)'
+						target_action_result = ' (Blinked)'
+						target_action_result_shdw = ' (Blinked)'
+						if player.id == act.actor_id and settings.sections.chat.tabs.dmg then
+							local target = action_target and truncateName(action_target.name) or 'Unknown'
+							local message = action_name..": "..count.."Blinked"
+							addMessageToChatTab('DMG', target, message)
+						end
 					--Dodged
 					elseif msg == 32 then
-						target_action_result = ' ('..count..'Dodged)'
-						target_action_result_shdw = ' ('..count..'Dodged)'
+						target_action_result = ' (Dodged)'
+						target_action_result_shdw = ' (Dodged)'
+						if player.id == act.actor_id and settings.sections.chat.tabs.dmg then
+							local target = action_target and truncateName(action_target.name) or 'Unknown'
+							local message = action_name..": "..count.."Dodged"
+							addMessageToChatTab('DMG', target, message)
+						end
 					--Missed
 					elseif msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
-						target_action_result = ' ('..count..'Missed)'
-						target_action_result_shdw = ' ('..count..'Missed)'
+						target_action_result = ' (Missed)'
+						target_action_result_shdw = ' (Missed)'
+						if player.id == act.actor_id and settings.sections.chat.tabs.dmg then
+							local target = action_target and truncateName(action_target.name) or 'Unknown'
+							local message = action_name..": "..count.."Missed"
+							addMessageToChatTab('DMG', target, message)
+						end
 					end
 				end
-			--Recover MP
+			--Recover/Absorb MP
 			elseif msg == 224 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr MP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr MP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr MP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
+			--Recover/Absorb HP
+			elseif msg == 238 then
+				local info = calculateInfo(act)
+				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
+				count = count == '' and '' or ' '..count
+				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr HP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr HP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
+			--Drain HP
+			elseif msg == 187 then
+				local info = calculateInfo(act)
+				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
+				count = count == '' and '' or ' '..count
+				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr HP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr HP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
+			--Drain MP
+			elseif msg == 225 then
+				local info = calculateInfo(act)
+				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
+				count = count == '' and '' or ' '..count
+				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr MP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr MP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
+			--Drain TP
+			elseif msg == 226 then
+				local info = calculateInfo(act)
+				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
+				count = count == '' and '' or ' '..count
+				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr TP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr TP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			end
 
 		--Spells
@@ -7425,11 +10207,16 @@ register_event('action', function (act)
 			local g = formatRGB(c.g)
 			local b = formatRGB(c.b)
 			action_name = spell[action_id] and ' \\cs('..r..','..g..','..b..')'..truncateAction(spell[action_id].name)..'\\cr' or ' [REDACTED]'
-			action_name_shdw = spell[action_id] and ' \\cs(000,000,000)'..truncateAction(spell[action_id].name)..'\\cr' or ' [REDACTED]'
+			action_name_shdw = spell[action_id] and ' \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..truncateAction(spell[action_id].name)..'\\cr' or ' [REDACTED]'
 			--Creates a Skillchain
 			if msg == 2 and act.targets[1].actions[1].has_add_effect == true then
 				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr + \\cs('..sc_c_r..','..sc_c_g..','..sc_c_b..')'..sc_amount..'\\cr '..sc_name..')'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr + \\cs(000,000,000)'..sc_amount..'\\cr '..sc_name..')'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr + \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..sc_amount..'\\cr '..sc_name..')'
+				if player.id == act.actor_id and settings.sections.chat.tabs.dmg then
+					local target = action_target and truncateName(action_target.name) or 'Unknown'
+					local message = spell[action_id].name..": "..amount.." + ("..sc_amount.." "..sc_name..")"
+					addMessageToChatTab('DMG', target, message)
+				end
 			--Plain Damage
 			elseif msg == 2 then
 				local info = calculateInfo(act)
@@ -7437,12 +10224,22 @@ register_event('action', function (act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = show_result_totals and target_count > 1 and ' '..landed..(landed < target_count and '/'..target_count or '')..num_hit_icon or ''
 				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
+				if player.id == act.actor_id and settings.sections.chat.tabs.dmg then
+					local target = action_target and truncateName(action_target.name) or 'Unknown'
+					local message = spell[action_id].name..": "..amount..count..amount_total
+					addMessageToChatTab('DMG', target, message)
+				end
 			--Absorbed and creates a Skillchain
 			elseif msg == 7 and act.targets[1].actions[1].has_add_effect == true then
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr + \\cs('..sc_c_r..','..sc_c_g..','..sc_c_b..')'..sc_amount..'\\cr '..sc_name..')'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr + \\cs(000,000,000)'..sc_amount..'\\cr '..sc_name..')'
-			--Cures/Absorbed
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr + \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..sc_amount..'\\cr '..sc_name..')'
+				if player.id == act.actor_id and settings.sections.chat.tabs.dmg then
+					local target = action_target and truncateName(action_target.name) or 'Unknown'
+					local message = spell[action_id].name..": Absorbed "..amount.." + ("..sc_amount.." "..sc_name..")"
+					addMessageToChatTab('DMG', target, message)
+				end
+				--Cures/Absorbed
 			elseif msg == 7 then
 				local info = calculateInfo(act)
 				local amount_total = info.amount_total
@@ -7451,11 +10248,11 @@ register_event('action', function (act)
 				if cure_total then
 					cure_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(cure_total) or ''
 					target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..cure_total..'\\cr)'
-					target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..cure_total..'\\cr)'
+					target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..cure_total..'\\cr)'
 				else
 					amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 					target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-					target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+					target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 				end
 			--Transportation
 			elseif msg == 93 then
@@ -7467,28 +10264,33 @@ register_event('action', function (act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (Magic Burst! \\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (Magic Burst! \\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (Magic Burst! \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
+				if player.id == act.actor_id and settings.sections.chat.tabs.dmg then
+					local target = action_target and truncateName(action_target.name) or 'Unknown'
+					local message = spell[action_id].name..": "..amount..count..amount_total.." Magic Burst"
+					addMessageToChatTab('DMG', target, message)
+				end
 			--Drain
 			elseif msg == 227 or msg == 274 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' ('..(msg == 274 and 'Magic Burst! ' or '')..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr HP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' ('..(msg == 274 and 'Magic Burst! ' or '')..'\\cs(000,000,000)'..amount..'\\cr HP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' ('..(msg == 274 and 'Magic Burst! ' or '')..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr HP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			--Aspir
 			elseif msg == 228 or msg == 275 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' ('..(msg == 275 and 'Magic Burst! ' or '')..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr MP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' ('..(msg == 275 and 'Magic Burst! ' or '')..'\\cs(000,000,000)'..amount..'\\cr MP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' ('..(msg == 275 and 'Magic Burst! ' or '')..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr MP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			--Absorb-TP
 			elseif msg == 454 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr TP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr TP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr TP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			--Buff/Debuff
 			elseif msg == 230 or msg == 236 or msg == 237 or msg == 268 or msg == 271 then
 				local landed = calculateInfo(act).landed
@@ -7512,7 +10314,7 @@ register_event('action', function (act)
 					local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 					count = count == '' and '' or ' '..count
 					target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr '..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-					target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr '..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+					target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr '..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 				else
 					--Evaded
 					if msg == 282 then
@@ -7523,40 +10325,44 @@ register_event('action', function (act)
 						target_action_result = ' ('..count..'No Effect)'
 						target_action_result_shdw = ' ('..count..'No Effect)'
 					--Resisted
-					elseif msg == 85 or msg == 284 or msg == 655 or msg == 656 then
+					elseif msg == 85 or msg == 284 then
 						target_action_result = ' ('..count..'Resisted)'
 						target_action_result_shdw = ' ('..count..'Resisted)'
+					--Completely Resisted
+					elseif msg == 655 or msg == 656 then
+						target_action_result = ' ('..count..'Completely Resisted)'
+						target_action_result_shdw = ' ('..count..'Completely Resisted)'
 					--Immunobreak
 					elseif msg == 653 or msg == 654 then
 						target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')Immunobreak!\\cr)'
-						target_action_result_shdw = ' (\\cs(000,000,000)Immunobreak!\\cr)'
+						target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')Immunobreak!\\cr)'
 					--Anticipated
 					elseif msg == 30 then
-						target_action_result = ' ('..count..'Anticipated)'
-						target_action_result_shdw = ' ('..count..'Anticipated)'
+						target_action_result = ' (Anticipated)'
+						target_action_result_shdw = ' (Anticipated)'
 					--Blinked
 					elseif msg == 31 then
-						target_action_result = ' ('..count..'Blinked)'
-						target_action_result_shdw = ' ('..count..'Blinked)'
+						target_action_result = ' (Blinked)'
+						target_action_result_shdw = ' (Blinked)'
 					--Dodged
 					elseif msg == 32 then
-						target_action_result = ' ('..count..'Dodged)'
-						target_action_result_shdw = ' ('..count..'Dodged)'
+						target_action_result = ' (Dodged)'
+						target_action_result_shdw = ' (Dodged)'
 					--Missed
 					elseif msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
-						target_action_result = ' ('..count..'Missed)'
-						target_action_result_shdw = ' ('..count..'Missed)'
+						target_action_result = ' (Missed)'
+						target_action_result_shdw = ' (Missed)'
 					end
 				end
 			--Dispel/Erase
 			elseif msg == 83 or msg == 341 or msg == 342 then
 				local buff_name = capitalize(buff[act.targets[1].actions[1].param].name)
 				target_action_result = ' ('..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..buff_name..'\\cr)'
-				target_action_result_shdw = ' ('..count..'\\cs(000,000,000)'..buff_name..'\\cr)'
+				target_action_result_shdw = ' ('..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..buff_name..'\\cr)'
 			--TP reduced
 			elseif msg == 431 then
 				target_action_result = ' ('..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')TP Reduced\\cr)'
-				target_action_result_shdw = ' ('..count..'\\cs(000,000,000)TP Reduced\\cr)'
+				target_action_result_shdw = ' ('..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')TP Reduced\\cr)'
 			end
 
 		--Items
@@ -7573,20 +10379,20 @@ register_event('action', function (act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr HP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr HP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr HP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			--MP
 			elseif msg == 25 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr MP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr MP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr MP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			--HP and MP
 			elseif msg == 26 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr HP/MP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr HP/MP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr HP/MP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			--Buff/Debuff
 			elseif msg == 375 then
 				local landed = calculateInfo(act).landed
@@ -7596,7 +10402,7 @@ register_event('action', function (act)
 			--Dispel/Erase
 			elseif msg == 378 then
 				target_action_result = ' ('..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..buff_name..'\\cr)'
-				target_action_result_shdw = ' ('..count..'\\cs(000,000,000)'..buff_name..'\\cr)'
+				target_action_result_shdw = ' ('..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..buff_name..'\\cr)'
 			--Obtains item
 			elseif msg == 376 or msg == 377 then
 				target_action_result = ' ('..count..obtained_item_name..')'
@@ -7620,14 +10426,19 @@ register_event('action', function (act)
 			end
 
 		--Pets
-		elseif act.category == 13 then
+		elseif act.category == 13 or (act.category == 11 and actor and get_player and actor.index == get_player.pet_index) then
 			local action_id = act.param
 			action_name = job_abil[action_id] and ' '..truncateAction(job_abil[action_id].name) or (monster_abil[action_id] and ' '..truncateAction(monster_abil[action_id].name) or ' [REDACTED]')
 			action_name_shdw = job_abil[action_id] and ' '..truncateAction(job_abil[action_id].name) or (monster_abil[action_id] and ' '..truncateAction(monster_abil[action_id].name) or ' [REDACTED]')
 			--Creates a Skillchain
 			if act.targets[1].actions[1].has_add_effect then
 				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr + \\cs('..sc_c_r..','..sc_c_g..','..sc_c_b..')'..sc_amount..'\\cr '..sc_name..')'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr + \\cs(000,000,000)'..sc_amount..'\\cr '..sc_name..')'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr + \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..sc_amount..'\\cr '..sc_name..')'
+				if actor and get_player and actor.index == get_player.pet_index and settings.sections.chat.tabs.dmg then
+					local target = action_target and truncateName(action_target.name) or 'Unknown'
+					local message = action_name..": "..amount.." + ("..sc_amount.." "..sc_name..")"
+					addMessageToChatTab('DMG', target, message)
+				end
 			--Accuracy/Evasion Down
 			elseif msg == 144 then
 				target_action_result = ' ('..count..'Acc./Eva. Down)'
@@ -7637,20 +10448,30 @@ register_event('action', function (act)
 				target_action_result = ' ('..count..'Acc./Eva. Boost)'
 				target_action_result_shdw = ' ('..count..'Acc./Eva. Boost)'
 			--Magic Burst
-			elseif msg == 379 then
+			elseif msg == 379 or msg == 747 then
 				local info = calculateInfo(act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (Magic Burst! \\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (Magic Burst! \\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (Magic Burst! \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
+				if actor and get_player and actor.index == get_player.pet_index and settings.sections.chat.tabs.dmg then
+					local target = action_target and truncateName(action_target.name) or 'Unknown'
+					local message = action_name..": "..amount..count..amount_total.." Magic Burst"
+					addMessageToChatTab('DMG', target, message)
+				end
 			--Plain Damage
-			elseif msg == 317 then
+			elseif msg == 317 or msg == 185 then
 				local info = calculateInfo(act)
 				local landed = info.landed
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = show_result_totals and target_count > 1 and ' '..landed..(landed < target_count and '/'..target_count or '')..num_hit_icon or ''
 				target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
+				if actor and get_player and actor.index == get_player.pet_index and settings.sections.chat.tabs.dmg then
+					local target = action_target and truncateName(action_target.name) or 'Unknown'
+					local message = action_name..": "..amount..count..amount_total
+					addMessageToChatTab('DMG', target, message)
+				end
 			--Cures
 			elseif msg == 318 then
 				local info = calculateInfo(act)
@@ -7660,14 +10481,14 @@ register_event('action', function (act)
 				if cure_total then
 					cure_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(cure_total) or ''
 					target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..cure_total..'\\cr)'
-					target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..cure_total..'\\cr)'
+					target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..cure_total..'\\cr)'
 				else
 					amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 					target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-					target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+					target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 				end
 			--Buff/Debuff
-			elseif msg == 319 or msg == 320 then
+			elseif msg == 319 or msg == 320 or msg == 243 then
 				local landed = calculateInfo(act).landed
 				local buff_name = (action_id == 0 or action_id == 232) and job_abil[act.param] and capitalize(job_abil[act.param].name) or buff[act.targets[1].actions[1].param] and capitalize(buff[act.targets[1].actions[1].param].name)
 				count = show_result_totals and target_count > 1 and landed..(landed < target_count and '/'..target_count or '')..num_hit_icon or ''
@@ -7694,7 +10515,7 @@ register_event('action', function (act)
 					local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 					count = count == '' and '' or ' '..count
 					target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr '..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-					target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr '..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+					target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr '..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 				else
 					--Evaded
 					if msg == 282 then
@@ -7705,29 +10526,53 @@ register_event('action', function (act)
 						target_action_result = ' ('..count..'No Effect)'
 						target_action_result_shdw = ' ('..count..'No Effect)'
 					--Resisted
-					elseif msg == 85 or msg == 284 or msg == 655 or msg == 656 then
+					elseif msg == 85 or msg == 284 then
 						target_action_result = ' ('..count..'Resisted)'
 						target_action_result_shdw = ' ('..count..'Resisted)'
+					--Completely Resisted
+					elseif msg == 655 or msg == 656 then
+						target_action_result = ' ('..count..'Completely Resisted)'
+						target_action_result_shdw = ' ('..count..'Completely Resisted)'
 					--Immunobreak
 					elseif msg == 653 or msg == 654 then
 						target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')Immunobreak!\\cr)'
-						target_action_result_shdw = ' (\\cs(000,000,000)Immunobreak!\\cr)'
+						target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')Immunobreak!\\cr)'
 					--Anticipated
 					elseif msg == 30 then
-						target_action_result = ' ('..count..'Anticipated)'
-						target_action_result_shdw = ' ('..count..'Anticipated)'
+						target_action_result = ' (Anticipated)'
+						target_action_result_shdw = ' (Anticipated)'
+						if player.id == act.actor_id and settings.sections.chat.tabs.dmg then
+							local target = action_target and truncateName(action_target.name) or 'Unknown'
+							local message = action_name..": Anticipated"
+							addMessageToChatTab('DMG', target, message)
+						end
 					--Blinked
 					elseif msg == 31 then
-						target_action_result = ' ('..count..'Blinked)'
-						target_action_result_shdw = ' ('..count..'Blinked)'
+						target_action_result = ' (Blinked)'
+						target_action_result_shdw = ' (Blinked)'
+						if player.id == act.actor_id and settings.sections.chat.tabs.dmg then
+							local target = action_target and truncateName(action_target.name) or 'Unknown'
+							local message = action_name..": Blinked"
+							addMessageToChatTab('DMG', target, message)
+						end
 					--Dodged
 					elseif msg == 32 then
-						target_action_result = ' ('..count..'Dodged)'
-						target_action_result_shdw = ' ('..count..'Dodged)'
+						target_action_result = ' (Dodged)'
+						target_action_result_shdw = ' (Dodged)'
+						if player.id == act.actor_id and settings.sections.chat.tabs.dmg then
+							local target = action_target and truncateName(action_target.name) or 'Unknown'
+							local message = action_name..": Dodged"
+							addMessageToChatTab('DMG', target, message)
+						end
 					--Missed
 					elseif msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
-						target_action_result = ' ('..count..'Missed)'
-						target_action_result_shdw = ' ('..count..'Missed)'
+						target_action_result = ' (Missed)'
+						target_action_result_shdw = ' (Missed)'
+						if player.id == act.actor_id and settings.sections.chat.tabs.dmg then
+							local target = action_target and truncateName(action_target.name) or 'Unknown'
+							local message = action_name..": Missed"
+							addMessageToChatTab('DMG', target, message)
+						end
 					end
 				end
 			--Stat Boost
@@ -7741,7 +10586,7 @@ register_event('action', function (act)
 			--TP Reduced
 			elseif msg == 730 then
 				target_action_result = ' (TP Reduced to \\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr)'
-				target_action_result_shdw = ' (TP Reduced to \\cs(000,000,000)'..amount..'\\cr)'
+				target_action_result_shdw = ' (TP Reduced to \\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr)'
 			--Enmity Reduced
 			elseif msg == 743 then
 				target_action_result = ' ('..count..'Enmity Reduced)'
@@ -7752,7 +10597,7 @@ register_event('action', function (act)
 				local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 				count = count == '' and '' or ' '..count
 				target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-				target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+				target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			end
 		end
 
@@ -7760,26 +10605,31 @@ register_event('action', function (act)
 		target_action_shdw = action_name_shdw..action_target_name_shdw
 
 		--The actor is our pet
-		if get_mob_by_id(act.actor_id) and get_mob_by_id(player.id) and get_mob_by_id(act.actor_id).index == get_mob_by_id(player.id).pet_index then
+		if actor and get_player and actor.index == get_player.pet_index then
 
-			self_action_bar_meter:bg_color(050,255,050)
-			completeSelfMeter()
+			if job ~= 'drg' or show_self_action_wyvern_breath then
+				self_action_bar_meter:bg_color(050,255,050)
+				self_action_bar_cast_meter:hide()
+				completeSelfMeter()
 
-			addToActionsTable(player.id,target_action,target_action_shdw,target_action_status,target_action_status_shdw,target_action_result,target_action_result_shdw,trackingIndex)
-			addToActionsTable(act.actor_id,target_action,target_action_shdw,target_action_status,target_action_status_shdw,target_action_result,target_action_result_shdw,trackingIndex)
+				addToActionsTable(player.id,target_action,target_action_shdw,target_action_status,target_action_status_shdw,target_action_result,target_action_result_shdw,trackingIndex)
+				addToActionsTable(act.actor_id,target_action,target_action_shdw,target_action_status,target_action_status_shdw,target_action_result,target_action_result_shdw,trackingIndex)
 
-			if act.param ~= nil then
+				if act.param ~= nil then
 
-				coroutine.schedule(function()
-					removeFromActionsTable(player.id, trackingIndex)
-					removeFromActionsTable(act.actor_id, trackingIndex)
-				end, clear_action_delay)
+					coroutine.schedule(function()
+						removeFromActionsTable(player.id, trackingIndex)
+						removeFromActionsTable(act.actor_id, trackingIndex)
+					end, clear_action_delay)
 
+				end
 			end
+
 		else
 
 			if player.id == act.actor_id then
 				self_action_bar_meter:bg_color(050,255,050)
+				self_action_bar_cast_meter:hide()
 				completeSelfMeter()
 			end
 
@@ -7798,7 +10648,7 @@ register_event('action', function (act)
 	elseif act and act.category == 11 and not nm_auto_tp then
 
 		local target_action_status = '\\cs(050,255,050)'..completed_icon..'\\cr'
-		local target_action_status_shdw = '\\cs(000,000,000)'..completed_icon..'\\cr'
+		local target_action_status_shdw = '\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..completed_icon..'\\cr'
 		local abil_id = act.param
 		local abil_name = monster_abil[abil_id] and monster_abil[abil_id].name or '[REDACTED]'
 		action_name = ' '..truncateAction(abil_name)
@@ -7810,7 +10660,7 @@ register_event('action', function (act)
 		if msg == 159 then
 			local buff_name = buff[act.targets[1].actions[1].param] and capitalize(buff[act.targets[1].actions[1].param].name)
 			target_action_result = ' ('..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..buff_name..'\\cr)'
-			target_action_result_shdw = ' ('..count..'\\cs(000,000,000)'..buff_name..'\\cr)'
+			target_action_result_shdw = ' ('..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..buff_name..'\\cr)'
 		--Buff/Debuff
 		elseif msg == 186 or msg == 194 or msg == 243 then
 			local landed = calculateInfo(act).landed
@@ -7825,14 +10675,14 @@ register_event('action', function (act)
 			local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 			count = show_result_totals and target_count > 1 and ' '..landed..(landed < target_count and '/'..target_count or '')..num_hit_icon or ''
 			target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr'..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 		--Drain
 		elseif msg == 187 then
 			local info = calculateInfo(act)
 			local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 			count = count == '' and '' or ' '..count
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr HP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr HP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr HP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 		--Evaded/No Effect/Resisted/Immunobreak/Anticipated/Blinked/Dodged/Missed
 		elseif msg == 282 or msg == 75 or msg == 156 or msg == 189 or msg == 248 or msg == 283 or msg == 323 or msg == 355 or msg == 408 or msg == 422 or msg == 423 or msg == 425 or msg == 659 or msg == 114 or msg == 85 or msg == 284 or msg == 653 or msg == 654 or msg == 655 or msg == 656 or msg == 30 or msg == 31 or msg == 32 or msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
 			local info = calculateInfo(act)
@@ -7849,7 +10699,7 @@ register_event('action', function (act)
 					local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 					count = count == '' and '' or ' '..count
 					target_action_result = ' (\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount..'\\cr '..count..'\\cs('..rdc_r..','..rdc_g..','..rdc_b..')'..amount_total..'\\cr)'
-					target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr '..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+					target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr '..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 			else
 				--Evaded
 				if msg == 282 then
@@ -7860,29 +10710,33 @@ register_event('action', function (act)
 					target_action_result = ' ('..count..'No Effect)'
 					target_action_result_shdw = ' ('..count..'No Effect)'
 				--Resisted
-				elseif msg == 85 or msg == 284 or msg == 655 or msg == 656 then
+				elseif msg == 85 or msg == 284 then
 					target_action_result = ' ('..count..'Resisted)'
 					target_action_result_shdw = ' ('..count..'Resisted)'
+				--Completely Resisted
+				elseif msg == 655 or msg == 656 then
+					target_action_result = ' ('..count..'Completely Resisted)'
+					target_action_result_shdw = ' ('..count..'Completely Resisted)'
 				--Immunobreak
 				elseif msg == 653 or msg == 654 then
 					target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')Immunobreak!\\cr)'
-					target_action_result_shdw = ' (\\cs(000,000,000)Immunobreak!\\cr)'
+					target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')Immunobreak!\\cr)'
 				--Anticipated
 				elseif msg == 30 then
-					target_action_result = ' ('..count..'Anticipated)'
-					target_action_result_shdw = ' ('..count..'Anticipated)'
+					target_action_result = ' (Anticipated)'
+					target_action_result_shdw = ' (Anticipated)'
 				--Blinked
 				elseif msg == 31 then
-					target_action_result = ' ('..count..'Blinked)'
-					target_action_result_shdw = ' ('..count..'Blinked)'
+					target_action_result = ' (Blinked)'
+					target_action_result_shdw = ' (Blinked)'
 				--Dodged
 				elseif msg == 32 then
-					target_action_result = ' ('..count..'Dodged)'
-					target_action_result_shdw = ' ('..count..'Dodged)'
+					target_action_result = ' (Dodged)'
+					target_action_result_shdw = ' (Dodged)'
 				--Missed
 				elseif msg == 15 or msg == 63 or msg == 158 or msg == 188 or msg == 245 or msg == 324 or msg == 658 then
-					target_action_result = ' ('..count..'Missed)'
-					target_action_result_shdw = ' ('..count..'Missed)'
+					target_action_result = ' (Missed)'
+					target_action_result_shdw = ' (Missed)'
 				end
 			end
 		--Aspir
@@ -7891,21 +10745,21 @@ register_event('action', function (act)
 			local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 			count = count == '' and '' or ' '..count
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr MP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr MP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr MP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 		--Absorb-TP
 		elseif msg == 226 then
 			local info = calculateInfo(act)
 			local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 			count = count == '' and '' or ' '..count
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr TP'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr TP'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr TP'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 		--Absorbed
 		elseif msg == 238 then
 			local info = calculateInfo(act)
 			local amount_total = show_result_totals and target_count > 1 and not info.last_buff_id and addCommas(info.amount_total) or ''
 			count = count == '' and '' or ' '..count
 			target_action_result = ' (\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount..'\\cr'..count..'\\cs('..rhc_r..','..rhc_g..','..rhc_b..')'..amount_total..'\\cr)'
-			target_action_result_shdw = ' (\\cs(000,000,000)'..amount..'\\cr'..count..'\\cs(000,000,000)'..amount_total..'\\cr)'
+			target_action_result_shdw = ' (\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount..'\\cr'..count..'\\cs('..c_shdw_r..','..c_shdw_g..','..c_shdw_b..')'..amount_total..'\\cr)'
 		--Stat Boost
 		elseif msg == 762 then
 			target_action_result = ' ('..count..'Stat Boost)'
@@ -7926,27 +10780,50 @@ register_event('action', function (act)
 
 		if abil_name ~= "[REDACTED]" then
 
+			local cor_roll = nil
+
+			--Wild Card|Cutting Cards 1
+			if act.targets[1].actions[1].animation == 132 or act.targets[1].actions[1].animation == 321 then
+				cor_roll = 1
+			--Wild Card|Cutting Cards 2
+			elseif act.targets[1].actions[1].animation == 133 or act.targets[1].actions[1].animation == 322 then
+				cor_roll = 2
+			--Wild Card|Cutting Cards 3
+			elseif act.targets[1].actions[1].animation == 134 or act.targets[1].actions[1].animation == 323 then
+				cor_roll = 3
+			--Wild Card|Cutting Cards 4
+			elseif act.targets[1].actions[1].animation == 135 or act.targets[1].actions[1].animation == 324 then
+				cor_roll = 4
+			--Wild Card|Cutting Cards 5
+			elseif act.targets[1].actions[1].animation == 136 or act.targets[1].actions[1].animation == 325 then
+				cor_roll = 5
+			--Wild Card|Cutting Cards 6
+			elseif act.targets[1].actions[1].animation == 137 or act.targets[1].actions[1].animation == 326 then
+				cor_roll = 6
+			end
+
 			--Check if the ability used was an SP ability
 			local sp_abil = sp_abils[abil_name]
 			if sp_abil then
-				addToSPTable(act.actor_id, abil_name)
+				addToSPTable(act.actor_id, abil_name, cor_roll)
+			end
 
 			--If specific moves are used, remove all debuffs from all targets it hits
-			elseif remove_all_debuffs:contains(abil_name) then
+			if remove_all_debuffs:contains(abil_name) then
 				for i = 1, target_count do
-					current_debuffs[act.targets[i].id] = nil
+					local t_id = act.targets[i].id
+					wipeDebuffs(t_id)
 				end
 			end
 
 		end
-
 	end
 end)
 
 function handleOverwrites(target_id, new_spell_id)
 
-	--Over 9000 special case spells (Impact, boosted versions of Dia, Bio, Burn, etc.)
-	new_spell_id = new_spell_id > 9000 and new_spell_id - 9000 or new_spell_id
+	--Over 9000(!) special case spells (Impact, boosted versions of Dia, Bio, Burn, etc., excluding TH)
+	new_spell_id = new_spell_id > 9000 and new_spell_id < 9900 and new_spell_id - 9000 or new_spell_id
 
 	--If the target has no current debuffs, return true so the new debuff gets saved
 	if not current_debuffs[target_id] then
@@ -7955,28 +10832,63 @@ function handleOverwrites(target_id, new_spell_id)
 
 	--Loop through all debuffs the target currently has
 	for effect_id, spell in pairs(current_debuffs[target_id]) do
-		--Over 9000 special case spells (Impact, boosted versions of Dia, Bio, Burn, etc.)
-		local old_spell_id = spell and spell.id and spell.id > 9000 and spell.id - 9000 or (spell and spell.id)
-		if old_spell_id == 503 then return false end --Impact does not overwrite itself
-		local old_debuff_overwrites = old_spell_id and res.spells[old_spell_id] and res.spells[old_spell_id].overwrites or {}
+		if effect_id ~= 'pos' then
 
-		--Check if there is a higher priority debuff already active
-		if table.length(old_debuff_overwrites) > 0 then
-			for _,v in ipairs(old_debuff_overwrites) do
-				if new_spell_id == v then
-					--If there is, return false so that the previous debuff is not overwritten
-					return false
+			local threnody_i = {
+				[454] = true,
+				[455] = true,
+				[456] = true,
+				[457] = true,
+				[458] = true,
+				[459] = true,
+				[460] = true,
+				[461] = true,
+			}
+			local threnody_ii = {
+				[871] = true,
+				[872] = true,
+				[873] = true,
+				[874] = true,
+				[875] = true,
+				[876] = true,
+				[877] = true,
+				[878] = true,
+			}
+
+			--Over 9000(!) special case spells (Impact, boosted versions of Dia, Bio, Burn, etc.)
+			local old_spell_id = spell.id and spell.id > 9000 and spell.id < 9900 and spell.id - 9000 or spell.id -- compare number with nil
+
+			--Impact does not overwrite itself
+			if new_spell_id == 503 and old_spell_id == 503 then
+				return false
+			--TH effect overwrites itself
+			elseif new_spell_id >= 9902 and new_spell_id <= 9914 and old_spell_id >= 9902 and old_spell_id <= 9914 then
+				current_debuffs[target_id][effect_id] = nil
+				return true
+			--Tier 1 Threnodies do not overwrite Tier 2 Threnodies
+			elseif threnody_ii[old_spell_id] and threnody_i[new_spell_id] then
+				return false
+			end
+			local old_debuff_overwrites = old_spell_id and res.spells[old_spell_id] and res.spells[old_spell_id].overwrites or {}
+
+			--Check if there is a higher priority debuff already active
+			if table.length(old_debuff_overwrites) > 0 then
+				for _,v in ipairs(old_debuff_overwrites) do
+					if new_spell_id == v then
+						--If there is, return false so that the previous debuff is not overwritten
+						return false
+					end
 				end
 			end
-		end
 
-		--Check if a lower priority debuff is being overwritten
-		local new_debuff_overwrites = res.spells[new_spell_id] and res.spells[new_spell_id].overwrites or {}
-		if table.length(new_debuff_overwrites) > 0 then
-			for _,v in ipairs(new_debuff_overwrites) do
-				if old_spell_id == v then
-					--If there is, clear the previous debuff
-					current_debuffs[target_id][effect_id] = nil
+			--Check if a lower priority debuff is being overwritten
+			local new_debuff_overwrites = res.spells[new_spell_id] and res.spells[new_spell_id].overwrites or {}
+			if table.length(new_debuff_overwrites) > 0 then
+				for _,v in ipairs(new_debuff_overwrites) do
+					if old_spell_id == v then
+						--If there is, clear the previous debuff
+						current_debuffs[target_id][effect_id] = nil
+					end
 				end
 			end
 		end
@@ -7988,15 +10900,14 @@ end
 
 --Remove a debuff from a monster if the specific debuff is still present
 function removeDebuff(target_id, effect_id, index)
-	if current_debuffs[target_id]
-	and current_debuffs[target_id][effect_id]
-	and current_debuffs[target_id][effect_id].index == index then
-		current_debuffs[target_id][effect_id] = nil
+	local target_debuffs = current_debuffs[target_id]
+	if target_debuffs and target_debuffs[effect_id] and target_debuffs[effect_id].index == index then
+		target_debuffs[effect_id] = nil
 	end
 end
 
 --Save debuff to current_debuffs table
-function saveDebuff(actor_id, target_id, effect_id, spell_id)
+function saveDebuff(actor_id, target_id, effect_id, spell_id, no_effect)
 
 	--Make sure the effect numbers we're getting are within the correct range
 	if not ((effect_id >= 1 and effect_id <= 634) or effect_id >= 9000) then return end
@@ -8013,6 +10924,7 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id)
 	local removal_timer = debuff_duration_cap
 	local trackingIndex = assignIndex()
 	local check_override = true
+	local clock = os.clock()
 
 	--Determine if this effect is a Daze and set duration accordingly
 	local daze_durations = {
@@ -8028,10 +10940,10 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id)
 		[10] = 120,
 	}
 	local daze_levels = {
-		[386] = 1, [387] = 2, [388] = 3, [389] = 4, [390] = 5, --Lethargic Daze
-		[391] = 1, [392] = 2, [393] = 3, [394] = 4, [395] = 5, --Sluggish Daze
-		[396] = 1, [397] = 2, [398] = 3, [399] = 4, [400] = 5, --Weakened Daze
-		[448] = 1, [449] = 2, [450] = 3, [451] = 4, [452] = 5, --Bewildered Daze
+		[386] = 1, [387] = 2, [388] = 3, [389] = 4, [390] = 5, [99106] = 6, [99107] = 7, [99108] = 8, [99109] = 9, [99110] = 10, --Lethargic Daze (Quickstep)
+		[391] = 1, [392] = 2, [393] = 3, [394] = 4, [395] = 5, [99206] = 6, [99207] = 7, [99208] = 8, [99209] = 9, [99210] = 10, --Sluggish Daze (Box Step)
+		[396] = 1, [397] = 2, [398] = 3, [399] = 4, [400] = 5, [99306] = 6, [99307] = 7, [99308] = 8, [99309] = 9, [99310] = 10, --Weakened Daze (Stutter Step)
+		[448] = 1, [449] = 2, [450] = 3, [451] = 4, [452] = 5, [99406] = 6, [99407] = 7, [99408] = 8, [99409] = 9, [99410] = 10, --Bewildered Daze (Feather Step)
 	}
 
 	--Match the effect with daze level
@@ -8040,8 +10952,17 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id)
 		duration = daze_durations[level]
 	end
 
+	--Light Shot Sleep
+	if effect_id == 2 and spell_id == 131 then
+		check_override = false
+		duration = 60 --lasts only 60 seconds
+		removal_timer = duration
+	--Stun
+	elseif effect_id == 10 then
+		duration = 3
+		removal_timer = 4
 	--Shadowbind
-	if effect_id == 11 and spell_id == 57 then
+	elseif effect_id == 11 and spell_id == 57 then
 		local base_duration = 30
 		local max_duration = 62
 		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Shadowbind"] or nil
@@ -8059,6 +10980,10 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id)
 		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Angon"]or nil
 		duration = bonus and base_duration + bonus or base_duration
 		removal_timer = bonus and duration or max_duration
+	--Flash
+	elseif effect_id == 156 then
+		duration = 13
+		removal_timer = 14
 	--Chainbound
 	elseif effect_id == 164 then
 		check_override = false
@@ -8147,8 +11072,31 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id)
 		spell_id = 422
 		duration = 180
 		removal_timer = duration
-	--Enfeebling Magic
-	elseif res.spells[spell_id] and res.spells[spell_id].skill == 35 then
+	--Helix Spells
+	elseif res.spells[spell_id] and string.find(res.spells[spell_id].en,"helix") then
+		local base_duration = duration
+		local max_duration = debuff_duration_cap
+		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Helix"] and durations_data[server][actor_name]["Helix"] / 100 or nil
+		duration = bonus and base_duration + (base_duration * bonus) or base_duration
+		removal_timer = bonus and duration or max_duration
+	--Blue Magic spells get no duration bonuses, so we remove them right at the duration length
+	elseif res.spells[spell_id] and res.spells[spell_id].skill == 43 then
+		removal_timer = duration
+	--Comet/Firaja/Blizzaja/Aeroja/Stoneja/Thundaja/Waterja (Cumulative Magic)
+	elseif T{9219,9496,9497,9498,9499,9500,9501}:contains(effect_id) then
+		local base_duration = 60
+		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Cumulative Spells"] or nil
+		duration = bonus and base_duration + bonus or base_duration
+		removal_timer = duration
+	--Kaustra
+	elseif effect_id == 23 then
+		duration = 100
+	--Impact
+	elseif effect_id == 9503 then
+		duration = 180
+		removal_timer = duration
+	--Elemental Magic
+	elseif res.spells[spell_id] and res.spells[spell_id].skill == 36 then
 		local base_duration = duration
 		local max_duration = debuff_duration_cap
 		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Enfeebling Magic"] and durations_data[server][actor_name]["Enfeebling Magic"] / 100 or nil
@@ -8157,7 +11105,7 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id)
 	--Singing
 	elseif res.spells[spell_id] and res.spells[spell_id].skill == 40 then
 		--Threnodies override eachother (at this point they've already landed so we can ignore tiers)
-		if effect_id == 217 and current_debuffs[target_id][217] then
+		if effect_id == 217 and current_debuffs[target_id][217] and not no_effect then
 			current_debuffs[target_id][217] = nil
 		end
 		--Lullaby fixes (incorrect durations in res\spells.lua)
@@ -8171,20 +11119,10 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id)
 		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Singing"] and durations_data[server][actor_name]["Singing"] / 100 or nil
 		duration = bonus and base_duration + (base_duration * bonus) or base_duration
 		removal_timer = bonus and duration or max_duration
-	--Blue Magic spells get no duration bonuses, so we remove them right at the duration length
-	elseif res.spells[spell_id] and res.spells[spell_id].skill == 43 then
-		removal_timer = duration
-	--Comet/Firaja/Blizzaja/Aeroja/Stoneja/Thundaja/Waterja (Cumulative Magic)
-	elseif T{9219,9496,9497,9498,9499,9500,9501}:contains(effect_id) then
-		local base_duration = 60
-		local bonus = durations_data[server] and durations_data[server][actor_name] and durations_data[server][actor_name]["Cumulative Spells"] or nil
-		duration = bonus and base_duration + bonus or base_duration
-		removal_timer = duration
-	--Impact
-	elseif effect_id == 9503 then
-		-- check_override = false
-		duration = 180
-		removal_timer = duration
+	--Treasure Hunter
+	elseif T{9902,9903,9904,9905,9906,9907,9908,9909,9910,9911,9912,9913,9914}:contains(effect_id) then
+		duration = nil
+		removal_timer = nil
 	end
 
 	--Check for spells that overwrite a current debuff
@@ -8193,10 +11131,17 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id)
 		return
 	end
 
+	--No Effect duration adjustment (since we don't know when the previously cast effect will wear off)
+	if no_effect and not current_debuffs[target_id][effect_id] then
+		duration = 0
+	end
+
 	--Set timer to remove the specific debuff
-	coroutine.schedule(function()
-		removeDebuff(target_id, effect_id, trackingIndex)
-	end, removal_timer)
+	if removal_timer then
+		coroutine.schedule(function()
+			removeDebuff(target_id, effect_id, trackingIndex)
+		end, removal_timer)
+	end
 
 	--Addle overwrites Nocturne
 	if effect_id == 21 and current_debuffs[target_id][223] then
@@ -8206,18 +11151,23 @@ function saveDebuff(actor_id, target_id, effect_id, spell_id)
 	--Get target position if slept, bound, or petrified so we can later determine if it wears off
 	if effect_id == 2 or effect_id == 7 or effect_id == 11 or effect_id == 19 then
 		local target_data = get_mob_by_id(target_id)
-		current_debuffs[target_id].pos = {
-			x = target_data.x,
-			y = target_data.y,
-		}
+		-- if target_data then
+		if target_data and current_debuffs[target_id] then
+			current_debuffs[target_id].pos = {
+				x = target_data.x or 0,
+				y = target_data.y or 0,
+				facing = target_data.facing and math.floor((target_data.facing * 180 / math.pi) + 0.5) or 0,
+				clear_delay = clock + 1 --Because server ticks and lag can make this messy, we add this short timer before which these debuffs won't be cleared if they Do Things.
+			}
+		end
 	end
 
 	--Save debuff data to the current_debuffs table
-	--target_id = id of the target (monster)
-	--effect_id = id of the debuff/status
+	--  target_id = id of the target (monster)
+	--  effect_id = id of the debuff/status
 	current_debuffs[target_id][effect_id] = {
 		id = spell_id, --id of the spell that was cast
-		timer = os.clock() + duration, --expiration time
+		timer = duration and clock + duration, --expiration time
 		index = trackingIndex, --Unique ID for this debuff
 	}
 
@@ -8234,32 +11184,76 @@ function handleAction(act)
 	local spell_id = act.param
 	local target_count = act.target_count
 	local shot_boosts = {
-		[131] = { --Light Shot -> Dia
-			effect_id = 134,
-			spell_map = {[23] = 9023, [24] = 9024, [25] = 9025}
+		[131] = { -- Light Shot
+			{
+				effect_id = 134, -- Dia
+				spell_map = {[23] = 9023, [24] = 9024, [25] = 9025}
+			}
 		},
-		[132] = { --Dark Shot -> Bio
-			effect_id = 135,
-			spell_map = {[230] = 9230, [231] = 9231, [232] = 9232}
+		[132] = { -- Dark Shot
+			{
+				effect_id = 135, -- Bio
+				spell_map = {[230] = 9230, [231] = 9231, [232] = 9232}
+			},
+			{
+				effect_id = 5, -- Blind
+				spell_map = {[254] = 9254, [276] = 9276}
+			}
 		},
-		[125] = {effect_id = 128, spell_map = {[235] = 9235}}, --Fire Shot		-> Burn
-		[126] = {effect_id = 129, spell_map = {[236] = 9236}}, --Ice Shot		-> Frost
-		[127] = {effect_id = 130, spell_map = {[237] = 9237}}, --Wind Shot		-> Choke
-		[128] = {effect_id = 131, spell_map = {[238] = 9238}}, --Earth Shot		-> Rasp
-		[129] = {effect_id = 132, spell_map = {[239] = 9239}}, --Thunder Shot	-> Shock
-		[130] = {effect_id = 133, spell_map = {[240] = 9240}}, --Water Shot		-> Drown
+		[125] = { -- Fire Shot
+			{ effect_id = 128, spell_map = {[235] = 9235} } -- Burn
+		},
+		[126] = { -- Ice Shot
+			{
+				effect_id = 129, -- Frost
+				spell_map = {[236] = 9236}
+			},
+			{
+				effect_id = 4, -- Paralyze
+				spell_map = {[58] = 9058, [80] = 9080}
+			}
+		},
+		[127] = { -- Wind Shot
+			{ effect_id = 130, spell_map = {[237] = 9237} } -- Choke
+		},
+		[128] = { -- Earth Shot
+			{
+				effect_id = 131, -- Rasp
+				spell_map = {[238] = 9238}
+			},
+			{
+				effect_id = 13, -- Slow
+				spell_map = {[56] = 9056, [79] = 9079}
+			}
+		},
+		[129] = { -- Thunder Shot
+			{ effect_id = 132, spell_map = {[239] = 9239} } -- Shock
+		},
+		[130] = { -- Water Shot
+			{ effect_id = 133, spell_map = {[240] = 9240} } -- Drown
+		},
 	}
 	for i = 1, target_count do
 
 		local target_id = act.targets[i].id
 		local message_id = act.targets[i].actions[1].message
+		local add_message_id = act.targets[i].actions[1].add_effect_message
+
+		--Treasure Hunter procs
+		if act.category == 1 and add_message_id == 603 then
+			local level = act.targets[i].actions[1].add_effect_param
+			local th_id = {[2]=9902,[3]=9903,[4]=9904,[5]=9905,[6]=9906,[7]=9907,[8]=9908,[9]=9909,[10]=9910,[11]=9911,[12]=9912,[13]=9913,[14]=9914}
+			effect_id = th_id[level]
+			spell_id = th_id[level]
+			saveDebuff(actor_id, target_id, effect_id, spell_id)
 
 		--Spells that include a debuff
-		if act.category == 4 then
+		elseif act.category == 4 then
 
 			--Spell messages to look for
 			local damaging_spell_messages = S{2,7,252,264,265}
 			local debuff_spell_messages = S{203,236,237,267,268,269,270,271,272,277,278,279}
+			local no_effect_spell_messages = S{75,283,423,659}
 
 			--Damaging spells
 			if damaging_spell_messages:contains(message_id) then
@@ -8290,6 +11284,9 @@ function handleAction(act)
 							current_debuffs[target_id][9501] = nil
 						end
 					end
+				--Kaustra
+				elseif spell_id == 502 then
+					effect_id = 23
 				--Impact
 				elseif spell_id == 503 then
 					effect_id = 9503
@@ -8302,8 +11299,14 @@ function handleAction(act)
 			elseif debuff_spell_messages:contains(message_id) then
 				local effect_id = act.targets[i].actions[1].param
 				local spell_status = res.spells[spell_id] and res.spells[spell_id].status
+				--Flash
+				if spell_id == 112 then
+					spell_status = 156
+				--Stun
+				elseif spell_id == 252 then
+					spell_status = 10
 				--Poisonga
-				if spell_id == 220 or spell_id == 225 then
+				elseif spell_id == 220 or spell_id == 225 then
 					spell_id = 220 --Poisonga (225) puts Poison (220/3) on each target
 					spell_status = 3
 					effect_id = 3
@@ -8316,6 +11319,10 @@ function handleAction(act)
 				if spell_status and spell_status == effect_id then
 					saveDebuff(actor_id, target_id, effect_id, spell_id)
 				end
+			elseif no_effect_spell_messages:contains(message_id) then
+				local effect_id = res.spells[spell_id] and res.spells[spell_id].status or 0
+				local no_effect = true
+				saveDebuff(actor_id, target_id, effect_id, spell_id, no_effect)
 			end
 
 		--Most job abilities
@@ -8344,17 +11351,28 @@ function handleAction(act)
 				effect_id = 9503
 				saveDebuff(actor_id, target_id, effect_id, spell_id)
 			end
-			--Boost debuff based on Corsair shot type
-			local boost = shot_boosts[act.param]
-			if act.category == 6 and boost and current_debuffs[main_target_id] then
-				local debuff = current_debuffs[main_target_id][boost.effect_id]
-				if debuff then
-					local boosted_id = boost.spell_map[debuff.id]
-					if boosted_id then
-						--Update the debuff id to the boosted version
-						debuff.id = boosted_id
+			--Boost debuffs based on Corsair shot type
+			local boost_list = shot_boosts[act.param]
+			if act.category == 6 and boost_list and current_debuffs[main_target_id] then
+				--Loop through all potential debuffs this shot can boost
+				for _, boost in ipairs(boost_list) do
+					local debuff = current_debuffs[main_target_id][boost.effect_id]
+					if debuff then
+						local boosted_id = boost.spell_map[debuff.id]
+						if boosted_id then
+							--Update the debuff id to the boosted version
+							debuff.id = boosted_id
+						end
 					end
 				end
+			end
+			--Bounty Shot procs
+			if message_id == 608 then
+				local level = act.targets[i].actions[1].param
+				local th_id = {[2]=9902,[3]=9903,[4]=9904,[5]=9905,[6]=9906,[7]=9907,[8]=9908,[9]=9909,[10]=9910,[11]=9911,[12]=9912,[13]=9913,[14]=9914}
+				effect_id = th_id[level]
+				spell_id = th_id[level]
+				saveDebuff(actor_id, target_id, effect_id, spell_id)
 			end
 
 		--Some job abilities that include a debuff (unblinkable)
@@ -8362,10 +11380,10 @@ function handleAction(act)
 
 			--Daze effect groups mapped to their level/message_id
 			local daze_types = {
-				[519] = {[1]=386, [2]=387, [3]=388, [4]=389, [5]=390, [6]=390, [7]=390, [8]=390, [9]=390, [10]=390}, --Lethargic Daze
-				[520] = {[1]=391, [2]=392, [3]=393, [4]=394, [5]=395, [6]=395, [7]=395, [8]=395, [9]=395, [10]=395}, --Sluggish Daze
-				[521] = {[1]=396, [2]=397, [3]=398, [4]=399, [5]=400, [6]=400, [7]=400, [8]=400, [9]=400, [10]=400}, --Weakened Daze
-				[591] = {[1]=448, [2]=449, [3]=450, [4]=451, [5]=452, [6]=452, [7]=452, [8]=452, [9]=452, [10]=452}, --Bewildered Daze
+				[519] = {[1]=386, [2]=387, [3]=388, [4]=389, [5]=390, [6]=99106, [7]=99107, [8]=99108, [9]=99109, [10]=99110}, --Lethargic Daze (Quickstep)
+				[520] = {[1]=391, [2]=392, [3]=393, [4]=394, [5]=395, [6]=99206, [7]=99207, [8]=99208, [9]=99209, [10]=99210}, --Sluggish Daze (Box Step)
+				[521] = {[1]=396, [2]=397, [3]=398, [4]=399, [5]=400, [6]=99306, [7]=99307, [8]=99308, [9]=99309, [10]=99310}, --Weakened Daze (Stutter Step)
+				[591] = {[1]=448, [2]=449, [3]=450, [4]=451, [5]=452, [6]=99406, [7]=99407, [8]=99408, [9]=99409, [10]=99410}, --Bewildered Daze (Feather Step)
 			}
 
 			--Check if the message ID is one of the Daze types
@@ -8378,6 +11396,9 @@ function handleAction(act)
 						for _, id in pairs(daze_group) do
 							current_debuffs[target_id][id] = nil
 						end
+					end
+					if level >= 6 then
+						spell_id = effect_id
 					end
 					saveDebuff(actor_id, target_id, effect_id, spell_id)
 				end
@@ -8450,55 +11471,293 @@ function handleActionMessage(data)
 				current_debuffs[target_id][9503] = nil
 			end
 
-			current_debuffs[target_id][effect_id] = nil
+			-- current_debuffs[target_id][effect_id] = nil
 		end
 
 	end
 
 end
 
+--Track in-game chat log
+register_event('chat message', function(message, sender, mode, is_gm)
+
+	if not show_chat_bar then return end
+
+	local target_tab_key = nil
+
+	if mode == 0 then
+		target_tab_key = 'Say'
+	elseif mode == 1 then
+		target_tab_key = 'Shout'
+	elseif mode == 3 then
+		target_tab_key = 'Tell'
+		new_tell_pulse_override = false
+	elseif mode == 4 then
+		target_tab_key = 'Party'
+	elseif mode == 5 then
+		target_tab_key = 'Linkshell1'
+	elseif mode == 26 then
+		target_tab_key = 'Yell'
+	elseif mode == 27 then
+		target_tab_key = 'Linkshell2'
+	elseif mode == 33 then
+		target_tab_key = 'Unity'
+		if sender == '' then return end
+	end
+
+	if target_tab_key then
+		--If this channel is disabled in settings.xml, discard the message
+		if settings.sections.chat.tabs[target_tab_key:lower()] == false then
+			return
+		end
+
+		--Combine Shout and Yell
+		if target_tab_key == 'Shout' or target_tab_key == 'Yell' then
+			target_tab_key = 'ShoutYell'
+		end
+
+		addMessageToChatTab(target_tab_key, sender, message)
+	end
+end)
+
+--Track outgoing packets
+register_event('outgoing chunk', function(id, data, modified, injected, blocked)
+
+	--Standard chat (0x0B5) or outgoing tells (0x0B6)
+	if (id == 0x0B5 or id == 0x0B6) and show_chat_bar then
+
+		local msg = nil
+		local mode = nil
+		local target_tab_key = nil
+		local tell_target = nil
+		local current_time = os.clock()
+
+		--Standard chat packet
+		if id == 0x0B5 then
+			local packet = packets.parse('outgoing', data)
+			mode = packet['Mode']
+			msg = packet['Message']
+
+			if mode == 0 then
+				target_tab_key = 'Say'
+			elseif mode == 1 then
+				target_tab_key = 'Shout'
+			elseif mode == 4 then
+				target_tab_key = 'Party'
+			elseif mode == 5 then
+				target_tab_key = 'Linkshell1'
+			elseif mode == 26 then
+				target_tab_key = 'Yell'
+			elseif mode == 27 then
+				target_tab_key = 'Linkshell2'
+			elseif mode == 33 then
+				target_tab_key = 'Unity'
+			end
+
+		--Outgoing tell packet
+		elseif id == 0x0B6 then
+			local packet = packets.parse('outgoing', data)
+			msg = packet['Message']
+
+			mode = 99 --Custom mode for deduplication logic
+
+			target_tab_key = 'Tell'
+
+			local target_name = packet['Target Name']
+			if target_name and target_name ~= "" then
+				tell_target = target_name
+				new_tell_pulse_override = true
+				updateChatTabs()
+			end
+		end
+
+		if msg then msg = msg:trim() end
+		if not msg or msg == "" then return end
+
+		--Depulication check
+		if msg == chat_last_outbound.text and mode == chat_last_outbound.mode then
+			--If it's the exact same message and channel within 0.5 seconds, skip it
+			if (current_time - chat_last_outbound.time) < 0.5 then
+				return
+			end
+		end
+
+		if target_tab_key then
+			if settings.sections.chat.tabs[target_tab_key:lower()] == false then
+				return
+			end
+
+			--Update our deduplication tracking
+			chat_last_outbound.text = msg
+			chat_last_outbound.mode = mode
+			chat_last_outbound.time = current_time
+
+			local player =get_player()
+			local sender_name = player and player.name or "You"
+
+			addMessageToChatTab(target_tab_key, sender_name, msg, tell_target)
+		end
+
+	end
+end)
+
+--Track incoming packets
 register_event('incoming chunk',function(id,original,modified,injected,blocked)
 
 	if injected then return end
 
-	if id == 0x67 or id == 0x068 then --pet tp
-		local packet = packets.parse('incoming', original)
+	local packet = packets.parse('incoming', original)
+	local player = get_player()
+	local msg = packet['Message']
+
+	--XP/JP/EP related info
+	if id == 0x061 and show_xp_bar then
+		master_level = tnml[packet['Required Exemplar Points']]
+		synced_master_level = packet['Master Level']
+		current_xp = packet["Current EXP"]
+		required_xp = packet["Required EXP"]
+		current_ep = packet["Current Exemplar Points"]
+		required_ep = packet["Required Exemplar Points"]
+	elseif id == 0x063 and show_xp_bar then
+		if packet['Order'] == 2 then
+			xp_capped = packet["EXP Capped"]
+			current_lp = packet['Limit Points'] or current_lp
+			current_mp = packet['Merit Points'] or current_mp
+			max_merit_points = packet['Max Merit Points'] or max_merit_points
+		elseif packet['Order'] == 5 then
+			local job = player.main_job_full
+			current_cp = packet[job..' Capacity Points'] or current_cp
+			job_points_stored = packet[job..' Job Points'] or job_points_stored
+		end
+	elseif id == 0x02D and show_xp_bar then
+		local points = packet['Param 1']
+		local timestamp = os.time()
+		local target_id = packet['Player']
+		if msg == 8 or msg == 105 or msg == 253 then --Gain XP
+			--Immediately add the points to the current xp total, unless that would push it over the req xp tnl then we'll let the packet update handle that
+			current_xp = current_xp and required_xp and current_xp + points < required_xp and current_xp + points or current_xp
+			table.insert(xp_table, {
+				timestamp = timestamp,
+				points = points,
+			})
+		elseif msg == 371 or msg == 372 then --Gain LP/Merits
+			if current_lp and current_mp and current_lp + points > 10000 then
+				current_lp = current_lp + points - 10000
+				current_mp = math.min(current_mp + 1, max_merit_points)
+			else
+				current_lp = current_lp and current_lp + points or current_lp
+			end
+			--Add LP into the XP table since XP and LP are 1:1 and you only get one or the other at a time
+			table.insert(xp_table, {
+				timestamp = timestamp,
+				points = points,
+			})
+		elseif msg == 718 or msg == 735 then --Gain CP
+			table.insert(cp_table, {
+				timestamp = timestamp,
+				points = points,
+			})
+		elseif msg == 809 or msg == 810 then --Gain EP
+			--Immediately add the exemplar points just like xp above
+			current_ep = current_ep and required_ep and current_ep + points < required_ep and current_ep + points or current_ep
+			table.insert(ep_table, {
+				timestamp = timestamp,
+				points = points,
+			})
+		elseif msg == 719 and player.id == target_id then --New JP Total on kill
+			job_points_stored = points
+		end
+
+	--Pet TP
+	elseif id == 0x67 or id == 0x068 then
 		local msg_type = packet['Message Type']
 		if (msg_type == 0x04) then
 			pet_tp = packet['Pet TP']
+			pet_mp = packet['Current MP%']
 		end
 
-	elseif id == 0x028 then --actions (for debuffs)
+	--Actions (for debuffs)
+	elseif id == 0x028 then
 		handleAction(windower.packets.parse_action(original))
 
-	elseif id == 0x029 then --action messages (for debuffs)
+	--Action messages (for debuffs)
+	elseif id == 0x029 then
 		local data = {}
 		data.target_id = original:unpack('I',0x09)
 		data.param_1 = original:unpack('I',0x0D)
 		data.message_id = original:unpack('H',0x19)%32768
 		handleActionMessage(data)
 
-	elseif id == 0xF4 then --wide scan (for monster levels)
-		local packet = packets.parse( 'incoming', original )
+	--Wide scan (for monster levels)
+	elseif id == 0xF4 then
 		current_levels[packet.Index] = packet.Level
 
-	elseif id == 0xB then --zone start
+	--Zone start
+	elseif id == 0xB then
 		zoning = true
 		hideBars()
 		clearTables()
+		if settings.sections.chat.show_during_zoning then
+			showChatBar()
+		else
+			hideChatBar()
+		end
 		if Screen_Test then
 			windower.send_command('bars ui')
 		end
 
-	elseif id == 0xA then --zone finish
+	--Zone finish
+	elseif id == 0xA then
 		zoning = false
 		local target = get_mob_by_target('t')
 		showBars(target)
+		showChatBar()
 		resetFadeDelay()
 
 	end
 
 end)
+
+--Pull data from the last_incoming packets if found (loads data faster instead of waiting for a fresh packet update)
+function checkLastPackets()
+
+	if show_xp_bar then
+		local char_stats_1 = windower.packets.last_incoming(0x061)
+		local char_stats_2 = windower.packets.last_incoming(0x063)
+
+		if char_stats_1 then
+			local packet = packets.parse('incoming', char_stats_1)
+			master_level = tnml[packet['Required Exemplar Points']]
+			synced_master_level = packet['Master Level']
+			current_xp = packet["Current EXP"]
+			required_xp = packet["Required EXP"]
+			current_ep = packet["Current Exemplar Points"]
+			required_ep = packet["Required Exemplar Points"]
+		end
+
+		if char_stats_2 then
+			local packet = packets.parse('incoming', char_stats_2)
+			if packet['Order'] == 2 then
+				xp_capped = packet["EXP Capped"]
+				current_lp = packet['Limit Points'] or current_lp
+				current_mp = packet['Merit Points'] or current_mp
+				max_merit_points = packet['Max Merit Points'] or max_merit_points
+			elseif packet['Order'] == 5 then
+				local job = get_player().main_job_full
+				current_cp = packet[job..' Capacity Points'] or current_cp
+				job_points_stored = packet[job..' Job Points'] or job_points_stored
+			end
+		end
+	end
+
+	local wide_scan = windower.packets.last_incoming(0xF4)
+
+	if wide_scan then
+		local packet = packets.parse('incoming', wide_scan)
+		current_levels[packet.Index] = packet.Level
+	end
+
+end
 
 --Unrecognized command
 function displayUnregnizedCommand()
@@ -8580,11 +11839,13 @@ register_event('addon command',function(addcmd, ...)
 
 	--Update the Focus Target bar widths
 	elseif addcmd == 'width' or addcmd == 'w' then
-		add_to_chat(8,('[Bars] '):color(220)..('Focus Target Bar Width:'):color(36)..(' '..focus_target_bar_width):color(200)..(' ('):color(8)..('//bars ftbw #'):color(1)..(')'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('Sub Target Bar Width:'):color(36)..(' '..sub_target_bar_width):color(200)..(' ('):color(8)..('//bars stbw #'):color(1)..(')'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('Target Bar Width:'):color(36)..(' '..target_bar_width):color(200)..(' ('):color(8)..('//bars tbw #'):color(1)..(')'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('Player Stats Bar Width:'):color(36)..(' '..player_stats_bar_width):color(200)..(' ('):color(8)..('//bars psbw #'):color(1)..(')'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('Self Action Bar Width:'):color(36)..(' '..self_action_bar_width):color(200)..(' ('):color(8)..('//bars sabw #'):color(1)..(')'):color(8))
+		add_to_chat(8,('[Bars] '):color(220)..('Bar widths (width/length of the meter)'):color(220))
+		add_to_chat(8,('Focus Target Bar Width:'):color(36)..(' '..focus_target_bar_width):color(200)..(' ('):color(8)..('//bars ftbw #'):color(1)..(')'):color(8))
+		add_to_chat(8,('Sub Target Bar Width:'):color(36)..(' '..sub_target_bar_width):color(200)..(' ('):color(8)..('//bars stbw #'):color(1)..(')'):color(8))
+		add_to_chat(8,('Target Bar Width:'):color(36)..(' '..target_bar_width):color(200)..(' ('):color(8)..('//bars tbw #'):color(1)..(')'):color(8))
+		add_to_chat(8,('Player Stats Bar Width:'):color(36)..(' '..player_stats_bar_width):color(200)..(' ('):color(8)..('//bars psbw #'):color(1)..(')'):color(8))
+		add_to_chat(8,('Self Action Bar Width:'):color(36)..(' '..self_action_bar_width):color(200)..(' ('):color(8)..('//bars sabw #'):color(1)..(')'):color(8))
+		add_to_chat(8,('XP Bar Width:'):color(36)..(' '..xp_bar_width):color(200)..(' ('):color(8)..('//bars xpbw #'):color(1)..(')'):color(8))
 
 	--Update the Focus Target bar width
 	elseif addcmd == 'ftbw' then
@@ -8599,7 +11860,7 @@ register_event('addon command',function(addcmd, ...)
 			setWidth()
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Focus Target Bar Width:'):color(36)..(' '..focus_target_bar_width):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 36'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 36'):color(1)..(')'):color(8))
 		end
 
 	--Update the Sub Target bar width
@@ -8615,7 +11876,7 @@ register_event('addon command',function(addcmd, ...)
 			setWidth()
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Sub Target Bar Width:'):color(36)..(' '..sub_target_bar_width):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 36'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 36'):color(1)..(')'):color(8))
 		end
 
 	--Update the Target bar width
@@ -8631,7 +11892,7 @@ register_event('addon command',function(addcmd, ...)
 			setWidth()
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Target Bar Width:'):color(36)..(' '..target_bar_width):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 73'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 73'):color(1)..(')'):color(8))
 		end
 
 	--Update the Player Stats bar width
@@ -8647,7 +11908,7 @@ register_event('addon command',function(addcmd, ...)
 			setWidth()
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Player Stats Bar Width:'):color(36)..(' '..player_stats_bar_width):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 73'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 73'):color(1)..(')'):color(8))
 		end
 
 	--Update the Self Action bar width
@@ -8663,16 +11924,36 @@ register_event('addon command',function(addcmd, ...)
 			setWidth()
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Self Action Bar Width:'):color(36)..(' '..self_action_bar_width):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 73'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 73'):color(1)..(')'):color(8))
 		end
 
-	--Update the Focus Target bar sizes
+	--Update the XP bar width
+	elseif addcmd == 'xpbw' then
+		local args = {...}
+		local new_width = tonumber(args[1])
+
+		if new_width then
+			settings.sections.xp.bar_width = new_width
+			xp_bar_width = new_width
+			settings:save('all')
+			add_to_chat(8,('[Bars] '):color(220)..('XP Bar Width:'):color(36)..(' '..new_width):color(200))
+			setWidth()
+		else
+			add_to_chat(8,('[Bars] '):color(220)..('XP Bar Width:'):color(36)..(' '..xp_bar_width):color(200))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 73'):color(1)..(')'):color(8))
+		end
+
+	--Show the bar sizes and commands for each
 	elseif addcmd == 'size' or addcmd == 's' then
-		add_to_chat(8,('[Bars] '):color(220)..('Focus Target Bar Size:'):color(36)..(' '..focus_target_bar_size):color(200)..(' ('):color(8)..('//bars ftbs #'):color(1)..(')'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('Sub Target Bar Size:'):color(36)..(' '..sub_target_bar_size):color(200)..(' ('):color(8)..('//bars stbs #'):color(1)..(')'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('Target Bar Size:'):color(36)..(' '..target_bar_size):color(200)..(' ('):color(8)..('//bars tbs #'):color(1)..(')'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('Player Stats Bar Size:'):color(36)..(' '..player_stats_bar_size):color(200)..(' ('):color(8)..('//bars psbs #'):color(1)..(')'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('Self Action Bar Size:'):color(36)..(' '..self_action_bar_size):color(200)..(' ('):color(8)..('//bars sabs #'):color(1)..(')'):color(8))
+		add_to_chat(8,('[Bars] '):color(220)..('Bar Sizes (the bar/meter/window itself)'):color(220))
+		add_to_chat(8,('Focus Target Bar Size:'):color(36)..(' '..focus_target_bar_size):color(200)..(' ('):color(8)..('//bars ftbs #'):color(1)..(')'):color(8))
+		add_to_chat(8,('Sub Target Bar Size:'):color(36)..(' '..sub_target_bar_size):color(200)..(' ('):color(8)..('//bars stbs #'):color(1)..(')'):color(8))
+		add_to_chat(8,('Target Bar Size:'):color(36)..(' '..target_bar_size):color(200)..(' ('):color(8)..('//bars tbs #'):color(1)..(')'):color(8))
+		add_to_chat(8,('Player Stats Bar Size:'):color(36)..(' '..player_stats_bar_size):color(200)..(' ('):color(8)..('//bars psbs #'):color(1)..(')'):color(8))
+		add_to_chat(8,('Self Action Bar Size:'):color(36)..(' '..self_action_bar_size):color(200)..(' ('):color(8)..('//bars sabs #'):color(1)..(')'):color(8))
+		add_to_chat(8,('Aggro List Size:'):color(36)..(' '..settings.sections.aggro_list.size):color(200)..(' ('):color(8)..('//bars als #'):color(1)..(')'):color(8))
+		add_to_chat(8,('Chat Bar Size:'):color(36)..(' '..settings.sections.chat.size):color(200)..(' ('):color(8)..('//bars cbs #'):color(1)..(')'):color(8))
+		add_to_chat(8,('XP Bar Size:'):color(36)..(' '..xp_bar_size):color(200)..(' ('):color(8)..('//bars xpbs #'):color(1)..(')'):color(8))
 
 	--Update the Focus Target bar size
 	elseif addcmd == 'ftbs' then
@@ -8685,11 +11966,13 @@ register_event('addon command',function(addcmd, ...)
 			settings:save('all')
 			add_to_chat(8,('[Bars] '):color(220)..('Focus Target Bar Size:'):color(36)..(' '..new_size):color(200))
 			focus_target_bar_bg:size(new_size)
-			focus_target_bar_meter:size(new_size)
+			focus_target_bar_meter:size(new_size / 10)
+			focus_target_bar_drain_meter:size(new_size / 10)
 			focus_target_bar_pulse:size(new_size)
+			setUIPositions()
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Focus Target Bar Size:'):color(36)..(' '..focus_target_bar_size):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
 		end
 
 	--Update the Sub Target bar size
@@ -8703,11 +11986,13 @@ register_event('addon command',function(addcmd, ...)
 			settings:save('all')
 			add_to_chat(8,('[Bars] '):color(220)..('Sub Target Bar Size:'):color(36)..(' '..new_size):color(200))
 			sub_target_bar_bg:size(new_size)
-			sub_target_bar_meter:size(new_size)
+			sub_target_bar_meter:size(new_size / 10)
+			sub_target_bar_drain_meter:size(new_size / 10)
 			sub_target_bar_pulse:size(new_size)
+			setUIPositions()
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Sub Target Bar Size:'):color(36)..(' '..sub_target_bar_size):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
 		end
 
 	--Update the Target bar size
@@ -8721,12 +12006,13 @@ register_event('addon command',function(addcmd, ...)
 			settings:save('all')
 			add_to_chat(8,('[Bars] '):color(220)..('Target Bar Size:'):color(36)..(' '..new_size):color(200))
 			target_bar_bg:size(new_size)
-			target_bar_meter:size(new_size)
-			target_bar_drain_meter:size(new_size)
+			target_bar_meter:size(new_size / 10)
+			target_bar_drain_meter:size(new_size / 10)
 			target_bar_pulse:size(new_size)
+			setUIPositions()
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Target Bar Size:'):color(36)..(' '..target_bar_size):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
 		end
 
 	--Update the Player Stats bar size
@@ -8740,26 +12026,26 @@ register_event('addon command',function(addcmd, ...)
 			settings:save('all')
 			add_to_chat(8,('[Bars] '):color(220)..('Player Stats Bar Size:'):color(36)..(' '..new_size):color(200))
 			player_stats_hp_bar_bg:size(new_size)
-			player_stats_hp_bar_meter:size(new_size)
-			player_stats_hp_bar_drain_meter:size(new_size)
+			player_stats_hp_bar_meter:size(new_size / 10)
+			player_stats_hp_bar_drain_meter:size(new_size / 10)
 			player_stats_hp_bar_pulse:size(new_size)
-			player_stats_hp_marker:size(new_size)
+			player_stats_hp_marker:size(new_size / 5)
 			player_stats_mp_bar_bg:size(new_size)
-			player_stats_mp_bar_meter:size(new_size)
-			player_stats_mp_bar_drain_meter:size(new_size)
+			player_stats_mp_bar_meter:size(new_size / 10)
+			player_stats_mp_bar_drain_meter:size(new_size / 10)
 			player_stats_mp_bar_pulse:size(new_size)
 			player_stats_tp_bar_bg:size(new_size)
-			player_stats_tp_bar_meter:size(new_size)
-			player_stats_tp_bar_drain_meter:size(new_size)
+			player_stats_tp_bar_meter:size(new_size / 10)
+			player_stats_tp_bar_drain_meter:size(new_size / 10)
 			player_stats_tp_bar_pulse:size(new_size)
-			player_stats_tp_marker:size(new_size)
+			player_stats_tp_marker:size(new_size / 5)
 			player_stats_pet_bar_bg:size(new_size)
-			player_stats_pet_bar_meter:size(new_size)
-			player_stats_pet_bar_drain_meter:size(new_size)
+			player_stats_pet_bar_meter:size(new_size / 10)
+			player_stats_pet_bar_drain_meter:size(new_size / 10)
 			player_stats_pet_bar_pulse:size(new_size)
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Player Stats Bar Size:'):color(36)..(' '..player_stats_bar_size):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
 		end
 
 	--Update the Self Action bar size
@@ -8773,19 +12059,75 @@ register_event('addon command',function(addcmd, ...)
 			settings:save('all')
 			add_to_chat(8,('[Bars] '):color(220)..('Self Action Bar Size:'):color(36)..(' '..new_size):color(200))
 			self_action_bar_bg:size(new_size)
-			self_action_bar_meter:size(new_size)
+			self_action_bar_meter:size(new_size / 10)
+			self_action_bar_cast_meter:size(new_size / 10)
+			setUIPositions()
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Self Action Bar Size:'):color(36)..(' '..self_action_bar_size):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
 		end
 
-	--Update the Focus Target text sizes
+	--Update the XP bar size
+	elseif addcmd == 'xpbs' then
+		local args = {...}
+		local new_size = tonumber(args[1])
+
+		if new_size then
+			settings.sections.xp.bar_size = new_size
+			xp_bar_size = new_size
+			settings:save('all')
+			add_to_chat(8,('[Bars] '):color(220)..('XP Bar Size:'):color(36)..(' '..new_size):color(200))
+			xp_bar_bg:size(new_size)
+			xp_bar_meter:size(new_size / 10)
+			xp_bar_cast_meter:size(new_size / 10)
+			setUIPositions()
+		else
+			add_to_chat(8,('[Bars] '):color(220)..('XP Bar Size:'):color(36)..(' '..xp_bar_size):color(200))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
+		end
+
+	--Update the Chat Bar size
+	elseif addcmd == 'cbs' or addcmd == 'chbs' then
+		local args = {...}
+		local new_size = tonumber(args[1])
+
+		if new_size then
+			settings.sections.chat.size = new_size
+			settings:save('all')
+			add_to_chat(8,('[Bars] '):color(220)..('Chat Bar Size:'):color(36)..(' '..new_size):color(200))
+			updateChatbarSize(settings.sections.chat.size)
+			initializeChatUIGrid()
+			updateChatUIPositions(settings.sections.chat.pos.x, settings.sections.chat.pos.y)
+		else
+			add_to_chat(8,('[Bars] '):color(220)..('Chat Bar Size:'):color(36)..(' '..settings.sections.chat.size):color(200))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 11'):color(1)..(')'):color(8))
+		end
+
+	--Update the Aggro List size
+	elseif addcmd == 'als' then
+		local args = {...}
+		local new_size = tonumber(args[1])
+
+		if new_size then
+			settings.sections.aggro_list.size = new_size
+			aggro_list_size = new_size
+			settings:save('all')
+			add_to_chat(8,('[Bars] '):color(220)..('Aggro List Size:'):color(36)..(' '..new_size):color(200))
+			aggro_list_box:size(new_size)
+		else
+			add_to_chat(8,('[Bars] '):color(220)..('Aggro List Size:'):color(36)..(' '..aggro_list_size):color(200))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
+		end
+
+	--Show the text sizes and commands for each
 	elseif addcmd == 'text' or addcmd == 't' then
-		add_to_chat(8,('[Bars] '):color(220)..('Focus Target Text Size:'):color(36)..(' '..focus_target_text_size):color(200)..(' ('):color(8)..('//bars ftts #'):color(1)..(')'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('Sub Target Text Size:'):color(36)..(' '..sub_target_text_size):color(200)..(' ('):color(8)..('//bars stts #'):color(1)..(')'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('Target Text Size:'):color(36)..(' '..target_text_size):color(200)..(' ('):color(8)..('//bars tts #'):color(1)..(')'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('Player Stats Text Size:'):color(36)..(' '..player_stats_text_size):color(200)..(' ('):color(8)..('//bars psts #'):color(1)..(')'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('Self Action Text Size:'):color(36)..(' '..self_action_text_size):color(200)..(' ('):color(8)..('//bars sats #'):color(1)..(')'):color(8))
+		add_to_chat(8,('[Bars] '):color(220)..('Text Sizes (main text)'):color(220))
+		add_to_chat(8,('Focus Target Text Size:'):color(36)..(' '..focus_target_text_size):color(200)..(' ('):color(8)..('//bars ftts #'):color(1)..(')'):color(8))
+		add_to_chat(8,('Sub Target Text Size:'):color(36)..(' '..sub_target_text_size):color(200)..(' ('):color(8)..('//bars stts #'):color(1)..(')'):color(8))
+		add_to_chat(8,('Target Text Size:'):color(36)..(' '..target_text_size):color(200)..(' ('):color(8)..('//bars tts #'):color(1)..(')'):color(8))
+		add_to_chat(8,('Player Stats Text Size:'):color(36)..(' '..player_stats_text_size):color(200)..(' ('):color(8)..('//bars psts #'):color(1)..(')'):color(8))
+		add_to_chat(8,('Self Action Text Size:'):color(36)..(' '..self_action_text_size):color(200)..(' ('):color(8)..('//bars sats #'):color(1)..(')'):color(8))
+		add_to_chat(8,('XP Text Size:'):color(36)..(' '..xp_text_size):color(200)..(' ('):color(8)..('//bars xpts #'):color(1)..(')'):color(8))
 
 	--Update the Focus Target text size
 	elseif addcmd == 'ftts' then
@@ -8801,7 +12143,7 @@ register_event('addon command',function(addcmd, ...)
 			focus_target_text_shadow:size(new_size)
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Focus Target Text Size:'):color(36)..(' '..focus_target_text_size):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
 		end
 
 	--Update the Sub Target text size
@@ -8818,7 +12160,7 @@ register_event('addon command',function(addcmd, ...)
 			sub_target_text_shadow:size(new_size)
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Sub Target Text Size:'):color(36)..(' '..sub_target_text_size):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
 		end
 
 	--Update the Target text size
@@ -8835,7 +12177,7 @@ register_event('addon command',function(addcmd, ...)
 			target_text_shadow:size(new_size)
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Target Text Size:'):color(36)..(' '..target_text_size):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 14'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 14'):color(1)..(')'):color(8))
 		end
 
 	--Update the Player Stats text size
@@ -8858,7 +12200,7 @@ register_event('addon command',function(addcmd, ...)
 			player_stats_pet_text_shadow:size(new_size)
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Player Stats Text Size:'):color(36)..(' '..player_stats_text_size):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
 		end
 
 	--Update the Self Action text size
@@ -8875,14 +12217,32 @@ register_event('addon command',function(addcmd, ...)
 			self_action_text_shadow:size(new_size)
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Self Action Text Size:'):color(36)..(' '..self_action_text_size):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 11'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 11'):color(1)..(')'):color(8))
+		end
+
+	--Update the XP text size
+	elseif addcmd == 'xpts' then
+		local args = {...}
+		local new_size = tonumber(args[1])
+
+		if new_size then
+			settings.sections.xp.text_size = new_size
+			xp_text_size = new_size
+			settings:save('all')
+			add_to_chat(8,('[Bars] '):color(220)..('XP Text Size:'):color(36)..(' '..new_size):color(200))
+			xp_text:size(new_size)
+			xp_text_shadow:size(new_size)
+		else
+			add_to_chat(8,('[Bars] '):color(220)..('XP Text Size:'):color(36)..(' '..xp_text_size):color(200))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 11'):color(1)..(')'):color(8))
 		end
 
 	--Update the Focus Target sub text sizes
 	elseif addcmd == 'subtext' or addcmd == 'st' then
-		add_to_chat(8,('[Bars] '):color(220)..('Focus Target Sub Text Size:'):color(36)..(' '..focus_target_sub_text_size):color(200)..(' ('):color(8)..('//bars ftsts #'):color(1)..(')'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('Sub Target Sub Text Size:'):color(36)..(' '..sub_target_sub_text_size):color(200)..(' ('):color(8)..('//bars ststs #'):color(1)..(')'):color(8))
-		add_to_chat(8,('[Bars] '):color(220)..('Target Sub Text Size:'):color(36)..(' '..target_sub_text_size):color(200)..(' ('):color(8)..('//bars tsts #'):color(1)..(')'):color(8))
+		add_to_chat(8,('[Bars] '):color(220)..('Sub Text Sizes (secondary text)'):color(220))
+		add_to_chat(8,('Focus Target Sub Text Size:'):color(36)..(' '..focus_target_sub_text_size):color(200)..(' ('):color(8)..('//bars ftsts #'):color(1)..(')'):color(8))
+		add_to_chat(8,('Sub Target Sub Text Size:'):color(36)..(' '..sub_target_sub_text_size):color(200)..(' ('):color(8)..('//bars ststs #'):color(1)..(')'):color(8))
+		add_to_chat(8,('Target Sub Text Size:'):color(36)..(' '..target_sub_text_size):color(200)..(' ('):color(8)..('//bars tsts #'):color(1)..(')'):color(8))
 
 	--Update the Focus Target sub text size
 	elseif addcmd == 'ftsts' then
@@ -8898,7 +12258,7 @@ register_event('addon command',function(addcmd, ...)
 			focus_target_action_text_shadow:size(new_size)
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Focus Target Sub Text Size:'):color(36)..(' '..focus_target_sub_text_size):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
 		end
 
 	--Update the Sub Target sub text size
@@ -8915,7 +12275,7 @@ register_event('addon command',function(addcmd, ...)
 			sub_target_action_text_shadow:size(new_size)
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Sub Target Sub Text Size:'):color(36)..(' '..sub_target_sub_text_size):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 10'):color(1)..(')'):color(8))
 		end
 
 	--Update the Target sub text size
@@ -8932,16 +12292,8 @@ register_event('addon command',function(addcmd, ...)
 			target_action_text_shadow:size(new_size)
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('Target Sub Text Size:'):color(36)..(' '..target_sub_text_size):color(200))
-			add_to_chat(8,('[Bars] '):color(220)..('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 11'):color(1)..(')'):color(8))
+			add_to_chat(8,('Update by adding a number (ex.'):color(8)..(' //bars '..addcmd..' 11'):color(1)..(')'):color(8))
 		end
-
-	--Toggle the Aggro List setting
-	elseif addcmd == 'aggro' or addcmd == 'agg' then
-
-		settings.sections.aggro_list.show = not settings.sections.aggro_list.show
-		show_aggro_list = settings.sections.aggro_list.show
-		settings:save('all')
-		add_to_chat(8,('[Bars] '):color(220)..('Aggro List:'):color(36)..(' %s':format(settings.sections.aggro_list.show and 'ON' or 'OFF')):color(200))
 
 	--Toggle the target distance setting
 	elseif addcmd == 'distance' or addcmd == 'dist' or addcmd == 'd' then
@@ -9001,7 +12353,7 @@ register_event('addon command',function(addcmd, ...)
 		listAutoFocusTargets()
 
 	--Focus Target Override
-	elseif addcmd == 'focus' or addcmd == 'f' then
+	elseif addcmd == 'ft' or addcmd == 'f' then
 
 		--Remove the current Focus Target Override
 		if focus_target_override then
@@ -9013,7 +12365,7 @@ register_event('addon command',function(addcmd, ...)
 				focus_target_override = target
 				local currFTMDist = settings.options.focus_target_max_distance
 				add_to_chat(8,('[Bars] '):color(220)..('Focus Target Override Added: '):color(36)..(focus_target_override.name):color(1))
-				add_to_chat(8,('[Bars] '):color(220)..('Override removed when out of range ('):color(8)..(''..currFTMDist):color(200)..(') or by typing '):color(8)..('//bars '..addcmd):color(1)..(' again.'):color(8))
+				add_to_chat(8,('Override removed when out of range ('):color(8)..(''..currFTMDist):color(200)..(') or by typing '):color(8)..('//bars '..addcmd):color(1)..(' again.'):color(8))
 			else
 				add_to_chat(8,('[Bars] '):color(220)..('Please highlight a target and try again.'):color(28))
 			end
@@ -9023,16 +12375,27 @@ register_event('addon command',function(addcmd, ...)
 
 		resetFadeDelay()
 		screenTest()
-		local r = 0
-		local g = Screen_Test and 255 or 0
-		local b = 0
-		local player_stat_bars = {
+		local r = Screen_Test and 50 or color.bar_bg.normal.r
+		local g = Screen_Test and 255 or color.bar_bg.normal.g
+		local b = Screen_Test and 50 or color.bar_bg.normal.b
+		local pt1_r = Screen_Test and 0 or pt1_text_color.r
+		local pt1_g = Screen_Test and 255 or pt1_text_color.g
+		local pt1_b = Screen_Test and 0 or pt1_text_color.b
+		local pt2_r = Screen_Test and 0 or pt2_text_color.r
+		local pt2_g = Screen_Test and 255 or pt2_text_color.g
+		local pt2_b = Screen_Test and 0 or pt2_text_color.b
+		local pt3_r = Screen_Test and 0 or pt3_text_color.r
+		local pt3_g = Screen_Test and 255 or pt3_text_color.g
+		local pt3_b = Screen_Test and 0 or pt3_text_color.b
+		local player_stats_bars = {
 			hp = player_stats_hp_bar_bg,
 			mp = player_stats_mp_bar_bg,
 			tp = player_stats_tp_bar_bg,
 			pet = player_stats_pet_bar_bg,
 		}
 
+		aggro_list_box:draggable(Screen_Test)
+		aggro_list_box:bg_color(r,g,b)
 		target_bar_bg:draggable(Screen_Test)
 		target_bar_bg:bg_color(r,g,b)
 		focus_target_bar_bg:draggable(Screen_Test)
@@ -9041,19 +12404,144 @@ register_event('addon command',function(addcmd, ...)
 		sub_target_bar_bg:bg_color(r,g,b)
 		self_action_bar_bg:draggable(Screen_Test)
 		self_action_bar_bg:bg_color(r,g,b)
-		player_stat_bars[player_stats_top_bar]:draggable(Screen_Test)
-		player_stat_bars[player_stats_top_bar]:bg_color(r,g,b)
+		player_stats_bars[player_stats_top_bar]:draggable(Screen_Test)
+		player_stats_bars[player_stats_top_bar]:bg_color(r,g,b)
+		xp_bar_bg:draggable(Screen_Test)
+		xp_bar_bg:bg_color(r,g,b)
+		chat_ui.bg_window:bg_color(r,g,b)
+		party_actions_pt1_p0_text:draggable(Screen_Test)
+		party_actions_pt1_p0_text:color(pt1_r,pt1_g,pt1_b)
+		party_actions_pt2_p0_text:draggable(Screen_Test)
+		party_actions_pt2_p0_text:color(pt2_r,pt2_g,pt2_b)
+		party_actions_pt3_p0_text:draggable(Screen_Test)
+		party_actions_pt3_p0_text:color(pt3_r,pt3_g,pt3_b)
 
 		if Screen_Test then
-			add_to_chat(8,('[Bars] '):color(220)..('UI editing unlocked. Dragging enabled for highlighted bars.'):color(36))
-			add_to_chat(8,('[Bars] '):color(220)..('NOTICE: May not work if Windower\'s '):color(28)..('Window Mode '):color(1)..('is set to '):color(28)..('Window'):color(1)..('.'):color(28))
-			add_to_chat(8,('[Bars] '):color(220)..('Display and adjust bar widths: '):color(8)..('//bars width'):color(1))
-			add_to_chat(8,('[Bars] '):color(220)..('Display and adjust bar sizes: '):color(8)..('//bars size'):color(1))
-			add_to_chat(8,('[Bars] '):color(220)..('Display and adjust text sizes: '):color(8)..('//bars text'):color(1))
-			add_to_chat(8,('[Bars] '):color(220)..('Display and adjust sub text sizes: '):color(8)..('//bars subtext'):color(1))
+			add_to_chat(8,('[Bars] '):color(220)..('UI editing unlocked. Highlighted green areas are now draggable.'):color(36))
+			add_to_chat(8,('NOTICE: Dragging may not work if Windower\'s '):color(28)..('Window Mode '):color(1)..('is set to '):color(28)..('Window'):color(1)..('.'):color(28))
+			add_to_chat(8,('Display and adjust bar widths: '):color(8)..('//bars width'):color(1))
+			add_to_chat(8,('Display and adjust bar sizes: '):color(8)..('//bars size'):color(1))
+			add_to_chat(8,('Display and adjust text sizes: '):color(8)..('//bars text'):color(1))
+			add_to_chat(8,('Display and adjust sub text sizes: '):color(8)..('//bars subtext'):color(1))
+			add_to_chat(8,('Toggle the display of specific bars: '):color(8)..('//bars focus|sub|target|aggro|chat|xp'):color(1))
 		else
 			add_to_chat(8,('[Bars] '):color(220)..('UI editing locked.'):color(36))
 		end
+
+		updatePartyActionsPos(6,6,6)
+
+	--Toggle the Aggro List setting
+	elseif addcmd == 'aggro' or addcmd == 'agg' then
+
+		settings.sections.aggro_list.show = not settings.sections.aggro_list.show
+		show_aggro_list = settings.sections.aggro_list.show
+		settings:save('all')
+		add_to_chat(8,('[Bars] '):color(220)..('Aggro List:'):color(36)..(' %s':format(settings.sections.aggro_list.show and 'ON' or 'OFF')):color(200))
+
+	--Toggle the Chat bar
+	elseif addcmd == 'chat' then
+
+		settings.sections.chat.show = not settings.sections.chat.show
+		show_chat_bar = settings.sections.chat.show
+
+		if show_chat_bar then
+			showChatBar()
+		else
+			hideChatBar()
+		end
+
+		settings:save('all')
+		add_to_chat(8,('[Bars] '):color(220)..('Chat Bar:'):color(36)..(' %s':format(settings.sections.chat.show and 'ON' or 'OFF')):color(200))
+
+	--Toggle the Focus Target bar
+	elseif addcmd == 'focus' then
+
+		settings.sections.focus_target.show = not settings.sections.focus_target.show
+		show_focus_target_bar = settings.sections.focus_target.show
+
+		if not show_focus_target_bar then
+			focus_target_bar_meter:hide()
+			focus_target_bar_drain_meter:hide()
+			focus_target_bar_bg:hide()
+			focus_target_bar_pulse:hide()
+			focus_target_text:hide()
+			focus_target_text_shadow:hide()
+			focus_target_action_text:hide()
+			focus_target_action_text_shadow:hide()
+			ui_bg_left.focus_target:hide()
+			ui_bg_middle.focus_target:hide()
+			ui_bg_right.focus_target:hide()
+			local ft_icon_set = debuff_icons.focus_target
+			local ft_settings = settings.sections.focus_target
+			local ft_timer_set = debuff_timers.focus_target
+			if ft_icon_set[1]:visible() then
+				for k = 1, max_icons.focus_target do
+					ft_icon_set[k]:hide()
+					if ft_settings.debuff_timers then
+						ft_timer_set[k]:hide()
+					end
+				end
+			end
+		end
+
+		settings:save('all')
+		add_to_chat(8,('[Bars] '):color(220)..('Focus Target Bar:'):color(36)..(' %s':format(settings.sections.focus_target.show and 'ON' or 'OFF')):color(200))
+
+	--Toggle the Sub Target bar
+	elseif addcmd == 'sub' then
+
+		settings.sections.sub_target.show = not settings.sections.sub_target.show
+		show_sub_target_bar = settings.sections.sub_target.show
+
+		if not show_sub_target_bar then
+
+			sub_target_bar_meter:hide()
+			sub_target_bar_drain_meter:hide()
+			sub_target_bar_bg:hide()
+			sub_target_bar_pulse:hide()
+			sub_target_text:hide()
+			sub_target_text_shadow:hide()
+			sub_target_action_text:hide()
+			sub_target_action_text_shadow:hide()
+			ui_bg_left.sub_target:hide()
+			ui_bg_middle.sub_target:hide()
+			ui_bg_right.sub_target:hide()
+			local st_icon_set = debuff_icons.sub_target
+			local st_settings = settings.sections.sub_target
+			local st_timer_set = debuff_timers.sub_target
+			if st_icon_set[1]:visible() then
+				for k = 1, max_icons.sub_target do
+					st_icon_set[k]:hide()
+					if st_settings.debuff_timers then
+						st_timer_set[k]:hide()
+					end
+				end
+			end
+		end
+
+		settings:save('all')
+		add_to_chat(8,('[Bars] '):color(220)..('Sub Target Bar:'):color(36)..(' %s':format(settings.sections.sub_target.show and 'ON' or 'OFF')):color(200))
+
+	--Toggle the XP bar
+	elseif addcmd == 'xp' then
+
+		settings.sections.xp.show = not settings.sections.xp.show
+		show_xp_bar = settings.sections.xp.show
+
+		if show_xp_bar then
+			xp_bar_meter:show()
+			xp_bar_bg:show()
+			xp_text:show()
+			xp_text_shadow:show()
+		else
+			xp_bar_meter:hide()
+			xp_bar_bg:hide()
+			xp_text:hide()
+			xp_text_shadow:hide()
+		end
+
+		settings:save('all')
+		add_to_chat(8,('[Bars] '):color(220)..('XP Bar:'):color(36)..(' %s':format(settings.sections.xp.show and 'ON' or 'OFF')):color(200))
 
 	--Display help text
 	elseif addcmd == 'help' then
@@ -9062,7 +12550,6 @@ register_event('addon command',function(addcmd, ...)
 		local currMP = job_specific[job].mp
 		local currTP = job_specific[job].tp
 		local currPet = job_specific[job].pet
-		local currAggro = settings.sections.aggro_list.show
 		local currDistance = settings.options.show_target_distance
 		local currMarker = settings.options.show_hp_tp_markers
 		local currHex = settings.options.show_target_hex
@@ -9074,15 +12561,15 @@ register_event('addon command',function(addcmd, ...)
 		add_to_chat(8,('[Bars] '):color(220)..('Version '):color(8)..(_addon.version):color(220)..(' by '):color(8)..(_addon.author):color(220)..(' ('):color(8)..(prefix):color(1)..(')'):color(8))
 		add_to_chat(8,(' Command '):color(36)..('[optional]'):color(53)..(' - Description ['):color(8)..('Current Setting'):color(200)..(']'):color(8))
 		add_to_chat(8,' ')
+		add_to_chat(8,(' Focus Targets '):color(220))
 		add_to_chat(8,(' add/a '):color(36)..('[target]'):color(53)..(' - Add a target to the Auto Focus Target list.'):color(8))
 		add_to_chat(8,('   - Valid targets: Names, IDs or current cursor target.'):color(8))
 		add_to_chat(8,('   - Use quotes to surround names with spaces.'):color(8))
 		add_to_chat(8,(' remove/r '):color(36)..('[target]'):color(53)..(' - Remove a target from the Auto Focus Target list.'):color(8))
-		add_to_chat(8,(' focus/f '):color(36)..(' - Temporarily override the Auto Focus Target with current cursor target.'):color(8))
+		add_to_chat(8,(' ft/f '):color(36)..(' - Temporarily override the Auto Focus Target with current cursor target.'):color(8))
 		add_to_chat(8,('   - Type again to remove the override.'):color(8))
 		add_to_chat(8,('   - Automatically removed when target moves out of range ('):color(8)..(tostring(currFTMDist)):color(200)..(').'):color(8))
 		add_to_chat(8,(' list/l'):color(36)..(' - Show the Auto Focus Target list.'):color(8))
-		add_to_chat(8,(' aggro/agg '):color(36)..(' - Toggle the Aggro List. ['):color(8)..('%s':format(currAggro and 'ON' or 'OFF')):color(200)..(']'):color(8))
 		add_to_chat(8,' ')
 		add_to_chat(8,(' Target Bar Display Options '):color(220))
 		add_to_chat(8,(' distance/d '):color(36)..(' - Toggle the target Distance. ['):color(8)..('%s':format(currDistance and 'ON' or 'OFF')):color(200)..(']'):color(8))
@@ -9090,14 +12577,23 @@ register_event('addon command',function(addcmd, ...)
 		add_to_chat(8,(' hex/h '):color(36)..(' - Toggle the target Hex (overrides Index). ['):color(8)..('%s':format(currHex and 'ON' or 'OFF')):color(200)..(']'):color(8))
 		add_to_chat(8,(' index/i '):color(36)..(' - Toggle the target Index (overrides Hex). ['):color(8)..('%s':format(currIndex and 'ON' or 'OFF')):color(200)..(']'):color(8))
 		add_to_chat(8,' ')
-		add_to_chat(8,(' UI Adjustents '):color(220))
+		add_to_chat(8,(' UI Adjustments '):color(220))
+		add_to_chat(8,(' focus/sub/target/aggro/chat/xp'):color(36)..(' - Toggle the display of the different bars.'):color(8))
 		add_to_chat(8,(' hp/mp/tp/pet'):color(36)..(' - Toggle HP/MP/TP/Pet bar display for current job.'):color(8))
 		add_to_chat(8,('   ['..currJob..' - HP: '):color(8)..('%s':format(currHP and 'ON' or 'OFF')):color(200)..(' MP: '):color(8)..('%s':format(currMP and 'ON' or 'OFF')):color(200)..(' TP: '):color(8)..('%s':format(currTP and 'ON' or 'OFF')):color(200)..(' Pet: '):color(8)..('%s':format(currPet and 'ON' or 'OFF')):color(200)..(']'):color(8))
-		add_to_chat(8,(' ui/lock/unlock'):color(36)..(' - Toggle Screen Test to drag sections of the UI around.'):color(8))
+		add_to_chat(8,(' ui'):color(36)..(' - Toggle Screen Test to drag sections of the UI around.'):color(8))
 		add_to_chat(8,(' width/w '):color(36)..(' - Display bar widths and how to update them.'):color(8))
 		add_to_chat(8,(' size/s '):color(36)..(' - Display bar sizes and how to update them.'):color(8))
 		add_to_chat(8,(' text/t '):color(36)..(' - Display text sizes and how to update them.'):color(8))
 		add_to_chat(8,(' subtext/st '):color(36)..(' - Display sub text sizes and how to update them.'):color(8))
+
+	elseif addcmd == 'test' then
+		-- Check memory before and after manual collection
+		local before = collectgarbage("count")
+		collectgarbage("collect")
+		local after = collectgarbage("count")
+
+		windower.add_to_chat(207, string.format("Bars Memory: %.2f MB -> %.2f MB", before / 1024, after / 1024))
 
 	else
 
@@ -9106,67 +12602,466 @@ register_event('addon command',function(addcmd, ...)
 	end
 end)
 
---Handle mouse events
-register_event('mouse',function(mouse_type, mouse_x, mouse_y)
+--Handle keyboard events
+register_event('keyboard',function(dik, down)
 
-	if logged_in and mouse_type == 2 then --leftmouseup
-
-		local player_stats_bars = {
-			hp = player_stats_hp_bar_bg,
-			mp = player_stats_mp_bar_bg,
-			tp = player_stats_tp_bar_bg,
-			pet = player_stats_pet_bar_bg,
-		}
-
-		--Save Bar positions after dragged
-		local focus_target_x = focus_target_bar_bg:pos_x()
-		local focus_target_y = focus_target_bar_bg:pos_y() - job_specific[job].vertical_offsets.focus_target
-
-		local sub_target_x = sub_target_bar_bg:pos_x()
-		local sub_target_y = sub_target_bar_bg:pos_y() - job_specific[job].vertical_offsets.sub_target
-
-		local target_x = target_bar_bg:pos_x()
-		local target_y = target_bar_bg:pos_y() - job_specific[job].vertical_offsets.target
-
-		local self_action_x = self_action_bar_bg:pos_x()
-		local self_action_y = self_action_bar_bg:pos_y() - job_specific[job].vertical_offsets.self_action
-
-		local player_stats_x = player_stats_bars[player_stats_top_bar]:pos_x()
-		local player_stats_y = player_stats_bars[player_stats_top_bar]:pos_y() - job_specific[job].vertical_offsets.player_stats
-
-		local aggro_list_x = aggro_list_box:pos_x()
-		local aggro_list_y = aggro_list_box:pos_y()
-
-		if settings.sections.focus_target.pos.x ~= focus_target_x or settings.sections.focus_target.pos.y ~= focus_target_y then
-			settings.sections.focus_target.pos = {x = focus_target_x, y = focus_target_y}
-			settings:save('all')
-			setPositions()
-
-		elseif settings.sections.sub_target.pos.x ~= sub_target_x or settings.sections.sub_target.pos.y ~= sub_target_y then
-			settings.sections.sub_target.pos = {x = sub_target_x, y = sub_target_y}
-			settings:save('all')
-			setPositions()
-
-		elseif settings.sections.target.pos.x ~= target_x or settings.sections.target.pos.y ~= target_y then
-			settings.sections.target.pos = {x = target_x, y = target_y}
-			settings:save('all')
-			setPositions()
-
-		elseif settings.sections.self_action.pos.x ~= self_action_x or settings.sections.self_action.pos.y ~= self_action_y then
-			settings.sections.self_action.pos = {x = self_action_x, y = self_action_y}
-			settings:save('all')
-			setPositions()
-
-		elseif settings.sections.player_stats.pos.x ~= player_stats_x or settings.sections.player_stats.pos.y ~= player_stats_y then
-			settings.sections.player_stats.pos = {x = player_stats_x, y = player_stats_y}
-			settings:save('all')
-			setPositions()
-
-		elseif settings.sections.aggro_list.pos.x ~= aggro_list_x or settings.sections.aggro_list.pos.y ~= aggro_list_y then
-			settings.sections.aggro_list.pos = {x = aggro_list_x, y = aggro_list_y}
-			settings:save('all')
-
-		end
+	--Update shift state
+	if dik == 0x1D or dik == 0x9D then  --0x1D and 0x9D are Left CTRL and Right CTRL
+		ctrl_down = down
+		return false
 	end
 
+end)
+
+function updateChatbarSize(size)
+
+	chat_ui.bg_window:size(size)
+	chat_ui.toggle_btn:size(size)
+	chat_ui.scroll_bar:size(size)
+	chat_ui.scroll_handle:size(size)
+	chat_ui.resize_width_handle:size(size + 2)
+	chat_ui.resize_height_handle:size(size + 2)
+	chat_ui.clear_all_btn:size(size)
+	chat_ui.clear_tab_btn:size(size)
+	chat_ui.message_counter:size(size)
+	chat_ui.divider:size(size)
+	chat_ui.body:size(size)
+	chat_context_menu.ui.name:size(size)
+	chat_context_menu.ui.tell:size(size)
+	chat_context_menu.ui.invite:size(size)
+	chat_context_menu.ui.search:size(size)
+	chat_context_menu.ui.target:size(size)
+
+	for _, tab_key in ipairs(chat_box.tab_order) do
+		chat_ui.tabs[tab_key]:size(size)
+	end
+
+end
+
+--Handle mouse events
+register_event('mouse',function(mouse_type, mouse_x, mouse_y, delta)
+
+	if logged_in and not calculating_dimensions then
+
+		--All bars except Chat (handled separately because it is a difficult child)
+		if mouse_type == 2 and Screen_Test then --leftmouseup
+
+			local player_stats_bars = {
+				hp = player_stats_hp_bar_bg,
+				mp = player_stats_mp_bar_bg,
+				tp = player_stats_tp_bar_bg,
+				pet = player_stats_pet_bar_bg,
+			}
+
+			--Save Bar positions after dragged
+			local focus_target_x = focus_target_bar_bg:pos_x()
+			local focus_target_y = focus_target_bar_bg:pos_y() - job_specific[job].vertical_offsets.focus_target
+
+			local sub_target_x = sub_target_bar_bg:pos_x()
+			local sub_target_y = sub_target_bar_bg:pos_y() - job_specific[job].vertical_offsets.sub_target
+
+			local target_x = target_bar_bg:pos_x()
+			local target_y = target_bar_bg:pos_y() - job_specific[job].vertical_offsets.target
+
+			local self_action_x = self_action_bar_bg:pos_x()
+			local self_action_y = self_action_bar_bg:pos_y() - job_specific[job].vertical_offsets.self_action
+
+			local player_stats_x = player_stats_bars[player_stats_top_bar]:pos_x()
+			local player_stats_y = player_stats_bars[player_stats_top_bar]:pos_y() - job_specific[job].vertical_offsets.player_stats
+
+			local aggro_list_x = aggro_list_box:pos_x()
+			local aggro_list_y = aggro_list_box:pos_y()
+
+			local xp_x = xp_bar_bg:pos_x()
+			local xp_y = xp_bar_bg:pos_y()
+
+			local party_1_x = party_actions_pt1_p0_text:pos_x()
+			local party_1_y = party_actions_pt1_p0_text:pos_y()
+
+			local party_2_x = party_actions_pt2_p0_text:pos_x()
+			local party_2_y = party_actions_pt2_p0_text:pos_y()
+
+			local party_3_x = party_actions_pt3_p0_text:pos_x()
+			local party_3_y = party_actions_pt3_p0_text:pos_y()
+
+			if focus_target_x >= 0 and focus_target_y >= 0
+			and settings.sections.focus_target.pos.x ~= focus_target_x or settings.sections.focus_target.pos.y ~= focus_target_y then
+				settings.sections.focus_target.pos = {x = focus_target_x, y = focus_target_y}
+				settings:save('all')
+				setPositions()
+
+			elseif sub_target_x >= 0 and sub_target_y >= 0
+			and settings.sections.sub_target.pos.x ~= sub_target_x or settings.sections.sub_target.pos.y ~= sub_target_y then
+				settings.sections.sub_target.pos = {x = sub_target_x, y = sub_target_y}
+				settings:save('all')
+				setPositions()
+
+			elseif target_x >= 0 and target_y >= 0
+			and settings.sections.target.pos.x ~= target_x or settings.sections.target.pos.y ~= target_y then
+				settings.sections.target.pos = {x = target_x, y = target_y}
+				settings:save('all')
+				setPositions()
+
+			elseif self_action_x >= 0 and self_action_y >= 0
+			and settings.sections.self_action.pos.x ~= self_action_x or settings.sections.self_action.pos.y ~= self_action_y then
+				settings.sections.self_action.pos = {x = self_action_x, y = self_action_y}
+				settings:save('all')
+				setPositions()
+
+			elseif player_stats_x >= 0 and player_stats_y >= 0
+			and settings.sections.player_stats.pos.x ~= player_stats_x or settings.sections.player_stats.pos.y ~= player_stats_y then
+				settings.sections.player_stats.pos = {x = player_stats_x, y = player_stats_y}
+				settings:save('all')
+				setPositions()
+
+			elseif aggro_list_x >= 0 and aggro_list_y >= 0
+			and settings.sections.aggro_list.pos.x ~= aggro_list_x or settings.sections.aggro_list.pos.y ~= aggro_list_y then
+				settings.sections.aggro_list.pos = {x = aggro_list_x, y = aggro_list_y}
+				settings:save('all')
+
+			elseif xp_x >= 0 and xp_y >= 0
+			and settings.sections.xp.pos.x ~= xp_x or settings.sections.xp.pos.y ~= xp_y then
+				settings.sections.xp.pos = {x = xp_x, y = xp_y}
+				settings:save('all')
+				setPositions()
+
+			elseif party_1_x >= 0 and party_1_y >= 0
+			and settings.sections.party_1_actions.pos.x ~= party_1_x or settings.sections.party_1_actions.pos.y ~= party_1_y then
+				settings.sections.party_1_actions.pos = {x = party_1_x, y = party_1_y}
+				settings:save('all')
+				updatePartyActionsPos(6,6,6)
+
+			elseif party_2_x >= 0 and party_2_y >= 0
+			and settings.sections.party_2_actions.pos.x ~= party_2_x or settings.sections.party_2_actions.pos.y ~= party_2_y then
+				settings.sections.party_2_actions.pos = {x = party_2_x, y = party_2_y}
+				settings:save('all')
+				updatePartyActionsPos(6,6,6)
+
+			elseif party_3_x >= 0 and party_3_y >= 0
+			and settings.sections.party_3_actions.pos.x ~= party_3_x or settings.sections.party_3_actions.pos.y ~= party_3_y then
+				settings.sections.party_3_actions.pos = {x = party_3_x, y = party_3_y}
+				settings:save('all')
+				updatePartyActionsPos(6,6,6)
+
+			end
+
+		end
+
+		--Context Menu - Right-Click Down to show the menu
+		if mouse_type == 4 and chat_ui.bg_window:visible() then
+			if chat_ui.bg_window:hover(mouse_x, mouse_y) and not chat_minimized then
+				local sender = getChatSenderAtMouseY(mouse_y)
+				--Don't open the menu on your own name or empty/system rows
+				local player = get_player()
+				if sender and sender ~= "" and not (sender:lower() == "you" or sender:lower() == player.name:lower()) then
+					updateChatContextMenu(mouse_x, mouse_y, true, sender)
+				end
+			end
+		end
+
+		--Context Menu - Left-Click Down (1) while menu is actively displayed
+		if chat_context_menu.visible and mouse_type == 1 then
+			--Send Tell
+			if chat_context_menu.ui.tell:hover(mouse_x, mouse_y) then
+				local target = chat_context_menu.target_player
+
+				updateChatContextMenu(0, 0, false, nil)
+
+				--Simulate hitting CTRL+T to both open the chat input and load the /tell into it
+				windower.send_command('setkey ctrl down; wait 0.05; setkey t down; wait 0.05; setkey t up; wait 0.05; setkey ctrl up')
+
+				coroutine.sleep(0.15)
+
+				--Add the targets name into the chat input
+				windower.chat.add_to_input(target)
+
+				return true
+			end
+
+			--Invite Player
+			if chat_context_menu.ui.invite:hover(mouse_x, mouse_y) then
+				if chat_context_menu.target_player then
+					windower.chat.input('/pcmd add '..chat_context_menu.target_player)
+				end
+				updateChatContextMenu(0, 0, false, nil)
+				return true
+			end
+
+			--Search Player
+			if chat_context_menu.ui.search:hover(mouse_x, mouse_y) then
+				if chat_context_menu.target_player then
+					windower.chat.input('/sea all '..chat_context_menu.target_player)
+				end
+				updateChatContextMenu(0, 0, false, nil)
+				return true
+			end
+
+			--Target Player
+			if chat_context_menu.ui.target:hover(mouse_x, mouse_y) then
+				if chat_context_menu.target_player then
+					windower.chat.input('/target '..chat_context_menu.target_player)
+				end
+				updateChatContextMenu(0, 0, false, nil)
+				return true
+			end
+
+			--User clicked anywhere else while menu was active
+			updateChatContextMenu(0, 0, false, nil)
+		end
+
+		local active_tab = chat_box.tabs[chat_box.current_tab]
+		local is_hovering_on_chat = chat_ui.bg_window:hover(mouse_x, mouse_y)
+		local chat_window_visible = chat_ui.bg_window:visible()
+
+		--Actions that require the chat window to be visible and hovered over
+		if chat_window_visible and is_hovering_on_chat then
+
+			--Scrolling inside panel boundary
+			if mouse_type == 10 then
+				if ctrl_down then
+					if delta > 0 then
+						settings.sections.chat.size = settings.sections.chat.size + .25
+						settings:save('all')
+						updateChatbarSize(settings.sections.chat.size)
+						initializeChatUIGrid()
+						updateChatUIPositions(settings.sections.chat.pos.x, settings.sections.chat.pos.y)
+					else
+						settings.sections.chat.size = settings.sections.chat.size - .25
+						settings:save('all')
+						updateChatbarSize(settings.sections.chat.size)
+						initializeChatUIGrid()
+						updateChatUIPositions(settings.sections.chat.pos.x, settings.sections.chat.pos.y)
+					end
+				else
+					local max_lines = settings.sections.chat.max_lines
+					if delta > 0 then
+						if #active_tab.messages > max_lines + active_tab.scroll_offset then
+							active_tab.scroll_offset = active_tab.scroll_offset + 1
+						end
+					elseif delta < 0 then
+						if active_tab.scroll_offset > 0 then
+							active_tab.scroll_offset = active_tab.scroll_offset - 1
+						end
+						if active_tab.scroll_offset == 0 then
+							active_tab.has_new = false
+						end
+					end
+					refreshChatUI()
+					return true
+				end
+			end
+
+			--Clicked a Chat UI element
+			if mouse_type == 1 then
+				local total_lines = #active_tab.messages
+				local max_lines = settings.sections.chat.max_lines
+
+				--Scrollbar Handle
+				if total_lines > max_lines and chat_ui.scroll_handle:hover(mouse_x, mouse_y) then
+					chat_grabbed_scrollbar = true
+					return true
+				end
+
+				--Resize Width Handle
+				if chat_ui.resize_width_handle:hover(mouse_x, mouse_y) then
+					chat_width_resizing = true
+					return true
+				end
+
+				--Resize Height Handle
+				if chat_ui.resize_height_handle:hover(mouse_x, mouse_y) then
+					chat_height_resizing = true
+					return true
+				end
+
+				--Tab Headers
+				for _, tab_key in ipairs(chat_box.tab_order) do
+					local tab_obj = chat_ui.tabs[tab_key]
+					if tab_obj and tab_obj:hover(mouse_x, mouse_y) then
+						if chat_box.current_tab ~= tab_key or chat_minimized then
+							chat_box.current_tab = tab_key
+							chat_box.tabs[tab_key].scroll_offset = 0
+
+							if chat_minimized then
+								chat_minimized = false
+								chat_box.tabs[tab_key].has_new = false
+								settings.sections.chat.minimized = chat_minimized
+								settings:save('all')
+							else
+								chat_box.tabs[tab_key].has_new = false
+							end
+
+							refreshChatUI()
+						end
+						return true 
+					end
+				end
+
+				--Buttons (Clear All, Clear Tab, Toggle View)
+				if chat_ui.toggle_btn:hover(mouse_x, mouse_y) then
+					chat_minimized = not chat_minimized
+					settings.sections.chat.minimized = chat_minimized
+					settings:save('all')
+
+					if not chat_minimized then
+						local current_key = chat_box.current_tab
+						if chat_box.tabs[current_key] then
+							chat_box.tabs[current_key].has_new = false
+						end
+					end
+
+					refreshChatUI()
+					return true
+				end
+
+				if chat_ui.clear_all_btn:hover(mouse_x, mouse_y) then
+					clearAllChatHistory()
+					return true
+				end
+
+				if chat_box.current_tab ~= 'All' and chat_ui.clear_tab_btn:hover(mouse_x, mouse_y) then
+					clearCurrentChatTab()
+					return true
+				end
+
+				if Screen_Test then
+					--Move window frame
+					chat_grabbed_window = true
+					local bg_x, bg_y = chat_ui.bg_window:pos()
+					chat_drag_offset_x = mouse_x - bg_x
+					chat_drag_offset_y = mouse_y - bg_y
+				end
+				return true
+			end
+		end
+
+		--Actions that track GLOBALLY once a drag is initiated (Even outside window boundary)
+		if chat_window_visible then
+
+			--Scroll Bar Handle dragging
+			if chat_grabbed_scrollbar then
+				if mouse_type == 0 then
+					local max_lines = settings.sections.chat.max_lines
+					local total_lines = #active_tab.messages
+					local max_scrollable_slots = total_lines - max_lines
+
+					local scroll_y_top = settings.sections.chat.pos.y + 27
+					local padding_offset = math.floor(chat_calculated_char_height * 0.5)
+					local scroll_y_bottom = scroll_y_top + ((max_lines - 1) * chat_calculated_char_height) - padding_offset
+					local total_track_pixel_span = scroll_y_bottom - scroll_y_top
+
+					if total_track_pixel_span > 0 then
+						local clamped_mouse_y = math.max(scroll_y_top, math.min(scroll_y_bottom, mouse_y))
+						local progress_ratio = (clamped_mouse_y - scroll_y_top) / total_track_pixel_span
+						local inverted_ratio = 1.0 - progress_ratio
+						local target_offset = math.floor((inverted_ratio * max_scrollable_slots) + 0.5)
+
+						target_offset = math.max(0, math.min(max_scrollable_slots, target_offset))
+
+						if active_tab.scroll_offset ~= target_offset then
+							active_tab.scroll_offset = target_offset
+							if active_tab.scroll_offset == 0 then
+								active_tab.has_new = false
+							end
+							refreshChatUI()
+						end
+					end
+					return true
+
+				elseif mouse_type == 2 then
+					chat_grabbed_scrollbar = false
+					return true
+				end
+
+			--Width Resize Handle dragging
+			elseif chat_width_resizing then
+				if mouse_type == 0 then
+					if chat_calculated_char_width > 0 and chat_calculated_char_height > 0 then
+						local current_pixel_width = mouse_x - settings.sections.chat.pos.x
+
+						local target_char_width = math.floor(current_pixel_width / chat_calculated_char_width)
+
+						target_char_width = math.max(chat_min_char_width, target_char_width)
+
+						if target_char_width ~= settings.sections.chat.bar_width then
+							settings.sections.chat.bar_width = target_char_width
+
+							if rebuildWrappedHistory then
+								rebuildWrappedHistory()
+							end
+
+							refreshChatUI()
+						end
+					end
+					return true
+
+				elseif mouse_type == 2 then
+					chat_width_resizing = false
+					settings:save('all')
+					return true
+				end
+
+			--Resize Handle dragging
+			elseif chat_height_resizing then
+				if mouse_type == 0 then
+					if chat_calculated_char_width > 0 and chat_calculated_char_height > 0 then
+						local current_pixel_height = mouse_y - settings.sections.chat.pos.y
+
+						local target_max_lines = math.floor((current_pixel_height - 27) / chat_calculated_char_height)
+
+						target_max_lines = math.max(chat_min_max_lines, target_max_lines)
+
+						if target_max_lines ~= settings.sections.chat.max_lines then
+							settings.sections.chat.max_lines = target_max_lines
+
+							if rebuildWrappedHistory then
+								rebuildWrappedHistory()
+							end
+
+							refreshChatUI()
+						end
+					end
+					return true
+
+				elseif mouse_type == 2 then
+					chat_height_resizing = false
+					settings:save('all')
+					return true
+				end
+
+			--Entire Window dragging
+			elseif chat_grabbed_window and Screen_Test then
+				if mouse_type == 0 then
+					local new_bg_x = mouse_x - chat_drag_offset_x
+					local new_bg_y = mouse_y - chat_drag_offset_y
+
+					local target_x = new_bg_x + settings.sections.chat.pad
+					local target_y = new_bg_y + settings.sections.chat.pad
+
+					updateChatUIPositions(target_x, target_y)
+					return true
+
+				elseif mouse_type == 2 then
+					chat_grabbed_window = false
+
+					local bg_x, bg_y = chat_ui.bg_window:pos()
+					local target_x = bg_x + settings.sections.chat.pad
+					local target_y = bg_y + settings.sections.chat.pad
+
+					if target_x ~= settings.sections.chat.pos.x or target_y ~= settings.sections.chat.pos.y then
+						settings.sections.chat.pos.x = target_x
+						settings.sections.chat.pos.y = target_y
+						settings:save('all')
+					end
+					return true
+				end
+			end
+
+			--If no drag state was active but we are hovering the window, block FFXI from picking up a click.
+			if mouse_type == 2 and is_hovering_on_chat then
+				return true
+			end
+		end
+
+	end
 end)

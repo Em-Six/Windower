@@ -7,8 +7,7 @@ function info (msg)
 end
 
 function print(mode, msg)
-	if msg == nil then
-		send_to_chat(mode,'Value is Nil')
+	if msg == nil then send_to_chat(mode,'Value is Nil')
 	elseif type(msg) == "table" then
 		for index, value in pairs(msg) do
 			if type(value) == "table" then
@@ -31,15 +30,10 @@ function print(mode, msg)
 				send_to_chat(mode,'---- ['..tostring(index)..'] '..tostring(value)..' ----')
 			end
 		end
-	elseif type(msg) == "number" then
-		send_to_chat(mode,tostring(msg))
-	elseif type(msg) == "string" then
-		send_to_chat(mode,msg)
-	elseif type(msg) == "boolean" then
-		send_to_chat(mode,tostring(msg))
-	else
-		send_to_chat(mode,'Unknown Message')
-	end
+	elseif type(msg) == "number" then send_to_chat(mode,tostring(msg))
+	elseif type(msg) == "string" then send_to_chat(mode,msg)
+	elseif type(msg) == "boolean" then send_to_chat(mode,tostring(msg))
+	else send_to_chat(mode,'Unknown Message') end
 end
 
 function echo (msg)

@@ -104,7 +104,12 @@ do
 
         if not player_data then return player_string end
 
-        local jp_spent = player_data.job_points[player_data.main_job:lower()].jp_spent
+        local main_job = player_data.main_job:lower()
+	    if player_data.job_points and main_job and player_data.job_points[main_job] then 
+		    jp_spent = player_data.job_points[main_job].jp_spent or 0
+	    else
+		    jp_spent = 0
+	    end
 
         local locked_on = false
 
@@ -140,10 +145,14 @@ do
     function player_packet_buffs(original)    
         local packet = parse_packet('incoming', original)
         if not packet then return end
+        if not player_info then return end
         player_buff_ids = {}
         for i=1,32 do
             local buff = 'Buffs '..i
             local buff_index = 'Time '..i
+
+            if packet[buff] == 0 and i == 1 and player_info.hpp > 0 then log('Clear Buff Detected') return end
+
             if packet[buff] ~= 255 and packet[buff] ~= 0 then
                 -- 1009810800 is GMT: Monday, December 31, 2001 3:00:00 PM
                 -- 4294967296 is 32 bit for the roll over
@@ -213,6 +222,7 @@ do
         local roll_over_rate = 4294967296 / 60
         epoch_ticks =  math.floor(server_time / roll_over_rate)
         server_delta = 1009810800 + server_time - os.time()
+        que_packet('update2_'..math.floor(server_delta))
         --log('Epoch Ticks ['..epoch_ticks..']')
         --log('Server Delta ['..server_delta..']')
     end

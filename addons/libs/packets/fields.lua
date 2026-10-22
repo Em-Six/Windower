@@ -8,7 +8,6 @@ require('strings')
 require('maths')
 require('lists')
 require('sets')
-local bit = require('bit')
 
 local fields = {}
 fields.outgoing = {}
@@ -19,79 +18,120 @@ local func = {
     outgoing = {},
 }
 
--- String decoding definitions
-local ls_enc = {
-    charset = T('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ':split()):update({
-        [0] = '`',
-        [60] = 0:char(),
-        [63] = 0:char(),
-    }),
-    bits = 6,
-    terminator = function(str)
-        return (#str % 4 == 2 and 60 or 63):binary()
+-- String encoding definitions
+local ls_enc
+local sign_enc
+do
+    local encoding_ls = {
+        charset = T(('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'):split()):update({
+            [0] = '`',
+            [60] = string.char(0),
+            [63] = string.char(0),
+        }),
+        bits = 6,
+        terminator = function(str)
+            return (#str % 4 == 2 and 60 or 63):binary()
+        end,
+    }
+
+    local encoding_sign = {
+        charset = T(('0123456798ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz{'):split()):update({
+            [0] = string.char(0),
+        }),
+        bits = 6,
+    }
+
+    local make_encoding = function(enc)
+        return {
+            encode = function(val)
+                return val:encode(enc)
+            end,
+            decode = function(val)
+                return val:decode(enc)
+            end,
+        }
     end
-}
-local sign_enc = {
-    charset = T('0123456798ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz{':split()):update({
-        [0] = 0:char(),
-    }),
-    bits = 6,
-}
+
+    ls_enc = make_encoding(encoding_ls)
+
+    sign_enc = make_encoding(encoding_sign)
+end
+
+local pad
+do
+    local identity = function(value)
+        return value
+    end
+
+    local make_encoding = function(zeroes)
+        local suffix = string.char(0):rep(zeroes)
+        return function(val)
+            return val == '' and '\0' or val .. suffix
+        end
+    end
+
+    pad = function(zeroes)
+        return {
+            decode = identity,
+            encode = make_encoding(zeroes),
+            pack = 'S*',
+        }
+    end
+end
 
 -- Function definitions. Used to display packet field information.
 local res = require('resources')
-
-local function s(val, from, to)
-    from = from - 1
-    to = to
-    return bit.band(bit.rshift(val, from), 2^(to - from) - 1)
-end
 
 local function id(val)
     local mob = windower.ffxi.get_mob_by_id(val)
     return mob and mob.name or '-'
 end
 
-local function index(val)
+local index = function(val)
     local mob = windower.ffxi.get_mob_by_index(val)
     return mob and mob.name or '-'
 end
 
-local function ip(val)
-    return '%d.%d.%d.%d':format('I':pack(val):unpack('CCCC'))
+local ip = function(val)
+    return ('%d.%d.%d.%d'):format(('I'):pack(val):unpack('CCCC'))
 end
 
-local function gil(val)
+local gil = function(val)
     return tostring(val):reverse():chunks(3):concat(','):reverse() .. ' G'
 end
 
-local function bool(val)
+local bool = function(val)
     return val ~= 0
 end
 
-local function invbool(val)
+local invbool = function(val)
     return val == 0
 end
 
-local function div(denom, val)
+local div = function(denom, val)
     return val/denom
 end
 
-local function add(amount, val)
+local add = function(amount, val)
     return val + amount
 end
 
-local function sub(amount, val)
+local sub = function(amount, val)
     return val - amount
+end
+
+local percent = function(val)
+    return tostring(val) .. '%'
 end
 
 local time
 local utime
+local bufftime
 do
     local now = os.time()
     local h, m = (os.difftime(now, os.time(os.date('!*t', now))) / 3600):modf()
 
-    local timezone = '%+.2d:%.2d':format(h, 60 * m)
+    local timezone = ('%+.2d:%.2d'):format(h, 60 * m)
 
     local fn = function(ts)
         return os.date('%Y-%m-%dT%H:%M:%S' .. timezone, ts)
@@ -112,82 +152,84 @@ end
 
 local time_ms = time .. function(val) return val/1000 end
 
-local dir = function()
+local dir
+do
     local dir_sets = L{'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW', 'N', 'NNE', 'NE', 'ENE', 'E'}
-    return function(val)
-        return dir_sets[((val + 8)/16):floor() + 1]
+
+    dir = function(val)
+        return dir_sets[((val + 8) / 16):floor() + 1]
     end
-end()
-
-local function cap(max, val)
-    return '%.1f':format(100*val/max)..'%'
 end
 
-local function zone(val)
-    return res.zones[val] and res.zones[val].name or '- (Unknown zone ID: %d)':format(val)
+local cap = function(max, val)
+    return ('%.1f'):format(100 * val / max) .. '%'
 end
 
-local function item(val)
+local zone = function(val)
+    return res.zones[val] and res.zones[val].name or ('- (Unknown zone ID: %d)'):format(val)
+end
+
+local item = function(val)
     return val ~= 0 and res.items[val] and res.items[val].name or '-'
 end
 
-local function server(val)
+local server = function(val)
     return res.servers[val].name
 end
 
-local function weather(val)
+local weather = function(val)
     return res.weather[val].name
 end
 
-local function buff(val)
+local buff = function(val)
     return val ~= 0xFF and res.buffs[val].name or '-'
 end
 
-local function chat(val)
+local chat = function(val)
     return res.chat[val].name
 end
 
-local function skill(val)
+local skill = function(val)
     return res.skills[val].name
 end
 
-local function title(val)
+local title = function(val)
     return res.titles[val].name
 end
 
-local function job(val)
+local job = function(val)
     return res.jobs[val].name
 end
 
-local function emote(val)
+local emote = function(val)
     return '/' .. res.emotes[val].command
 end
 
-local function bag(val)
+local bag = function(val)
     return res.bags[val] and res.bags[val].name or 'Unknown'
 end
 
-local function race(val)
+local race = function(val)
     return res.races[val].name
 end
 
-local function slot(val)
+local slot = function(val)
     return res.slots[val].name
 end
 
-local function statuses(val)
+local statuses = function(val)
     return res.statuses[val] and res.statuses[val].name or 'Unknown'
 end
 
-local function srank(val)
+local srank = function(val)
     return res.synth_ranks[val].name
 end
 
-local function arecast(val)
+local arecast = function(val)
     return res.ability_recasts[val].name
 end
 
-local function inv(bag, val)
+local inv = function(bag, val)
     if val == 0 or not res.bags[bag] then
         return '-'
     end
@@ -195,16 +237,16 @@ local function inv(bag, val)
     return item(windower.ffxi.get_items(bag, val).id)
 end
 
-local function invp(index, val, data)
+local invp = function(index, val, data)
     return inv(data[index + 1]:byte(), val)
 end
 
-local function hex(fill, val)
+local hex = function(fill, val)
     return val:hex():zfill(2*fill):chunks(2):reverse():concat(' ')
 end
 
-local function bin(fill, val)
-    return type(val) == 'string' and val:binary(' ') or val:binary():zfill(8*fill):chunks(8):reverse():concat(' ')
+local bin = function(fill, val)
+    return type(val) == 'string' and val:binary(' ') or val:binary():zfill(8 * fill):chunks(8):reverse():concat(' ')
 end
 
 --[[
@@ -269,7 +311,7 @@ local enums = {
 }
 
 local e = function(t, val)
-    return enums[t][val] or 'Unknown value for \'%s\': %s':format(t, tostring(val))
+    return enums[t][val] or ('Unknown value for \'%s\': %s'):format(t, tostring(val))
 end
 
 --[[
@@ -306,7 +348,6 @@ fields.outgoing[0x00F] = L{
 fields.outgoing[0x011] = L{
     {ctype='int',               label='_unknown1'},                             -- 04   Always 02 00 00 00?
 }
-
 
 -- Standard Client
 fields.outgoing[0x015] = L{
@@ -615,7 +656,7 @@ fields.outgoing[0x051] = function(data, count)
     return func.outgoing[0x051].base + L{
         -- Only the number given in Count will be properly populated, the rest is junk
         {ref=types.equipset,        count=count},                                   -- 08
-        {ctype='data[%u]':format((16 - count) * 4), label='_junk1'},                -- 08 + 4 * count
+        {ctype=('data[%u]'):format((16 - count) * 4), label='_junk1'},              -- 08 + 4 * count
     }
 end
 
@@ -648,13 +689,12 @@ types.lockstyleset = L{
 
 -- lockstyleset
 fields.outgoing[0x053] = L{
-        -- First 4 bytes are a header for the set
-        {ctype='unsigned char',     label='Count'},                             -- 04
-        {ctype='unsigned char',     label='Type'},                              -- 05   0 = "Stop locking style", 1 = "Continue locking style", 3 = "Lock style in this way". Might be flags?
-        {ctype='unsigned short',    label='_unknown1',      const=0x0000},      -- 06
-        {ref=types.lockstyleset,    count=16},                                  -- 08
-    }
-
+    -- First 4 bytes are a header for the set
+    {ctype='unsigned char',     label='Count'},                                 -- 04
+    {ctype='unsigned char',     label='Type'},                                  -- 05   0 = "Stop locking style", 1 = "Continue locking style", 3 = "Lock style in this way". Might be flags?
+    {ctype='unsigned short',    label='_unknown1',          const=0x0000},      -- 06
+    {ref=types.lockstyleset,    count=16},                                      -- 08
+}
 
 -- End Synth
 -- This packet is sent after receiving a result when synthesizing.
@@ -840,7 +880,7 @@ fields.outgoing[0x096] = L{
     {ctype='unsigned short',    label='_junk1'},                                -- 22
 }
 
--- /nominate or /proposal
+-- /nominate or /propose
 fields.outgoing[0x0A0] = L{
     {ctype='unsigned char',     label='Packet Type'},                           -- 04  Not typical mapping. 0=Open poll (say), 1 = Open poll (party), 3 = conclude poll
     -- Just padding if the poll is being concluded.
@@ -1006,8 +1046,7 @@ fields.outgoing[0x0EA] = L{
 
 -- Cancel
 fields.outgoing[0x0F1] = L{
-    {ctype='unsigned char',     label='Buff'},                                  -- 04
-    {ctype='unsigned char',     label='_unknown1'},                             -- 05
+    {ctype='unsigned short',    label='Buff'},                                  -- 04
     {ctype='unsigned char',     label='_unknown2'},                             -- 06
     {ctype='unsigned char',     label='_unknown3'},                             -- 07
 }
@@ -1218,7 +1257,7 @@ types.job_level = L{
     {ctype='unsigned char',     label='Level'},                                 -- 00
 }
 
-enums['mh door menus'] = {      -- only known use is Mog House exit menu type 
+enums['mh door menus'] = {      -- only known use is Mog House exit menu type
     [0x00] = 'None',            -- results in simple yes/no dialog to leave to where you came from
     [0x01] = 'San d\'Oria',     -- only when flower girl quest completed
     [0x02] = 'Bastok',          -- only when flower girl quest completed
@@ -1229,6 +1268,23 @@ enums['mh door menus'] = {      -- only known use is Mog House exit menu type
     [0x07] = "Bastok [S]",      -- only one exit so value should never be seen on retail (but value tested)
     [0x08] = "Windurst [S]",    -- only one exit so value should never be seen on retail (but value tested)
     [0x09] = 'Adoulin',         -- no flower girl quest, should always be this value for adoulin mh
+}
+
+-- Visited Zones
+fields.incoming[0x008] = L{
+	{ctype='bit[384]',			label='Zones'},				-- bitfield of previously visited zones
+}
+
+-- Standard Message
+-- Really ancient message packet -- used for log messages like "You throw away X itemNameHere" (Message 180)
+fields.incoming[0x009] = L{
+    {ctype='unsigned int',      label='ID'},                                    -- 04
+    {ctype='unsigned short',    label='Index'},                                 -- 08
+    {ctype='unsigned short',    label='Message'},                               -- 0A
+    {ctype='unsigned char',     label='_unknown',           const=0x10},        -- 0C   packet is ignored by client if this value is not 0x10
+    {ctype='char*',             label='Data'},                                  -- 0D   The formatting of this data can be exceptionally crude. For example the string literal data for Message 180:
+                                                                                --      Para0 5725 Para1 1
+                                                                                --      Meaning, Parameter 0 = 5725, Parameter 1 = 1
 }
 
 -- Zone update
@@ -1338,7 +1394,6 @@ fields.incoming[0x00D] = L{
     -- 64 = None
     -- 128 = None
 
-
     -- Byte 0x21:
     -- 01 = None
     -- 02 = None
@@ -1378,7 +1433,7 @@ fields.incoming[0x00D] = L{
     {ctype='boolbit',           label='Update Model'},                          -- 0A:4 Race, Face, Gear models
     {ctype='boolbit',           label='Despawn'},                               -- 0A:5 Only set if player runs out of range or zones
     {ctype='boolbit',           label='_unknown1'},                             -- 0A:6
-    {ctype='boolbit',           label='_unknown2'},                             -- 0A:6
+    {ctype='boolbit',           label='_unknown2'},                             -- 0A:7
     {ctype='unsigned char',     label='Heading',            fn=dir},            -- 0B
     {ctype='float',             label='X'},                                     -- 0C
     {ctype='float',             label='Z'},                                     -- 10
@@ -1425,7 +1480,7 @@ fields.incoming[0x00D] = L{
     {ctype='unsigned short',    label='Main'},                                  -- 54
     {ctype='unsigned short',    label='Sub'},                                   -- 56
     {ctype='unsigned short',    label='Ranged'},                                -- 58
-    {ctype='char*',             label='Character Name'},                        -- 5A -   *
+    {ctype='char*',             label='Character Name',     enc=pad(2)},        -- 5A
 }
 
 -- NPC Update
@@ -1443,7 +1498,6 @@ fields.incoming[0x00D] = L{
 -- 0x20: "Bit 5"
 -- 0x40: "Bit 6"
 -- 0x80: "Bit 7"
-
 
 -- Status flags (from antiquity):
 -- 0b00100000 = CFH Bit
@@ -1492,31 +1546,31 @@ func.incoming[0x017].default = L{
     {ctype='bool',              label='GM'},                                    -- 05
     {ctype='unsigned short',    label='_padding1',},                            -- 06   Reserved for Yell and Assist Modes
     {ctype='char[0xF]',         label='Sender Name'},                           -- 08
-    {ctype='char*',             label='Message'},                               -- 17   Max of 150 characters
+    {ctype='char*',             label='Message',          enc=pad(0)},          -- 17   Max of 150 characters
 }
 func.incoming[0x017][0x1A] = L{ -- Yell
     {ctype='bool',              label='GM'},                                    -- 05
     {ctype='unsigned short',    label='Zone',             fn=zone},             -- 06   Zone ID of sender
     {ctype='char[0xF]',         label='Sender Name'},                           -- 08
-    {ctype='char*',             label='Message'},                               -- 17   Max of 150 characters
+    {ctype='char*',             label='Message',          enc=pad(0)},          -- 17   Max of 150 characters
 }
 func.incoming[0x017][0x22] = L{ -- AssistJ
     {ctype='bool',              label='GM'},                                    -- 05
     {ctype='unsigned char',     label='Mastery Rank'},                          -- 06   Sender Mastery Rank
     {ctype='unsigned char',     label='Mentor Icon',      fn=e+{'mentor icon'}},-- 07   Color of Mentor Flag
     {ctype='char[0xF]',         label='Sender Name'},                           -- 08
-    {ctype='char*',             label='Message'},                               -- 17   Max of 150 characters
+    {ctype='char*',             label='Message',          enc=pad(0)},          -- 17   Max of 150 characters
 }
 func.incoming[0x017][0x23] = func.incoming[0x017][0x22] -- AssistE
 
 -- Incoming Chat
-fields.incoming[0x017] = function()
-    local fields = func.incoming[0x017]
+do
+    local types = func.incoming[0x017]
 
-    return function(data, type)
-        return fields.base + (fields[type or data:byte(5)] or fields.default)
+    fields.incoming[0x017] = function(data, type)
+        return types.base + (types[type or data and data:byte(5)] or types.default)
     end
-end()
+end
 
 types.job_master= L{
     {ctype='boolbit', label='Master'}
@@ -1647,7 +1701,7 @@ fields.incoming[0x020] = L{
     {ctype='unsigned char',     label='Bag',                fn=bag},            -- 0E
     {ctype='unsigned char',     label='Index',              fn=invp+{0x0E}},    -- 0F
     {ctype='unsigned char',     label='Status',             fn=e+{'itemstat'}}, -- 10
-    {ctype='data[24]',          label='ExtData',            fn='...':fn()},     -- 11
+    {ctype='data[24]',          label='ExtData'},                               -- 11
     {ctype='data[3]',           label='_junk1'},                                -- 29
 }
 
@@ -1717,8 +1771,8 @@ fields.incoming[0x027] = L{
 
 -- Action
 func.incoming[0x028] = {}
-fields.incoming[0x028] = function()
-    local self = func.incoming[0x028]
+do
+    local types = func.incoming[0x028]
 
     -- start and length are both in bits
     local extract = function(data, start, length)
@@ -1730,23 +1784,23 @@ fields.incoming[0x028] = function()
     local add_effect_size = 37
     local spike_effect_size = 34
     local add_action = function(data, pos)
-        action = L{}
-        action:extend(self.action_base)
+        local action = L{}
+        action:extend(types.action_base)
 
-        action:extend(self.add_effect_base)
+        action:extend(types.add_effect_base)
         pos = pos + add_effect_offset
         local has_add_effect = extract(data, pos, 1) == 1
         pos = pos + 1
         if has_add_effect then
-            action:extend(self.add_effect_body)
+            action:extend(types.add_effect_body)
             pos = pos + add_effect_size
         end
 
-        action:extend(self.spike_effect_base)
+        action:extend(types.spike_effect_base)
         local has_spike_effect = extract(data, pos, 1) == 1
         pos = pos + 1
         if has_spike_effect then
-            action:extend(self.spike_effect_body)
+            action:extend(types.spike_effect_body)
             pos = pos + spike_effect_size
         end
 
@@ -1756,7 +1810,7 @@ fields.incoming[0x028] = function()
     local action_count_offset = 32;
     local add_target = function(data, pos)
         local target = L{}
-        target:extend(self.target_base:copy())
+        target:extend(types.target_base:copy())
 
         pos = pos + action_count_offset
         local action_count = extract(data, pos, 4)
@@ -1766,7 +1820,7 @@ fields.incoming[0x028] = function()
             action, pos = add_action(data, pos)
 
             action = action:copy():map(function(field)
-                field.label = 'Action %u %s':format(i, field.label)
+                field.label = ('Action %u %s'):format(i, field.label)
                 return field
             end)
             target:extend(action)
@@ -1777,24 +1831,24 @@ fields.incoming[0x028] = function()
 
     local target_count_offset = 72
     local first_target_offset = 150
-    return function(data)
-        local fields = self.base:copy()
+    fields.incoming[0x028] = function(data)
+        local result = types.base:copy()
         local target_count = extract(data, target_count_offset, 10)
-        pos = first_target_offset
+        local pos = first_target_offset
         for i = 1, target_count do
             local target
             target, pos = add_target(data, pos)
 
             target = target:copy():map(function(field)
-                field.label = 'Target %u %s':format(i, field.label)
+                field.label = ('Target %u %s'):format(i, field.label)
                 return field
             end)
-            fields:extend(target)
+            result:extend(target)
         end
 
-        return fields
+        return result
     end
-end()
+end
 
 enums.action_in = {
     [1] = 'Melee attack',
@@ -1873,7 +1927,6 @@ fields.incoming[0x029] = L{
     {ctype='unsigned short',    label='_unknown1'},                             -- 1A
 }
 
-
 --[[ 0x2A can be triggered by knealing in the right areas while in the possession of a VWNM KI:
     Field1 will be lights level:
     0 = 'Tier 1', -- faintly/feebly depending on whether it's outside of inside Abyssea
@@ -1918,12 +1971,10 @@ fields.incoming[0x029] = L{
       Field1 will be the amount of cruor spent
 ]]
 
-
 --[[ 0x2A can also be triggered by zoning into Abyssea:
      Field1 will be set to your remaining time. 5 at first, then whatever new value when acquiring visiting status.
      0x2A will likely be triggered as well when extending your time limit. Needs verification.
 ]]
-
 
 --[[ 0x2A can be triggered sometimes when zoning into non-Abyssea:
      Not sure what it means.
@@ -1986,7 +2037,6 @@ fields.incoming[0x030] = L{
    Field7-22: Item ID of recipe
    Field23: Unknown
    Field24: Usually Item ID of the recipe on next page
-
 
    If you ask a guild NPC for a specific recipe, fields are as follows:
    field1: item to make (item id)
@@ -2327,6 +2377,11 @@ func.incoming[0x044].base = L{
     {ctype='unsigned short',    label='_unknown1'},                             -- 06
 }
 
+-- COR
+func.incoming[0x044][0x11] = L{
+    {ctype='data[4]',           label='Available Rolls'},                       -- 08 bitfield of available Phantom Rolls
+}
+
 -- PUP
 func.incoming[0x044][0x12] = L{
     {ctype='unsigned char',     label='Automaton Head'},                        -- 08   Harlequinn 1, Valoredge 2, Sharpshot 3, Stormwaker 4, Soulsoother 5, Spiritreaver 6
@@ -2409,19 +2464,20 @@ fields.incoming[0x047] = L{
     {ctype='char[64]',          label='Translated Phrase'},                     -- 48   Will be 00'd if no match was found.
 }
 
-
 -- Unknown 0x048 incoming :: Sent when loading linkshell information from the Linkshell Concierge
 -- One per entry, 128 bytes long, mostly empty, does not contain name as far as I can see.
 -- Likely contributes to that information.
 
 -- Delivery Item
 func.incoming[0x04B] = {}
-fields.incoming[0x04B] = function()
+do
     local full = S{0x01, 0x04, 0x06, 0x08, 0x0A} -- This might not catch all packets with 'slot-info' (extra 68 bytes)
-    return function(data, type)
-        return full:contains(type or data:byte(5)) and func.incoming[0x04B].slot or func.incoming[0x04B].base
+    local types = func.incoming[0x04B]
+
+    fields.incoming[0x04B] = function(data, type)
+        return full:contains(type or data:byte(5)) and types.slot or types.base
     end
-end()
+end
 
 enums.delivery = {
     -- Seems to occur when refreshing the d-box after any change (or before changes).
@@ -2645,13 +2701,13 @@ func.incoming[0x04C][0x10] = L{
 -- Auction Interaction
 -- All types in here are server responses to the equivalent type in 0x04E
 -- The only exception is type 0x02, which is sent to initiate the AH menu
-fields.incoming[0x04C] = function()
-    local fields = func.incoming[0x04C]
+do
+    local types = func.incoming[0x04C]
 
-    return function(data, type)
-        return fields.base + (fields[type or data:byte(5)] or L{})
+    fields.incoming[0x04C] = function(data, type)
+        return types.base + (types[type or data:byte(5)] or L{})
     end
-end()
+end
 
 -- Servmes Resp
 -- Length of the packet may vary based on message length? Kind of hard to test.
@@ -2836,7 +2892,6 @@ func.incoming[0x056][0xFFFF] = L{
     {ctype='int',           label='Current ROV Mission'},                       -- 20 Doesn't correspond directly to DAT
 }
 
-
 -- Weather Change
 fields.incoming[0x057] = L{
     {ctype='unsigned int',      label='Vanadiel Time',      fn=vtime},          -- 04   Units of minutes.
@@ -2908,9 +2963,6 @@ fields.incoming[0x05C] = L{
     -- 3 = Windurst
     -- 4 = Beastmen
     -- 0xFF = Jeuno
-
-
-
 
 -- Bitpacked Besieged Info:
 
@@ -3243,13 +3295,13 @@ fields.incoming[0x070] = L{
 -- Unity Start
 -- Only observed being used for Unity fights. Also observed on DynaD, Odyssey for mask//weapon/neck/izzat progression bars, Escutcheons progression and mandragora minigame.
 func.incoming[0x075] = {}
-fields.incoming[0x075] = function()
-    local fields = func.incoming[0x075]
+do
+    local types = func.incoming[0x075]
 
-    return function(data, type)
-        return fields.base + (fields[type] or (data:byte(0x025) > 1 and fields.bars) or fields.default)
+    fields.incoming[0x075] = function(data, type)
+        return types.base + (types[type] or (data:byte(0x025) > 1 and types.bars) or types.default)
     end
-end()
+end
 
 enums[0x075] = {
     [0] = 'No Timer',
@@ -3366,7 +3418,6 @@ fields.incoming[0x086] = L{
     {ctype='data[3]',           label='Guild Hours'},                           -- 08   First 1 indicates the opening hour. First 0 after that indicates the closing hour. In the event that there are no 0s, 91022244 is used.
     {ctype='unsigned char',     label='_flags1'},                               -- 0B   Most significant bit (0x80) indicates whether the "close guild" message should be displayed.
 }
-
 
 types.merit_entry = L{
     {ctype='unsigned short',    label='Merit'},                                 -- 00
@@ -3637,7 +3688,6 @@ fields.incoming[0x0DF] = L{
 
 -- Unknown packet 0x0E0: I still can't make heads or tails of the content. The packet is always 8 bytes long.
 
-
 -- Linkshell Equip
 fields.incoming[0x0E0] = L{
     {ctype='unsigned char',     label='Linkshell Number'},                      -- 04
@@ -3676,8 +3726,8 @@ fields.incoming[0x0F4] = L{
     {ctype='unsigned short',    label='Index',              fn=index},          -- 04
     {ctype='unsigned char',     label='Level'},                                 -- 06
     {ctype='unsigned char',     label='Type',               fn=e+{'ws mob'}},   -- 07
-    {ctype='short',             label='X Offset',           fn=pixel},          -- 08   Offset on the map
-    {ctype='short',             label='Y Offset',           fn=pixel},          -- 0A
+    {ctype='short',             label='X Offset',},                             -- 08   Offset on the map
+    {ctype='short',             label='Y Offset',},                             -- 0A
     {ctype='char[16]',          label='Name'},                                  -- 0C   Slugged, may not extend all the way to 27. Up to 25 has been observed. This will be used if Type == 0
 }
 
@@ -3801,7 +3851,6 @@ fields.incoming[0x111] = L{
     {ctype='bit[12]',           label='Limited Time RoE Quest ID'},             -- 100
     {ctype='bit[20]',           label='Limited Time RoE Quest Progress'},       -- 101 upper 4
 }
-
 
 -- RoE Quest Log
 fields.incoming[0x112] = L{
@@ -3943,7 +3992,7 @@ fields.incoming[0x117] = function(data, count)
     return func.incoming[0x117].base + L{
         -- Only the number given in Count will be properly populated, the rest is junk
         {ref=types.equipset,        count=count},                                   -- 08
-        {ctype='data[%u]':format((16 - count) * 4), label='_junk1'},                -- 08 + 4 * count
+        {ctype=('data[%u]'):format((16 - count) * 4), label='_junk1'},              -- 08 + 4 * count
         {ref=types.equipset,        lookup={res.slots, 0x00},   count=0x10},        -- 48
     }
 end
@@ -4055,12 +4104,13 @@ types.ability_recast = L{
     {ctype='unsigned char',     label='_unknown1',          const=0x00},        -- 02
     {ctype='unsigned char',     label='Recast',             fn=arecast},        -- 03
     {ctype='signed short',      label='Recast Modifier'},                       -- 04
-    {ctype='unsigned short',    label='_unknown2'}                              -- 06
+    {ctype='unsigned short',    label='_unknown2'},                             -- 06
 }
 
 -- Ability timers
 fields.incoming[0x119] = L{
     {ref=types.ability_recast,                              count=0x1F},        -- 04
+    {ctype='unsigned short',    label='Mount'},                                 -- FC
 }
 
 return fields

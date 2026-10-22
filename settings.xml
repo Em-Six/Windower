@@ -41,7 +41,6 @@
     <plugin>Config</plugin>
     <plugin>Sandbox</plugin>
     <plugin>ChatMon</plugin>
-    <plugin>PacketFlow</plugin>
   </autoload>
   <profile name="">
     <consolekey>Insert</consolekey>
@@ -49,6 +48,10 @@
     <hardwaremouse>false</hardwaremouse>
     <alwaysplaysound>false</alwaysplaysound>
     <alwaysenablegamepad>false</alwaysenablegamepad>
+    <allowwinkey>true</allowwinkey>
+    <increaseaccountlimit>true</increaseaccountlimit>
+    <enablefastlogin>true</enablefastlogin>
+    <preventbackgroundthrottling>true</preventbackgroundthrottling>
   </profile>
   <profile name="Windowed">
     <consolekey>Insert</consolekey>

@@ -34,6 +34,10 @@ action_type_map = {['/ja']='Ability',['/jobability']='Ability',['/so']='Magic',[
     ['/ra']='Ranged Attack',['/range']='Ranged Attack',['/throw']='Ranged Attack',['/shoot']='Ranged Attack',['/ms']='Ability',['/monsterskill']='Ability',
     ['/ws']='Ability',['/weaponskill']='Ability',['/item']='Item',['/pet']='Ability',['/bstpet']='Ability',['Monster']='Monster Move'}
 
+res_prefix_map = {['/ma']='spells',['/ms']='monster_skills',['/ja']='job_abilities',['/ws']='weapon_skills',['/item']='items',['/ra']='ranged_attacks'}
+
+res.ranged_attacks = {[0] = {id="0",index="0",prefix="/range",range=25,english="Ranged",german="Fernwaffe",french="Attaque à dist.",japanese="飛び道具",type="Misc",element="None",targets=S{"Enemy"}}}
+
 equippable_item_bags = {res.bags:equippable(true):extract()}
 
 usable_item_bags = {res.bags:with('command','temporary'), table.extract(equippable_item_bags)}
@@ -93,6 +97,10 @@ for i,v in pairs(res.items) do
     end
 end
 
+for i,v in pairs(res.ranged_attacks) do
+    make_entry(v,i)
+end
+
     -- Should transition these slot maps to be based off res.slots, but it's very unlikely to change.
 default_slot_map = T{'sub','range','ammo','head','body','hands','legs','feet','neck','waist',
     'left_ear', 'right_ear', 'left_ring', 'right_ring','back'}
@@ -101,7 +109,7 @@ default_slot_map[0]= 'main'
 jas = {false,false,false,false,false,true,false,false,false,false,false,false,false,true,true,false}-- {6,14,15}
 readies = {false,false,false,false,false,false,true,true,true,false,false,true,false,false,false,false} -- {7,8,9,12}
 uses = {false,true,true,true,true,false,false,false,false,false,true,false,true,false,false,false}--{2,3,4,5,11,13}
-unable_to_use = T{17,18,55,56,87,88,89,90,104,191,308,313,325,410,428,561,574,579,580,581,661,665,
+unable_to_use = T{17,18,55,56,87,88,89,90,104,191,308,313,325,410,428,429,561,574,579,580,581,661,665,
     12,16,34,35,40,47,48,49,71,72,76,78,84,91,92,95,96,106,111,128,154,155,190,192,193,198,
     199,215,216,217,218,219,220,233,246,247,307,315,316,328,337,338,346,347,348,349,356,411,443,444,
     445,446,514,516,517,518,523,524,525,547,568,569,575,649,660,662,666,700,701,62,717} -- Probably don't need some of these (event action) 
@@ -130,8 +138,6 @@ addendum_white = {[14]="Poisona",[15]="Paralyna",[16]="Blindna",[17]="Silena",[1
 addendum_black = {[253]="Sleep",[259]="Sleep II",[260]="Dispel",[162]="Stone IV",[163]="Stone V",[167]="Thunder IV",
     [168]="Thunder V",[157]="Aero IV",[158]="Aero V",[152]="Blizzard IV",[153]="Blizzard V",[147]="Fire IV",[148]="Fire V",
     [172]="Water IV",[173]="Water V",[255]="Break"}
-
-resources_ranged_attack = {id="0",index="0",prefix="/range",range=25,english="Ranged",german="Fernwaffe",french="Attaque à dist.",japanese="飛び道具",type="Misc",element="None",targets=S{"Enemy"}}
 
 
 -- _globals --
@@ -189,6 +195,7 @@ world = make_user_table()
 buffactive = make_user_table()
 alliance = make_user_table()
 st_targs = {['<st>']=true,['<stpc>']=true,['<stal>']=true,['<stnpc>']=true,['<stpt>']=true}
+st_flag = false
 current_file = nil
 disable_table = {false,false,false,false,false,false,false,false,false,false,false,false,false,false,false}
 disable_table[0] = false
@@ -344,7 +351,7 @@ region_to_zone_map = {
     [14] = S{126,127,157,158,179,184},
     [15] = S{121,122,153,154,202,251},
     [16] = S{114,125,168,208,209,247},
-    [17] = S{113,128.174,201,212},
+    [17] = S{113,128,174,201,212},
     [18] = S{123,176,250,252},
     [19] = S{124,159,160,163,205,207,211},
     [20] = S{130,177,178,180,181},
